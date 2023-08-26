@@ -53,7 +53,7 @@ The application will measure, track and distribute student performance metrics i
 
 ### Built With
 
-<div style="display: flex">
+<div style="display: flex; justify-content: center">
 
 [![Docker][docker-shield]][docker-url]
 [![React][react-shield]][react-url]
