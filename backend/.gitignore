@@ -1,0 +1,5 @@
+database.db
+*.pyc
+src/analytics/projects/*.csv
+src/analytics/users/*.csv
+src/reports/*.json

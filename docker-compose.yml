@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  server:
+    build: ./backend
+    ports:
+      - 5000:5000
+    volumes:
+      - ./backend:/usr/src/server
+      # - ./backend/src/database:/usr/src/server/src/database
+      #- ./backend/tests:/usr/src/server/tests
+      #- ./backend/requirements.txt:/usr/src/server/requirements.txt
+    environment:
+      - FLASK_ENV=development
+  client:
+    build: ./frontend
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend/public:/usr/src/client/public
+      - ./frontend/src:/usr/src/client/src
+      - ./frontend/package.json:/usr/src/client/package.json
+    depends_on:
+      - server

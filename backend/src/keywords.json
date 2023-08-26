@@ -1,0 +1,543 @@
+{
+  "react": [
+    "react",
+    "frontend",
+    "web dev",
+    "javascript",
+    "html",
+    "css",
+    "jsx",
+    "state management",
+    "virtual dom"
+  ],
+  "python": [
+    "python",
+    "backend",
+    "data science",
+    "machine learning",
+    "web dev",
+    "django",
+    "flask"
+  ],
+  "java": [
+    "java",
+    "backend",
+    "android",
+    "enterprise",
+    "spring",
+    "object-oriented"
+  ],
+  "javascript": [
+    "javascript",
+    "frontend",
+    "web dev",
+    "react",
+    "angular",
+    "node.js",
+    "typescript"
+  ],
+  "html": [
+    "html",
+    "frontend",
+    "web dev",
+    "css",
+    "javascript",
+    "markup",
+    "html5"
+  ],
+  "css": ["css", "frontend", "web dev", "html", "sass", "bootstrap", "styling"],
+  "c": [
+    "c",
+    "pointers",
+    "arrays",
+    "structs",
+    "malloc",
+    "memory management",
+    "multithreading",
+    "sockets",
+    "makefile",
+    "makefiles",
+    "programming language",
+    "procedural",
+    "low-level",
+    "system programming",
+    "portability"
+  ],
+  "c++": [
+    "c++",
+    "backend",
+    "game dev",
+    "object-oriented",
+    "performance",
+    "embedded"
+  ],
+  "c#": [
+    "c#",
+    "backend",
+    "game dev",
+    "unity",
+    "windows apps",
+    "object-oriented"
+  ],
+  "php": [
+    "php",
+    "backend",
+    "web dev",
+    "mysql",
+    "laravel",
+    "server-side scripting"
+  ],
+  "swift": [
+    "swift",
+    "mobile app dev",
+    "ios",
+    "apple",
+    "object-oriented",
+    "swiftui"
+  ],
+  "kotlin": [
+    "kotlin",
+    "mobile app dev",
+    "android",
+    "java",
+    "object-oriented",
+    "jetpack"
+  ],
+  "typescript": [
+    "typescript",
+    "frontend",
+    "javascript",
+    "static typing",
+    "object-oriented",
+    "angular"
+  ],
+  "ruby": ["ruby", "backend", "web dev", "rails", "dynamic", "object-oriented"],
+  "go": ["go", "backend", "web dev", "concurrency", "performance", "compiled"],
+  "rust": [
+    "rust",
+    "system programming",
+    "concurrency",
+    "safety",
+    "performance",
+    "compiled"
+  ],
+  "sql": ["sql", "database", "query", "relational", "data management", "mysql"],
+  "git": [
+    "git",
+    "version control",
+    "repository",
+    "source code",
+    "collaboration",
+    "github"
+  ],
+  "docker": [
+    "docker",
+    "containers",
+    "virtualization",
+    "deployment",
+    "microservices",
+    "kubernetes"
+  ],
+  "angular": [
+    "angular",
+    "frontend",
+    "web dev",
+    "javascript",
+    "typescript",
+    "mvc",
+    "single-page apps"
+  ],
+  "vue": [
+    "vue",
+    "frontend",
+    "web dev",
+    "javascript",
+    "progressive framework",
+    "component-based"
+  ],
+  "react native": [
+    "react native",
+    "mobile app dev",
+    "javascript",
+    "cross-platform",
+    "native mobile apps",
+    "expo"
+  ],
+  "android": [
+    "android",
+    "mobile app dev",
+    "java",
+    "kotlin",
+    "xml",
+    "android studio",
+    "material design"
+  ],
+  "ios": [
+    "ios",
+    "mobile app dev",
+    "swift",
+    "objective-c",
+    "xcode",
+    "apple",
+    "app store"
+  ],
+  "node.js": [
+    "node.js",
+    "backend",
+    "javascript",
+    "server-side",
+    "express",
+    "npm",
+    "async"
+  ],
+  "express": [
+    "express",
+    "backend",
+    "node.js",
+    "javascript",
+    "web dev",
+    "server-side",
+    "middleware"
+  ],
+  "django": [
+    "django",
+    "backend",
+    "python",
+    "web dev",
+    "server-side",
+    "mvc",
+    "orm"
+  ],
+  "flask": [
+    "flask",
+    "backend",
+    "python",
+    "web dev",
+    "micro web framework",
+    "lightweight"
+  ],
+  "spring": [
+    "spring",
+    "java",
+    "backend",
+    "enterprise",
+    "dependency injection",
+    "mvc",
+    "spring boot"
+  ],
+  "laravel": [
+    "laravel",
+    "backend",
+    "php",
+    "web dev",
+    "mvc",
+    "artisan",
+    "eloquent"
+  ],
+  "ruby on rails": [
+    "on rails",
+    "backend",
+    "ruby",
+    "web dev",
+    "mvc",
+    "active record",
+    "scaffolding"
+  ],
+  "bootstrap": [
+    "bootstrap",
+    "frontend",
+    "web dev",
+    "css",
+    "responsive design",
+    "framework",
+    "mobile-first"
+  ],
+  "sass": [
+    "sass",
+    "frontend",
+    "web dev",
+    "css",
+    "preprocessor",
+    "scss",
+    "styling"
+  ],
+  "webpack": [
+    "webpack",
+    "frontend",
+    "javascript",
+    "module bundler",
+    "build tool",
+    "asset management"
+  ],
+  "babel": [
+    "babel",
+    "frontend",
+    "javascript",
+    "transpiler",
+    "es6",
+    "jsx",
+    "compatibility"
+  ],
+  "flutter": [
+    "flutter",
+    "mobile app dev",
+    "dart",
+    "ui toolkit",
+    "cross-platform",
+    "material design"
+  ],
+  "java swing": [
+    "java swing",
+    "java",
+    "desktop apps",
+    "gui",
+    "event-driven",
+    "awt",
+    "swing"
+  ],
+  "electron": [
+    "electron",
+    "desktop apps",
+    "javascript",
+    "cross-platform",
+    "web technologies",
+    "node.js"
+  ],
+  "jupyter": [
+    "jupyter",
+    "data science",
+    "notebook",
+    "python",
+    "interactive",
+    "data analysis",
+    "visualization"
+  ],
+  "pandas": [
+    "pandas",
+    "data science",
+    "python",
+    "data manipulation",
+    "data analysis",
+    "dataframes"
+  ],
+  "numpy": [
+    "numpy",
+    "data science",
+    "python",
+    "numerical computing",
+    "array processing"
+  ],
+  "tensorflow": [
+    "tensorflow",
+    "machine learning",
+    "python",
+    "deep learning",
+    "neural networks",
+    "keras"
+  ],
+  "pytorch": [
+    "pytorch",
+    "machine learning",
+    "python",
+    "deep learning",
+    "neural networks",
+    "torch"
+  ],
+  "rest api": [
+    "rest api",
+    "api",
+    "web services",
+    "http",
+    "json",
+    "restful",
+    "backend"
+  ],
+  "graphql": [
+    "graphql",
+    "api",
+    "query language",
+    "frontend",
+    "backend",
+    "data fetching"
+  ],
+  "jwt": ["jwt", "authentication", "security", "json web tokens", "tokens"],
+  "oauth": [
+    "oauth",
+    "authentication",
+    "authorization",
+    "authentication protocol",
+    "openid connect"
+  ],
+  "devops": [
+    "devops",
+    "development",
+    "operations",
+    "collaboration",
+    "continuous integration",
+    "continuous deployment"
+  ],
+  "unit testing": [
+    "unit testing",
+    "testing",
+    "test-driven development",
+    "automated testing",
+    "assertions",
+    "junit"
+  ],
+  "machine learning": [
+    "machine learning",
+    "ai",
+    "data science",
+    "algorithms",
+    "supervised learning",
+    "unsupervised learning"
+  ],
+  "data visualization": [
+    "data visualization",
+    "data science",
+    "charts",
+    "graphs",
+    "matplotlib",
+    "d3.js"
+  ],
+  "cybersecurity": [
+    "cybersecurity",
+    "security",
+    "hacking",
+    "network security",
+    "encryption",
+    "vulnerabilities"
+  ],
+  "agile": [
+    "agile",
+    "software development",
+    "project management",
+    "iterative",
+    "scrum",
+    "kanban"
+  ],
+  "arduino": [
+    "arduino",
+    "embedded systems",
+    "microcontroller",
+    "physical computing",
+    "iot",
+    "c++"
+  ],
+  "raspberry pi": [
+    "raspberry pi",
+    "embedded systems",
+    "single-board computer",
+    "iot",
+    "python",
+    "gpio"
+  ],
+  "aws": [
+    "aws",
+    "cloud computing",
+    "cloud services",
+    "amazon web services",
+    "s3",
+    "ec2"
+  ],
+  "azure": [
+    "azure",
+    "cloud computing",
+    "cloud services",
+    "microsoft azure",
+    "virtual machines",
+    "app services"
+  ],
+  "svelte": [
+    "svelte",
+    "frontend",
+    "web dev",
+    "javascript",
+    "component framework",
+    "reactive"
+  ],
+  "ember": [
+    "ember",
+    "frontend",
+    "web dev",
+    "javascript",
+    "mvc",
+    "convention over configuration"
+  ],
+  "web components": [
+    "web components",
+    "frontend",
+    "web dev",
+    "javascript",
+    "custom elements",
+    "shadow DOM"
+  ],
+  "scss": [
+    "scss",
+    "frontend",
+    "web dev",
+    "css",
+    "sass",
+    "styling",
+    "variables"
+  ],
+  "less": [
+    "less",
+    "frontend",
+    "web dev",
+    "css",
+    "styling",
+    "variables",
+    "dynamic"
+  ],
+  "styled-components": [
+    "styled-components",
+    "frontend",
+    "web dev",
+    "css-in-js",
+    "react",
+    "styling",
+    "components"
+  ],
+  "tailwind": [
+    "tailwind",
+    "tailwind css",
+    "frontend",
+    "web dev",
+    "css",
+    "utility-first",
+    "responsive"
+  ],
+  "material ui": [
+    "material UI",
+    "frontend",
+    "web dev",
+    "react",
+    "component library",
+    "material design"
+  ],
+  "d3.js": [
+    "d3.js",
+    "frontend",
+    "web dev",
+    "javascript",
+    "data visualization",
+    "charts"
+  ],
+  "golang": [
+    "golang",
+    "backend",
+    "web dev",
+    "performance",
+    "concurrency",
+    "compiled"
+  ],
+  "scala": [
+    "scala",
+    "backend",
+    "web dev",
+    "functional programming",
+    "jvm",
+    "scalability"
+  ]
+}

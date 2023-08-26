@@ -1,0 +1,1 @@
+This directory will hold csv files for each user, named "{handle}.csv"
