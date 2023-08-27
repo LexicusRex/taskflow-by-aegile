@@ -189,8 +189,6 @@ def auth_login():
 
 APP.config["MAIL_SERVER"] = "smtp.gmail.com"
 APP.config["MAIL_PORT"] = 465
-APP.config["MAIL_USERNAME"] = "taskflow.helicopters@gmail.com"
-APP.config["MAIL_PASSWORD"] = "kwpbzyoehylhhrpo"
 APP.config["MAIL_USE_TLS"] = False
 APP.config["MAIL_USE_SSL"] = True
 mail = Mail(APP)
