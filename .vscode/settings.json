@@ -1,0 +1,27 @@
+{
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.inlineSuggest.enabled": true,
+    
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true
+    },
+    "python.linting.enabled": true,
+
+
+    "prettier.semi": true,
+    "prettier.singleQuote": true,
+    "emmet.includeLanguages": {
+        "javascript": "javascriptreact",
+    },
+    // React
+    "reactSnippets.settings.importReactOnTop": false,
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+}
