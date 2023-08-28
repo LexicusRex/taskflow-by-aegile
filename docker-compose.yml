@@ -18,6 +18,6 @@ services:
     volumes:
       - ./frontend/public:/usr/src/client/public
       - ./frontend/src:/usr/src/client/src
-      - ./frontend/package.json:/usr/src/client/package.json
+      #- ./frontend/package.json:/usr/src/client/package.json
     depends_on:
       - server
