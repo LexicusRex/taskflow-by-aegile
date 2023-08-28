@@ -113,10 +113,8 @@ To get this project going locally, please ensure the following.
     ```
 #### VSCode Dev Container
 Alternatively, you can use the VSCode Dev Container to run the application.
-**Instead** of `docker-compose up --build`, open the **`taskflow-by-aegile/backend`**
-directory in a VSCode Dev Container. Appropriate extensions will install automatically.
-
-To edit the frontend, navigate to the Remote Explorer tab on the left side of the VSCode window and open the client container in a new window.
+**Instead** of `docker-compose up --build`, use the `Dev Containers: Clone Repository in Dev Container...` command to clone the **`taskflow-by-aegile`**
+repo into a VSCode Dev Container. Appropriate extensions will install automatically.
 
 Navigate to `http://localhost:3000` in your preferred browser application.
 
