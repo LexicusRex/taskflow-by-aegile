@@ -16,7 +16,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./frontend/public:/usr/src/client/public
+      #- ./frontend/public:/usr/src/client/public
       - ./frontend/src:/usr/src/client/src
       #- ./frontend/package.json:/usr/src/client/package.json
     depends_on:
