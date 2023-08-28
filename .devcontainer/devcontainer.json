@@ -16,7 +16,23 @@
 
 	// The optional 'workspaceFolder' property is the path VS Code should open by default when
 	// connected. This is typically a file mount in .devcontainer/docker-compose.yml
-	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.black-formatter",
+				"dbaeumer.vscode-eslint",
+				"GitHub.copilot",
+				"VisualStudioExptTeam.vscodeintellicode",
+				"VisualStudioExptTeam.intellicode-api-usage-examples",
+				"esbenp.prettier-vscode",
+				"ms-python.vscode-pylance",
+				"ms-python.pylint",
+				"ms-python.python",
+				"ChakrounAnas.turbo-console-log"
+			]
+		}
+	}
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
