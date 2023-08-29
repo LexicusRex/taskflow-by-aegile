@@ -114,7 +114,14 @@ To get this project going locally, please ensure the following.
 #### VSCode Dev Container
 Alternatively, you can use the VSCode Dev Container to run the application.
 **Instead** of `docker-compose up --build`, use the `Dev Containers: Clone Repository in Dev Container...` command to clone the **`taskflow-by-aegile`**
-repo into a VSCode Dev Container. Appropriate extensions will install automatically.
+repo into a VSCode Dev Container. Appropriate extensions will install automatically. This may take an around 8-10 minutes. Once installtion is complete,
+open two bash instances and run the following in each:
+    ```console
+    $ python backend/src/server.py
+    ```
+    ```console
+    $ cd frontend && npm start
+    ```
 
 Navigate to `http://localhost:3000` in your preferred browser application.
 

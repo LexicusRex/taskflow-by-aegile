@@ -15,7 +15,26 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "cd backend && pip3 install --user -r requirements.txt && export PYTHONPATH='./src' && cd ../frontend && npm install"
+	"postCreateCommand": "export PYTHONPATH='backend' && cd backend && pip3 install --user -r requirements.txt && cd ../frontend && npm install",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"dbaeumer.vscode-eslint",
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"ms-python.black-formatter",
+				"VisualStudioExptTeam.vscodeintellicode",
+				"VisualStudioExptTeam.intellicode-api-usage-examples",
+				"GitHub.copilot",
+				"eamodio.gitlens",
+				"esbenp.prettier-vscode",
+				"ms-python.pylint",
+				"ChakrounAnas.turbo-console-log",
+				"dsznajder.es7-react-js-snippets",
+				"xabikos.JavaScriptSnippets"
+			]
+		}
+	}
 
 	// Configure tool-specific properties.
 	// "customizations": {},
