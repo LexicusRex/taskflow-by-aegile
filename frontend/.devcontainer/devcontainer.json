@@ -7,7 +7,22 @@
     ],
     "service": "client", // The service in docker-compose.yml that we want vs code to use as a dev containers 
     "shutdownAction": "stopCompose",
-    "workspaceFolder": "/usr/src/client"
+	"workspaceFolder": "/usr/src/client",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"dsznajder.es7-react-js-snippets",
+				"xabikos.JavaScriptSnippets",
+				"dbaeumer.vscode-eslint",
+				"GitHub.copilot",
+				"VisualStudioExptTeam.vscodeintellicode",
+				"VisualStudioExptTeam.intellicode-api-usage-examples",
+				"esbenp.prettier-vscode",
+				"ChakrounAnas.turbo-console-log",
+				"eamodio.gitlens"
+			]
+		}
+	}
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 
