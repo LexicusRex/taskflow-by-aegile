@@ -15,7 +15,7 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "export PYTHONPATH='backend' && cd backend && pip3 install --user -r requirements.txt && cd ../frontend && npm install",
+	"postCreateCommand": "cd backend && pip3 install --user -r ./requirements.txt && cd ../frontend && npm install",
 	"customizations": {
 		"vscode": {
 			"extensions": [
