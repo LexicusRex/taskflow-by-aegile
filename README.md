@@ -1,4 +1,5 @@
 # TaskFlow by Aegile
+
 <a name="readme-top"></a>
 
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
@@ -61,6 +62,7 @@ The application will measure, track and distribute student performance metrics i
 [![Python][python-shield]][python-url]
 [![Flask][flask-shield]][flask-url]
 [![ChatGPT][chatgpt-shield]][chatgpt-url]
+
 <!-- [![Pandas][pandas-shield]][pandas-url] -->
 <!-- [![Chart.js][chartjs-shield]][chartjs-url] -->
 <!-- [![JWT][jwt-shield]][jwt-url] -->
@@ -77,58 +79,67 @@ The application will measure, track and distribute student performance metrics i
 To get this project going locally, please ensure the following.
 
 ### Prerequisites
--   [Docker][docker-url]
-    -   Docker is a containerisation platform that allows for the easy deployment of applications. For more, please head to their website [here](https://www.docker.com/).
-    -   If you are using Windows, ensule WSL 2 is enabled on your machine. [Read more here](https://docs.docker.com/desktop/wsl/) 
+
+- [Docker][docker-url]
+  - Docker is a containerisation platform that allows for the easy deployment of applications. For more, please head to their website [here](https://www.docker.com/).
+  - If you are using Windows, ensule WSL 2 is enabled on your machine. [Read more here](https://docs.docker.com/desktop/wsl/)
+
 ### Installation
+
 1. Install [Docker for desktop][docker-url].
 2. `git clone` this repository to your machine. Alternatively, if you have a ZIP download of the source code, extract it to a desired location.
 3. Ensure the Docker for Desktop client is running.
 4. Navigate to the root of the repository. There should be a `docker-compose.yml` file there.
 5. Run the command (for the initial setup):
-    ```console
-    $ docker-compose up --build
-    ```
+   ```console
+   $ docker-compose up --build
+   ```
 6. Please wait for Docker to build the container. (This may take upwards of 5-7 minutes depending on your machine.)
 7. Once the build is complete, you should see the following message
 
-    ```console
-    ...
-    Compiled successfully!
-    taskflow-by-aegile-client-1  |
-    taskflow-by-aegile-client-1  | You can now view helicopter in the browser.
-    taskflow-by-aegile-client-1  |
-    taskflow-by-aegile-client-1  |   Local:            http://localhost:3000
-    taskflow-by-aegile-client-1  |   On Your Network:  http://172.26.0.3:3000
-    taskflow-by-aegile-client-1  |
-    taskflow-by-aegile-client-1  | Note that the development build is not optimized.
-    taskflow-by-aegile-client-1  | To create a production build, use npm run build.
-    taskflow-by-aegile-client-1  |
-    taskflow-by-aegile-client-1  | webpack compiled successfully
-    ```
+   ```console
+   ...
+   Compiled successfully!
+   taskflow-by-aegile-client-1  |
+   taskflow-by-aegile-client-1  | You can now view helicopter in the browser.
+   taskflow-by-aegile-client-1  |
+   taskflow-by-aegile-client-1  |   Local:            http://localhost:3000
+   taskflow-by-aegile-client-1  |   On Your Network:  http://172.26.0.3:3000
+   taskflow-by-aegile-client-1  |
+   taskflow-by-aegile-client-1  | Note that the development build is not optimized.
+   taskflow-by-aegile-client-1  | To create a production build, use npm run build.
+   taskflow-by-aegile-client-1  |
+   taskflow-by-aegile-client-1  | webpack compiled successfully
+   ```
+
 8. Navigate to `http://localhost:3000` in your preferred browser application.
 9. For subsequent Docker startups, use:
-    ```console
-    $ docker-compose up
-    ```
+   ```console
+   $ docker-compose up
+   ```
+
 #### VSCode Dev Container
+
 Alternatively, you can use the VSCode Dev Container to run the application.
 **Instead** of `docker-compose up --build`, use the `Dev Containers: Clone Repository in Dev Container...` command to clone the **`taskflow-by-aegile`**
 repo into a VSCode Dev Container. Appropriate extensions will install automatically. This may take an around 8-10 minutes. Once installtion is complete,
 open two bash instances and run the following in each:
-    ```console
-    $ python backend/src/server.py
-    ```
-    ```console
-    $ cd frontend && npm start
-    ```
+
+```console
+$ cd backend && bash setup.sh
+```
+
+```console
+$ cd frontend && npm start
+```
 
 Navigate to `http://localhost:3000` in your preferred browser application.
 
-
 ## Restarting the Docker
-To restart the Docker, you have to cancel the current Docker process by entering Ctrl-C into the command line terminal. 
+
+To restart the Docker, you have to cancel the current Docker process by entering Ctrl-C into the command line terminal.
 You should see the following output once the Docker has stopped:
+
 ```sh
 Gracefully stopping... (press Ctrl+C again to force)
 Aborting on container exit...
@@ -137,14 +148,15 @@ Aborting on container exit...
 ✔ Container taskflow-by-aegile-server-1  Stopped                                                                             10.8s
 canceled
 ```
-Now to start a new Docker process, simply run `docker-compose up`. 
+
+Now to start a new Docker process, simply run `docker-compose up`.
 You should see a similar message on the command line terminal from step 7 in the installation guide above.
 
 To ensure that the Docker restarts smoothly, please log out of your account in the current TaskFlow instance before cancelling the current Docker process.
 
-<!-- 
+<!--
 ## Setup Configurations (Optional)
-To change configuration settings for the server, open the "__config__.py" file in “backend/src”. 
+To change configuration settings for the server, open the "__config__.py" file in “backend/src”.
 The file will look like the following:
 
 ```py
@@ -162,9 +174,9 @@ ANALYTICS_TIMESPAN = 60
 # Set to True use existing data stored in the backend
 DATA_PERSISTENCE = False
 ```
-Here, you can change the `ANALYTICS_TIMESPAN` constant, which dictates the number of seconds between each update of the user and project analytics. 
-The `DATA_PERSISTENCE` constant can also be switched between `False` and `True`. 
-  If `False` - running “docker-compose up” will wipe all data on the backend. 
+Here, you can change the `ANALYTICS_TIMESPAN` constant, which dictates the number of seconds between each update of the user and project analytics.
+The `DATA_PERSISTENCE` constant can also be switched between `False` and `True`.
+  If `False` - running “docker-compose up” will wipe all data on the backend.
   If `True` - the backend data will persist between Docker restarts. -->
 
 <!-- USAGE EXAMPLES -->
@@ -183,14 +195,14 @@ Use this space to show useful examples of how a project can be used. Additional 
 
 ### User Interface:
 
--   [x] Authorisation ✅
--   [x] Projects ✅
--   [x] Tasks ✅
--   [ ] Word processor 🔃
--   [ ] Dashboard 🔃
--   [ ] Taskboards 🔃
--   [ ] Analytics page 🔃
--   [ ] Timeline
+- [x] Authorisation ✅
+- [x] Projects ✅
+- [x] Tasks ✅
+- [ ] Word processor 🔃
+- [ ] Dashboard 🔃
+- [ ] Taskboards 🔃
+- [ ] Analytics page 🔃
+- [ ] Timeline
 
 ### Functionality
 
@@ -229,24 +241,24 @@ GitHub [@samyu1204](https://github.com/samyu1204)
 
 This project uses the following open source modules:
 
--   [Node.js](https://nodejs.org/)
--   [react-router-dom](https://github.com/remix-run/react-router)
--   [Material UI](https://mui.com/)
--   [React](https://reactjs.org/)
--   [SQLite](https://www.sqlite.org/index.html)
--   [Python](https://www.python.org/)
--   [Flask](https://flask.palletsprojects.com/en/2.0.x/)
--   [Chart.js](https://www.chartjs.org/)
--   [JWT](https://jwt.io/)
--   [npm](https://www.npmjs.com/)
--   [Pandas](https://pandas.pydata.org/)
--   [Docker](https://www.docker.com/)
--   [Docker Compose](https://docs.docker.com/compose/)
--   [ChatGPT](http://openai.com/)
--   [notistack](https://iamhosseindhv.com/notistack)
--   [compressorjs](https://fengyuanchen.github.io/compressorjs/)
--   [react-chartjs-2](https://github.com/reactchartjs/react-chartjs-2)
--   [react-time-ago](https://gitlab.com/catamphetamine/react-time-ago)
+- [Node.js](https://nodejs.org/)
+- [react-router-dom](https://github.com/remix-run/react-router)
+- [Material UI](https://mui.com/)
+- [React](https://reactjs.org/)
+- [SQLite](https://www.sqlite.org/index.html)
+- [Python](https://www.python.org/)
+- [Flask](https://flask.palletsprojects.com/en/2.0.x/)
+- [Chart.js](https://www.chartjs.org/)
+- [JWT](https://jwt.io/)
+- [npm](https://www.npmjs.com/)
+- [Pandas](https://pandas.pydata.org/)
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+- [ChatGPT](http://openai.com/)
+- [notistack](https://iamhosseindhv.com/notistack)
+- [compressorjs](https://fengyuanchen.github.io/compressorjs/)
+- [react-chartjs-2](https://github.com/reactchartjs/react-chartjs-2)
+- [react-time-ago](https://gitlab.com/catamphetamine/react-time-ago)
 <!-- -   [React Quill]( -->
 
 <!-- MARKDOWN LINKS -->
