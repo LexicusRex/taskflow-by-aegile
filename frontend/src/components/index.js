@@ -10,3 +10,4 @@ export { default as LoadingScreen } from './LoadingScreen.jsx';
 export { default as AddMemberDropDown } from './AddMemberDropDown.jsx';
 export { default as TeamAddMemberForm } from './TeamAddMemberForm.jsx';
 export { default as SearchBar } from './SearchBar.jsx';
+export { default as Editor } from './Editor.jsx';

@@ -9,6 +9,7 @@ import {
   UserProfilePage,
   ConnectionsPage,
   TaskPage,
+  TaskEditPage,
   PerformancePage,
   ReportsPage,
 } from './pages/index.js';
@@ -125,6 +126,7 @@ function App() {
                   <Route path="/projects/:projectId" element={<TaskPage />} />
                   <Route path="/performance" element={<PerformancePage />} />
                   <Route path="/reports" element={<ReportsPage />} />
+                  <Route path="/edit" element={<TaskEditPage />} />
                 </Route>
               </Routes>
             </AlertProvider>

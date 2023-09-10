@@ -4,6 +4,7 @@ export { default as PasswordResetPage } from './PasswordResetPage.jsx';
 export { default as ProjectPage } from './ProjectPage/ProjectPage.jsx';
 export { default as ProjectInvitesPage } from './ProjectPage/ProjectInvitesPage.jsx';
 export { default as TaskPage } from './TaskPage/TaskPage.jsx';
+export { default as TaskEditPage } from './TaskEditPage/TaskEditPage.jsx';
 export { default as Dashboard } from './Dashboard/Dashboard.jsx';
 export { default as UserProfilePage } from './UserProfilePage/UserProfilePage.jsx';
 export { default as ConnectionsPage } from './ConnectionsPage/ConnectionsPage.jsx';
