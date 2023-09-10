@@ -18,6 +18,9 @@ class Task:
 
     def __init__(self, task_id=None):
         self.t_id = task_id
+        self.is_edit = False
+        self.editor = None
+        self.observers = []
 
     def fetch(self):
         pass
@@ -27,7 +30,6 @@ class Task:
         users = self.get_assignees(task["id"])
         task_data["assignees"] = list(users.keys())
         task_data["assigneesData"] = users
-        pprint(task_data, indent=2)
         return task_data
 
     def new(self, creator_handle, project_id, task_data):
@@ -135,8 +137,6 @@ class Task:
                 cur = conn.cursor()
                 cur.execute(query, (self.t_id, user))
                 res = cur.execute("SELECT * FROM assigned").fetchall()
-                for row in res:
-                    print(tuple(row))
         # TODO - notification
 
     def get_metrics(self):
@@ -146,3 +146,26 @@ class Task:
             SELECT * FROM metrics
             WHERE task = ?
         """
+
+    def register_edit_lock(self, handle: str) -> None:
+        if self.is_edit or self.editor:
+            # TODO - notification
+
+            # Add handle to observers
+            self.observers.append(handle)
+            raise AccessError(f"Task is currently being edited by {self.editor}")
+
+            return
+
+        self.is_edit = True
+        self.editor = handle
+
+    def release_edit_lock(self, handle):
+        if not self.is_edit:
+            # TODO - notification
+            raise AccessError(f"Task is currently being edited by {self.editor}")
+
+            # Add handle to observers
+            self.observers.append(handle)
+            return
+        pass
