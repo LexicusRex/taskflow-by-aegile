@@ -34,7 +34,7 @@ def test_user_profile_fetch_by_handle(_init_database):
     handle = exec_query(
         """SELECT handle from users WHERE email=?""", ("alex@email.com",)
     )[0]["handle"]
-    user_data = User(handle).data()
+    user_data = User(handle).data
     assert user_data["email"] == "alex@email.com"
     assert user_data["first_name"] == "Alex"
     assert user_data["last_name"] == "Xu"
@@ -49,24 +49,23 @@ def test_user_update_profile(_init_database):
     handle = exec_query(
         """SELECT handle from users WHERE email=?""", ("alex@email.com",)
     )[0]["handle"]
-    user_data = (
-        User(handle)
-        .edit_user(
-            {
-                "email": "xu@email.com",
-                "first_name": "Xu",
-                "last_name": "Alex",
-                "password": "AlexXu123!",
-                # "handle": handle,
-                "skills": "",
-                "description": "",
-                "image": "",
-                "raw_image": "",
-                "banner": "",
-            }
-        )
-        .data()
+    user = User(handle)
+    user.edit_user(
+        {
+            "email": "xu@email.com",
+            "firstName": "Xu",
+            "lastName": "Alex",
+            "password": "AlexXu123!",
+            # "handle": handle,
+            "skills": "",
+            "description": "",
+            "image": "",
+            "rawImage": "",
+            "banner": "",
+        }
     )
+
+    user_data = user.data
     assert user_data["email"] == "xu@email.com"
     assert user_data["first_name"] == "Xu"
     assert user_data["last_name"] == "Alex"
