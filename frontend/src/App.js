@@ -126,7 +126,7 @@ function App() {
                   <Route path="/projects/:projectId" element={<TaskPage />} />
                   <Route path="/performance" element={<PerformancePage />} />
                   <Route path="/reports" element={<ReportsPage />} />
-                  <Route path="/edit" element={<TaskEditPage />} />
+                  <Route path="/edit/:projectId" element={<TaskEditPage />} />
                 </Route>
               </Routes>
             </AlertProvider>
