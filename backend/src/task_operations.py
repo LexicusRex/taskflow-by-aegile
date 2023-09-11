@@ -333,12 +333,21 @@ def register_edit_task_lock(handle, task_id):
 
 def get_task_edit(task_id):
     if not os.path.exists(f"{BASE_DIR}/task_content/{task_id}.json"):
-        return {}
+        return []
         # raise AccessError("Task is being edited by another user")
     with open(f"{BASE_DIR}/task_content/{task_id}.json", "r", encoding="utf-8") as fp:
         return json.load(fp)
 
+def get_task_content(project_id):
+    data = []
+    with get_db() as conn:
+        cur = conn.cursor()
+        tasks = cur.execute("SELECT name, id FROM tasks WHERE project = ?", (project_id, )).fetchall()
+        for task in tasks:
+            data.append({'id': task['id'], 'name': task['name'], 'blocks': get_task_edit(task['id'])})
+
+        return data
 
 def update_task_edit(task_id, task_content: list):
     with open(f"{BASE_DIR}/task_content/{task_id}.json", "w", encoding="utf-8") as fp:
-        return json.dump(task_content, fp)
+        json.dump(task_content, fp)

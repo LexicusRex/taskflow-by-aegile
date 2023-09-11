@@ -58,6 +58,8 @@ from src.task_operations import (
     get_user_tasks,
     task_comment,
     task_get_comment,
+    get_task_content,
+    update_task_edit,
 )
 
 from src.analytics import (
@@ -488,6 +490,19 @@ def do_task_get_comment():
         raise AccessError("Invalid token")
 
     return dumps(task_get_comment(task_id))
+
+@APP.route("/task/get/content", methods=["GET"])
+@token_auth
+def fetch_task_content(handle):
+    project_id = request.args["projectId"]
+    return dumps(get_task_content(project_id))
+
+@APP.route("/task/edit/content", methods=["PUT"])
+@token_auth
+def edit_task_content(handle):
+    task_id = request.args["taskId"]
+    data = request.get_json()
+    return dumps(update_task_edit(task_id, data["blocks"]))
 
 
 # =============================================================================
