@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS notifications (
     message TEXT NOT NULL,
     project INTEGER,
     timestamp INTEGER NOT NULL,
-    FOREIGN KEY(recipient) REFERENCES users(email),
+    FOREIGN KEY(recipient) REFERENCES users(handle),
     FOREIGN KEY(sender) REFERENCES users(handle),
     FOREIGN KEY(project) REFERENCES projects(id)
 );
