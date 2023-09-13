@@ -94,6 +94,13 @@ class Task:
         conn.commit()
         conn.close()
         self.assign_users(data["assignees"])
+    
+    def update_status(self, new_status):
+        with get_db() as conn:
+            cur = conn.cursor()
+            cur.execute(
+                f"UPDATE tasks SET status= ? WHERE id = ?", (new_status, self.t_id)
+            )
 
     def delete(self, handle):
         if not self.t_id:

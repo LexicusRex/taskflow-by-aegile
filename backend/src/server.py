@@ -60,6 +60,7 @@ from src.task_operations import (
     task_get_comment,
     get_task_content,
     update_task_edit,
+    task_update_status,
 )
 
 from src.analytics import (
@@ -503,6 +504,14 @@ def edit_task_content(handle):
     task_id = request.args["taskId"]
     data = request.get_json()
     return dumps(update_task_edit(task_id, data["blocks"]))
+
+
+@APP.route("/task/update/status", methods=["PUT"])
+@token_auth
+def update_task_status(handle):
+    task_id = request.args["taskId"]
+    status = request.args["status"]
+    return dumps(task_update_status(handle, task_id, status))
 
 
 # =============================================================================

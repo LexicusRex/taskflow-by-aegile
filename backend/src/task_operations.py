@@ -326,6 +326,11 @@ def task_get_comment(task_id):
 
     return comments_list
 
+def task_update_status(handle, task_id, status):
+    task = get_active_task(task_id)
+    task.update_status(status)
+    return {}
+
 
 def register_edit_task_lock(handle, task_id):
     Task(task_id).register_edit_lock(handle)
