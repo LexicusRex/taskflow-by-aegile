@@ -5,6 +5,8 @@ import TaskCard from './TaskCard';
 import { fetchAPIRequest } from '../../helpers';
 import { useParams } from 'react-router-dom';
 import { LoadingScreen, SearchBar } from '../../components';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import TaskList from './TaskList';
 
 export default function TaskDisplayScreen({ isEdit, setIsEdit }) {
   const { projectId } = useParams();
@@ -46,7 +48,7 @@ export default function TaskDisplayScreen({ isEdit, setIsEdit }) {
 
   // Render function
   const renderTaskList = (taskList) => {
-    return taskList.map((task) => (
+    return taskList.map((task, index) => (
       <TaskCard
         key={task.id}
         id={task.id}
@@ -65,6 +67,7 @@ export default function TaskDisplayScreen({ isEdit, setIsEdit }) {
         isLoading={!allImagesLoaded}
         incrementLoadedCount={handleImageLoad}
         isTaskPage={true}
+        index={index}
       />
     ));
   };
@@ -129,6 +132,65 @@ export default function TaskDisplayScreen({ isEdit, setIsEdit }) {
     fetchAndRenderTasks();
   }, [isEdit, projectId]);
 
+  const updateTaskStatus = async (taskId, newStatus) => {
+    try {
+      await fetchAPIRequest(
+        `/task/update/status?taskId=${taskId}&status=${newStatus}`,
+        'PUT'
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleDragEnd = (result) => {
+    if (!result.destination) return;
+    const dropIdToState = {
+      'blocked-tasks': {
+        state: blocked,
+        update: setBlocked,
+        status: 'blocked',
+      },
+      'pending-tasks': {
+        state: notStarted,
+        update: setNotStarted,
+        status: 'notstarted',
+      },
+      'in-progress-tasks': {
+        state: inProgress,
+        update: setInProgress,
+        status: 'inprogress',
+      },
+      'completed-tasks': {
+        state: completed,
+        update: setCompleted,
+        status: 'completed',
+      },
+    };
+
+    const { source, destination } = result;
+    if (source.droppableId !== destination.droppableId) {
+      // remove from old list
+      const sourceList = dropIdToState[source.droppableId].state;
+      const [removed] = sourceList.splice(source.index, 1);
+      const destList = dropIdToState[destination.droppableId].state;
+      // insert into new list
+      destList.splice(destination.index, 0, removed);
+      dropIdToState[source.droppableId].update(sourceList); // update old list
+      dropIdToState[destination.droppableId].update(destList);
+      updateTaskStatus(
+        removed.id,
+        dropIdToState[destination.droppableId].status
+      );
+    } else {
+      const sourceList = dropIdToState[source.droppableId].state;
+      const items = Array.from(sourceList);
+      const [reorderedItem] = items.splice(source.index, 1);
+      items.splice(destination.index, 0, reorderedItem);
+      dropIdToState[source.droppableId].update(items);
+    }
+  };
+
   return isLoading ? (
     <LoadingScreen />
   ) : (
@@ -152,7 +214,6 @@ export default function TaskDisplayScreen({ isEdit, setIsEdit }) {
         searchFilter={searchFilter}
         setSearchFilter={setSearchFilter}
       />
-
       <Box
         sx={{
           display: 'flex',
@@ -162,26 +223,52 @@ export default function TaskDisplayScreen({ isEdit, setIsEdit }) {
           gap: 1,
         }}
       >
-        {/* Backlog */}
-        <Box sx={statColStyle}>
-          <StatusLabel status={'Blocked'} setIsEdit={setIsEdit} />
-          {renderTaskList(searchFilter ? filterTasks(blocked) : blocked)}
-        </Box>
-        {/* Not Started */}
-        <Box sx={statColStyle}>
-          <StatusLabel status={'Not Started'} setIsEdit={setIsEdit} />
-          {renderTaskList(searchFilter ? filterTasks(notStarted) : notStarted)}
-        </Box>
-        {/* In Progress */}
-        <Box sx={statColStyle}>
-          <StatusLabel status={'In Progress'} setIsEdit={setIsEdit} />
-          {renderTaskList(searchFilter ? filterTasks(inProgress) : inProgress)}
-        </Box>
-        {/* Completed */}
-        <Box sx={statColStyle}>
-          <StatusLabel status={'Completed'} setIsEdit={setIsEdit} />
-          {renderTaskList(searchFilter ? filterTasks(completed) : completed)}
-        </Box>
+        <DragDropContext onDragEnd={handleDragEnd}>
+          {/* Backlog */}
+          <TaskList
+            taskList={blocked}
+            listId="blocked-tasks"
+            labelText="Blocked"
+            projectId={projectId}
+            projectMembers={projectMembers}
+            allImagesLoaded={allImagesLoaded}
+            handleImageLoad={handleImageLoad}
+            setIsEdit={setIsEdit}
+          />
+          {/* Not Started */}
+          <TaskList
+            taskList={notStarted}
+            listId="pending-tasks"
+            labelText="Not Started"
+            projectId={projectId}
+            projectMembers={projectMembers}
+            allImagesLoaded={allImagesLoaded}
+            handleImageLoad={handleImageLoad}
+            setIsEdit={setIsEdit}
+          />
+          {/* In Progress */}
+          <TaskList
+            taskList={inProgress}
+            listId="in-progress-tasks"
+            labelText="In Progress"
+            projectId={projectId}
+            projectMembers={projectMembers}
+            allImagesLoaded={allImagesLoaded}
+            handleImageLoad={handleImageLoad}
+            setIsEdit={setIsEdit}
+          />
+          {/* Completed */}
+          <TaskList
+            taskList={completed}
+            listId="completed-tasks"
+            labelText="Completed"
+            projectId={projectId}
+            projectMembers={projectMembers}
+            allImagesLoaded={allImagesLoaded}
+            handleImageLoad={handleImageLoad}
+            setIsEdit={setIsEdit}
+          />
+        </DragDropContext>
       </Box>
     </Box>
   );
