@@ -331,6 +331,16 @@ def task_update_status(handle, task_id, status):
     task.update_status(status)
     return {}
 
+def task_set_as_subtask(handle, task_id, parent_id):
+    task = get_active_task(task_id)
+    task.set_as_subtask(parent_id)
+    return {}
+
+def task_remove_as_subtask(handle, task_id, status):
+    task = get_active_task(task_id)
+    task.remove_as_subtask(status)
+    return {}
+
 
 def register_edit_task_lock(handle, task_id):
     Task(task_id).register_edit_lock(handle)

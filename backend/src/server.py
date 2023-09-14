@@ -61,6 +61,8 @@ from src.task_operations import (
     get_task_content,
     update_task_edit,
     task_update_status,
+    task_set_as_subtask,
+    task_remove_as_subtask,
 )
 
 from src.analytics import (
@@ -512,6 +514,20 @@ def update_task_status(handle):
     task_id = request.args["taskId"]
     status = request.args["status"]
     return dumps(task_update_status(handle, task_id, status))
+
+@APP.route("/task/set/subtask", methods=["PUT"])
+@token_auth
+def set_task_subtask(handle):
+    task_id = request.args["taskId"]
+    parent_id = request.args["parentId"]
+    return dumps(task_set_as_subtask(handle, task_id, parent_id))
+
+@APP.route("/task/remove/subtask", methods=["PUT"])
+@token_auth
+def remove_task_subtask(handle):
+    task_id = request.args["taskId"]
+    status = request.args["status"]
+    return dumps(task_remove_as_subtask(handle, task_id, status))
 
 
 # =============================================================================
