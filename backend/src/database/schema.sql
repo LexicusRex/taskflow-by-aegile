@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     description TEXT,
     deadline TEXT,
     status TEXT NOT NULL,
+    parent INTEGER,
     attachment TEXT,
     attachment_name TEXT,
     weighting INTEGER,
@@ -66,6 +67,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     time_start INTEGER NOT NULL,
     time_end INTEGER,
     complete_till_due INTEGER,
+    FOREIGN KEY(parent) REFERENCES tasks(id),
     FOREIGN KEY(project) REFERENCES projects(id) ON DELETE CASCADE,
     FOREIGN KEY(creator) REFERENCES users(handle) ON DELETE CASCADE
 );
