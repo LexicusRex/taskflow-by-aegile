@@ -1,7 +1,6 @@
 import StatusLabel from './StatusLabel';
 import { Box } from '@mui/material';
 import TaskCard from './TaskCard';
-import { useState } from 'react';
 import { Droppable } from 'react-beautiful-dnd';
 
 const TaskList = ({
@@ -13,6 +12,9 @@ const TaskList = ({
   allImagesLoaded,
   handleImageLoad,
   setIsEdit,
+  selectedId,
+  setSelectedTask,
+  setCurrentSubtasks,
 }) => {
   return (
     <Box
@@ -46,11 +48,15 @@ const TaskList = ({
                 priority={task.priority}
                 assignees={task.assignees}
                 assigneesData={projectMembers}
+                subtasks={task.subtasks}
                 setIsEdit={setIsEdit}
                 isLoading={!allImagesLoaded}
                 incrementLoadedCount={handleImageLoad}
                 isTaskPage={true}
                 index={index}
+                selectedId={selectedId}
+                setSelectedTask={setSelectedTask}
+                setCurrentSubtasks={setCurrentSubtasks}
               />
             ))}
             {provided.placeholder}
