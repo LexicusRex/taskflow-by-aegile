@@ -9,12 +9,13 @@ class Task:
     def get_all(cls, project_id):
         query = """
             SELECT * FROM tasks
-            WHERE project = ?
+            WHERE project = ? AND parent IS NULL
         """
         with get_db() as conn:
             cur = conn.cursor()
             cur.execute(query, (project_id,))
             return [Task().data(task) for task in cur.fetchall()]
+
 
     def __init__(self, task_id=None):
         self.t_id = task_id
@@ -27,6 +28,14 @@ class Task:
 
     def data(self, task):
         task_data = dict(task)
+        query = """
+            SELECT * FROM tasks
+            WHERE parent = ?
+        """
+        with get_db() as conn:
+            cur = conn.cursor()
+            cur.execute(query, (task["id"],))
+            task_data["subtasks"] = [Task().data(task) for task in cur.fetchall()]
         users = self.get_assignees(task["id"])
         task_data["assignees"] = list(users.keys())
         task_data["assigneesData"] = users
@@ -176,3 +185,17 @@ class Task:
             self.observers.append(handle)
             return
         pass
+
+    def set_as_subtask(self, parent_task_id):
+        with get_db() as conn:
+            cur = conn.cursor()
+            cur.execute(
+                f"UPDATE tasks SET parent= ? WHERE id = ?", (parent_task_id, self.t_id)
+            )
+
+    def remove_as_subtask(self, new_status):
+        with get_db() as conn:
+            cur = conn.cursor()
+            cur.execute(
+                f"UPDATE tasks SET parent = NULL, status=? WHERE id = ?", (new_status, self.t_id)
+            )

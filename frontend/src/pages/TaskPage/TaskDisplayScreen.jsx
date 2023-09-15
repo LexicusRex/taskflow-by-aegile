@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Box } from '@mui/material';
-import StatusLabel from './StatusLabel';
-import TaskCard from './TaskCard';
 import { fetchAPIRequest } from '../../helpers';
 import { useParams } from 'react-router-dom';
 import { LoadingScreen, SearchBar } from '../../components';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext } from 'react-beautiful-dnd';
 import TaskList from './TaskList';
+import TaskDetails from './TaskDetails';
+import TaskPageAnalytics from './TaskPageAnalytics';
+import { AlertContext } from '../../context/AlertContext';
 
 export default function TaskDisplayScreen({ isEdit, setIsEdit }) {
   const { projectId } = useParams();
@@ -23,55 +24,36 @@ export default function TaskDisplayScreen({ isEdit, setIsEdit }) {
   const [loadedImageCount, setLoadedImageCount] = useState(0);
   const [searchFilter, setSearchFilter] = useState('');
 
+  const [selectedTask, setSelectedTask] = useState({});
+  const [currentSubtasks, setCurrentSubtasks] = useState([]);
+  const alertCtx = useContext(AlertContext);
+
   const handleImageLoad = () => {
     if (loadedImageCount >= 0 && loadedImageCount < taskCount) {
       setLoadedImageCount((prevCount) => prevCount + 1);
     }
   };
 
-  const filterTasks = (taskList) => {
-    return taskList.filter((task) => {
-      let target = task.name;
-      let query = searchFilter.split('::')[1];
-      if (searchFilter.startsWith('id::')) {
-        target = task.id;
-      } else if (searchFilter.startsWith('desc::')) {
-        target = task.description;
-      } else if (searchFilter.startsWith('due::')) {
-        target = task.deadline;
-      } else {
-        query = searchFilter;
-      }
-      return target.toString().toLowerCase().includes(query.toLowerCase());
-    });
-  };
+  useEffect(() => {
+    console.log(selectedTask);
+  }, [selectedTask]);
 
-  // Render function
-  const renderTaskList = (taskList) => {
-    return taskList.map((task, index) => (
-      <TaskCard
-        key={task.id}
-        id={task.id}
-        projectId={projectId}
-        name={task.name}
-        description={task.description}
-        deadline={task.deadline}
-        status={task.status}
-        attachment={task.attachment}
-        attachmentName={task.attachmentName}
-        weighting={task.weighting}
-        priority={task.priority}
-        assignees={task.assignees}
-        assigneesData={projectMembers}
-        setIsEdit={setIsEdit}
-        isLoading={!allImagesLoaded}
-        incrementLoadedCount={handleImageLoad}
-        isTaskPage={true}
-        index={index}
-      />
-    ));
-  };
-  // Fetch and render
+  // const filterTasks = (taskList) => {
+  //   return taskList.filter((task) => {
+  //     let target = task.name;
+  //     let query = searchFilter.split('::')[1];
+  //     if (searchFilter.startsWith('id::')) {
+  //       target = task.id;
+  //     } else if (searchFilter.startsWith('desc::')) {
+  //       target = task.description;
+  //     } else if (searchFilter.startsWith('due::')) {
+  //       target = task.deadline;
+  //     } else {
+  //       query = searchFilter;
+  //     }
+  //     return target.toString().toLowerCase().includes(query.toLowerCase());
+  //   });
+  // };
 
   useEffect(() => {
     if (loadedImageCount >= taskCount && loadedImageCount > 0) {
@@ -80,13 +62,6 @@ export default function TaskDisplayScreen({ isEdit, setIsEdit }) {
       }, 500);
     }
   }, [loadedImageCount, taskCount]);
-
-  // Status style
-  const statColStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 2,
-  };
 
   useEffect(() => {
     const fetchAndRenderTasks = async () => {
@@ -138,6 +113,31 @@ export default function TaskDisplayScreen({ isEdit, setIsEdit }) {
         `/task/update/status?taskId=${taskId}&status=${newStatus}`,
         'PUT'
       );
+      setIsEdit((prev) => !prev);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const setAsSubtask = async (taskId, parentId) => {
+    try {
+      await fetchAPIRequest(
+        `/task/set/subtask?taskId=${taskId}&parentId=${parentId}`,
+        'PUT'
+      );
+      setIsEdit((prev) => !prev);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const removeAsSubtask = async (taskId, status) => {
+    console.log(taskId, status);
+    try {
+      await fetchAPIRequest(
+        `/task/remove/subtask?taskId=${taskId}&status=${status}`,
+        'PUT'
+      );
+      setIsEdit((prev) => !prev);
     } catch (err) {
       console.log(err);
     }
@@ -166,6 +166,10 @@ export default function TaskDisplayScreen({ isEdit, setIsEdit }) {
         update: setCompleted,
         status: 'completed',
       },
+      'subtask-list': {
+        state: currentSubtasks,
+        update: setCurrentSubtasks,
+      },
     };
 
     const { source, destination } = result;
@@ -174,14 +178,46 @@ export default function TaskDisplayScreen({ isEdit, setIsEdit }) {
       const sourceList = dropIdToState[source.droppableId].state;
       const [removed] = sourceList.splice(source.index, 1);
       const destList = dropIdToState[destination.droppableId].state;
+
+      if (
+        destination.droppableId === 'subtask-list' &&
+        removed.id === selectedTask.id
+      ) {
+        alertCtx.error('Cannot assign a task as a subtask to itself');
+        // add back to old list
+        sourceList.splice(source.index, 0, removed);
+        return;
+      }
+      if (
+        destination.droppableId === 'subtask-list' &&
+        removed.subtasks.length > 0
+      ) {
+        alertCtx.error('Cannot assign a parent task as a subtask.');
+        // add back to old list
+        sourceList.splice(source.index, 0, removed);
+        return;
+      }
+
       // insert into new list
       destList.splice(destination.index, 0, removed);
       dropIdToState[source.droppableId].update(sourceList); // update old list
       dropIdToState[destination.droppableId].update(destList);
-      updateTaskStatus(
-        removed.id,
-        dropIdToState[destination.droppableId].status
-      );
+      destination.droppableId === 'subtask-list' &&
+        setAsSubtask(removed.id, selectedTask.id);
+      source.droppableId === 'subtask-list' &&
+        removeAsSubtask(
+          removed.id,
+          dropIdToState[destination.droppableId].status
+        );
+      if (
+        source.droppableId !== 'subtask-list' &&
+        destination.droppableId !== 'subtask-list'
+      ) {
+        updateTaskStatus(
+          removed.id,
+          dropIdToState[destination.droppableId].status
+        );
+      }
     } else {
       const sourceList = dropIdToState[source.droppableId].state;
       const items = Array.from(sourceList);
@@ -197,79 +233,121 @@ export default function TaskDisplayScreen({ isEdit, setIsEdit }) {
     <Box
       sx={{
         display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: '#ECEFF1',
-        flexGrow: 1,
-        minHeight: '50vh',
-        maxHeight: '80vh',
-        overflow: 'auto',
-        px: 2,
-        py: 2,
-        borderTopLeftRadius: '10px',
-        borderTopRightRadius: '10px',
-        // flex: 6,
+        height: '100dvh',
+        // '@media (max-width: 1400px)': {
+        //   flexDirection: 'column',
+        // },
       }}
     >
-      <SearchBar
-        searchFilter={searchFilter}
-        setSearchFilter={setSearchFilter}
-      />
-      <Box
-        sx={{
-          display: 'flex',
-          flex: 6,
-          justifyContent: 'space-around',
-          flexWrap: 'wrap',
-          gap: 1,
-        }}
-      >
-        <DragDropContext onDragEnd={handleDragEnd}>
-          {/* Backlog */}
-          <TaskList
-            taskList={blocked}
-            listId="blocked-tasks"
-            labelText="Blocked"
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            backgroundColor: '#ECEFF1',
+            flexGrow: 1,
+            minHeight: '50vh',
+            maxHeight: '80vh',
+            overflow: 'auto',
+            px: 2,
+            py: 2,
+            borderTopLeftRadius: '10px',
+            borderTopRightRadius: '10px',
+            // flex: 6,
+          }}
+        >
+          <SearchBar
+            searchFilter={searchFilter}
+            setSearchFilter={setSearchFilter}
+          />
+          <Box
+            sx={{
+              display: 'flex',
+              flex: 6,
+              justifyContent: 'space-around',
+              flexWrap: 'wrap',
+              gap: 1,
+            }}
+          >
+            {/* Backlog */}
+            <TaskList
+              taskList={blocked}
+              listId="blocked-tasks"
+              labelText="Blocked"
+              projectId={projectId}
+              projectMembers={projectMembers}
+              allImagesLoaded={allImagesLoaded}
+              handleImageLoad={handleImageLoad}
+              setIsEdit={setIsEdit}
+              selectedId={selectedTask.id}
+              setSelectedTask={setSelectedTask}
+              setCurrentSubtasks={setCurrentSubtasks}
+            />
+            {/* Not Started */}
+            <TaskList
+              taskList={notStarted}
+              listId="pending-tasks"
+              labelText="Not Started"
+              projectId={projectId}
+              projectMembers={projectMembers}
+              allImagesLoaded={allImagesLoaded}
+              handleImageLoad={handleImageLoad}
+              setIsEdit={setIsEdit}
+              selectedId={selectedTask.id}
+              setSelectedTask={setSelectedTask}
+              setCurrentSubtasks={setCurrentSubtasks}
+            />
+            {/* In Progress */}
+            <TaskList
+              taskList={inProgress}
+              listId="in-progress-tasks"
+              labelText="In Progress"
+              projectId={projectId}
+              projectMembers={projectMembers}
+              allImagesLoaded={allImagesLoaded}
+              handleImageLoad={handleImageLoad}
+              setIsEdit={setIsEdit}
+              selectedId={selectedTask.id}
+              setSelectedTask={setSelectedTask}
+              setCurrentSubtasks={setCurrentSubtasks}
+            />
+            {/* Completed */}
+            <TaskList
+              taskList={completed}
+              listId="completed-tasks"
+              labelText="Completed"
+              projectId={projectId}
+              projectMembers={projectMembers}
+              allImagesLoaded={allImagesLoaded}
+              handleImageLoad={handleImageLoad}
+              setIsEdit={setIsEdit}
+              selectedId={selectedTask.id}
+              setSelectedTask={setSelectedTask}
+              setCurrentSubtasks={setCurrentSubtasks}
+            />
+          </Box>
+        </Box>
+        {Object.keys(selectedTask).length > 0 ? (
+          <TaskDetails
             projectId={projectId}
             projectMembers={projectMembers}
             allImagesLoaded={allImagesLoaded}
             handleImageLoad={handleImageLoad}
             setIsEdit={setIsEdit}
+            taskData={selectedTask}
+            subtasks={currentSubtasks}
+            setSelectedTask={setSelectedTask}
           />
-          {/* Not Started */}
-          <TaskList
-            taskList={notStarted}
-            listId="pending-tasks"
-            labelText="Not Started"
+        ) : (
+          <TaskPageAnalytics
+            isEdit={isEdit}
             projectId={projectId}
-            projectMembers={projectMembers}
-            allImagesLoaded={allImagesLoaded}
-            handleImageLoad={handleImageLoad}
-            setIsEdit={setIsEdit}
+            style={{
+              width: '20%',
+            }}
           />
-          {/* In Progress */}
-          <TaskList
-            taskList={inProgress}
-            listId="in-progress-tasks"
-            labelText="In Progress"
-            projectId={projectId}
-            projectMembers={projectMembers}
-            allImagesLoaded={allImagesLoaded}
-            handleImageLoad={handleImageLoad}
-            setIsEdit={setIsEdit}
-          />
-          {/* Completed */}
-          <TaskList
-            taskList={completed}
-            listId="completed-tasks"
-            labelText="Completed"
-            projectId={projectId}
-            projectMembers={projectMembers}
-            allImagesLoaded={allImagesLoaded}
-            handleImageLoad={handleImageLoad}
-            setIsEdit={setIsEdit}
-          />
-        </DragDropContext>
-      </Box>
+        )}
+      </DragDropContext>
     </Box>
   );
 }

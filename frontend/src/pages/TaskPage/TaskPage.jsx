@@ -72,28 +72,31 @@ export default function TaskPage() {
         />
       </Box>
       {/* Task display screen */}
-      <Box
-        sx={{
-          display: 'flex',
-          height: '100vh',
-          '@media (max-width: 1400px)': {
-            flexDirection: 'column',
-          },
-        }}
-      >
-        {projectTab === 'tasks' && (
-          <TaskDisplayScreen isEdit={isEdit} setIsEdit={setIsEdit} />
-        )}
-        {projectTab === 'team' && <TeamDisplay />}
-        {projectTab === 'performance' && <TaskPerformanceScreen />}
-        <TaskPageAnalytics
-          isEdit={isEdit}
-          projectId={projectId}
-          style={{
-            width: '20%',
+      {projectTab === 'tasks' && (
+        <TaskDisplayScreen isEdit={isEdit} setIsEdit={setIsEdit} />
+      )}
+      {projectTab !== 'tasks' && (
+        <Box
+          sx={{
+            display: 'flex',
+            height: '100vh',
+            '@media (max-width: 1400px)': {
+              flexDirection: 'column',
+            },
           }}
-        />
-      </Box>
+        >
+          {projectTab === 'team' && <TeamDisplay />}
+          {projectTab === 'performance' && <TaskPerformanceScreen />}
+          {/* <TaskDetails taskName={'Hello'} taskId={selectedTask} /> */}
+          <TaskPageAnalytics
+            isEdit={isEdit}
+            projectId={projectId}
+            style={{
+              width: '20%',
+            }}
+          />
+        </Box>
+      )}
     </Box>
   );
 }

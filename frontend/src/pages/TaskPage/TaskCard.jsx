@@ -15,7 +15,10 @@ import SpeedIcon from '@mui/icons-material/Speed';
 import DoneIcon from '@mui/icons-material/Done';
 import { fetchAPIRequest } from '../../helpers';
 import { AlertContext } from '../../context/AlertContext';
-import { Droppable, Draggable } from 'react-beautiful-dnd';
+import { Draggable } from 'react-beautiful-dnd';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import TaskPriority from './TaskPriority';
+import { ReactComponent as SubtaskIcon } from '../../assets/subtask.svg';
 
 export default function TaskCard({
   id,
@@ -30,27 +33,34 @@ export default function TaskCard({
   priority,
   assignees,
   assigneesData,
+  subtasks,
   setIsEdit,
   isLoading,
   incrementLoadedCount,
   isTaskPage,
   index,
+  selectedId,
+  setSelectedTask,
+  setCurrentSubtasks,
   showStatus = false,
   hasBoxShadow = false,
 }) {
   const { isModalShown, toggleModal } = useModal();
   const [btnLock, setBtnLock] = useState(false);
-  const colourBackground = {
-    high: 'rgba(229, 107, 107, 0.22)',
-    medium: 'rgba(255, 107, 0, 0.3)',
-    low: 'rgba(131, 201, 106, 0.3)',
+  const taskData = {
+    id,
+    projectId,
+    name,
+    description,
+    deadline,
+    status,
+    attachment,
+    attachmentName,
+    weighting,
+    priority,
+    assignees,
+    assigneesData,
   };
-  const fontColour = {
-    high: '#E76A6A',
-    medium: '#DA7730',
-    low: '#3FBE7F',
-  };
-
   const [isCardLoading, setIsCardLoading] = useState(false); // this was set to true before, causing the tasks to not load
   const [isHover, setIsHover] = useState(false);
   useEffect(() => {
@@ -104,19 +114,7 @@ export default function TaskCard({
           <TaskForm
             purpose={'edit'}
             toggleModal={toggleModal}
-            taskData={{
-              id: id,
-              projectId: projectId,
-              name: name,
-              description: description,
-              deadline: deadline,
-              status: status,
-              attachment: attachment,
-              attachmentName: attachmentName,
-              weighting: weighting,
-              priority: priority,
-              assignees: assignees,
-            }}
+            taskData={taskData}
             setIsEdit={setIsEdit}
           />
         </Modal>
@@ -136,7 +134,8 @@ export default function TaskCard({
                 backgroundColor: 'white',
                 borderRadius: '20px',
                 boxSizing: 'border-box',
-                border: '1px solid #fff',
+                border: '1px solid',
+                borderColor: selectedId === id ? '#B4B4B4' : '#ECEFF1',
                 transition: 'border-color 0.5s',
                 boxShadow: hasBoxShadow && 3,
                 '&:hover': {
@@ -145,7 +144,11 @@ export default function TaskCard({
                   transitionTimingFunction: 'ease-in-out',
                 },
               }}
-              onClick={toggleModal}
+              onClick={() => {
+                setSelectedTask(taskData);
+                setCurrentSubtasks(subtasks);
+              }}
+              // onClick={toggleModal}
               onMouseEnter={() => setIsHover(true)}
               onMouseLeave={() => setIsHover(false)}
             >
@@ -170,44 +173,14 @@ export default function TaskCard({
                       sx={{ mt: '3px' }}
                     />
                   ) : (
-                    <Box
-                      sx={{
-                        fontSize: '10px',
-                        color: isOverdue ? '#FF6C74' : fontColour[priority],
-                        backgroundColor: isOverdue
-                          ? '#FF6C7422'
-                          : colourBackground[priority],
-                        width: 'fit-content',
-                        height: 'fit-content',
-                        px: '6px',
-                        borderRadius: '3px',
-                        mt: '3px',
-                        border: isOverdue ? '1px solid #FF6C74' : 'none',
-                      }}
-                    >
-                      {isOverdue ? 'OVERDUE' : priority.toUpperCase()}
-                    </Box>
+                    <TaskPriority isOverdue={isOverdue} priority={priority} />
                   )}
-                  <Box
-                    sx={{
-                      color: '#8A8A8A',
-                      fontSize: '13px',
-                      marginLeft: 'auto',
-                      fontWeight: 500,
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    {showStatus &&
-                      !isLoading &&
-                      !isCardLoading &&
-                      (status === 'inprogress'
-                        ? 'IN PROGRESS'
-                        : status === 'notstarted'
-                        ? 'NOT STARTED'
-                        : status.toUpperCase())}{' '}
-                    {!isLoading && !isCardLoading && `#${id}`}
-                  </Box>
+                  <Tooltip title="More options" placement="top">
+                    <MoreHorizIcon
+                      sx={{ marginLeft: 'auto', color: '#8A8A8A' }}
+                      onClick={toggleModal}
+                    />
+                  </Tooltip>
                 </Box>
                 {/* Name of presentation */}
                 {isLoading || isCardLoading ? (
@@ -342,7 +315,22 @@ export default function TaskCard({
                             !showStatus && status !== 'completed' && -35,
                         }}
                       >
-                        <SpeedIcon sx={{ mr: 0.5 }} /> {weighting}
+                        {subtasks?.length > 0 ? (
+                          <>
+                            <SubtaskIcon
+                              style={{
+                                width: '25px',
+                                height: '25px',
+                                marginRight: '0.2rem',
+                              }}
+                            />
+                            {subtasks.length}
+                          </>
+                        ) : (
+                          <>
+                            <SpeedIcon sx={{ mr: 0.5 }} /> {weighting}
+                          </>
+                        )}
                       </div>
                     )}
                     {!showStatus &&
