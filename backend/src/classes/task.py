@@ -16,7 +16,6 @@ class Task:
             cur.execute(query, (project_id,))
             return [Task().data(task) for task in cur.fetchall()]
 
-
     def __init__(self, task_id=None):
         self.t_id = task_id
         self.is_edit = False
@@ -78,6 +77,12 @@ class Task:
                 ),
             )
             self.t_id = cur.lastrowid
+            # Check if task being created is a subtask
+            if task_data.get("parent_id") is not None:
+                cur.execute(
+                    f"UPDATE tasks SET parent= ? WHERE id = ?",
+                    (task_data["parent_id"], self.t_id),
+                )
         self.assign_users(task_data["assignees"])
 
     def edit(self, data):
@@ -103,7 +108,7 @@ class Task:
         conn.commit()
         conn.close()
         self.assign_users(data["assignees"])
-    
+
     def update_status(self, new_status):
         with get_db() as conn:
             cur = conn.cursor()
@@ -197,5 +202,6 @@ class Task:
         with get_db() as conn:
             cur = conn.cursor()
             cur.execute(
-                f"UPDATE tasks SET parent = NULL, status=? WHERE id = ?", (new_status, self.t_id)
+                f"UPDATE tasks SET parent = NULL, status=? WHERE id = ?",
+                (new_status, self.t_id),
             )
