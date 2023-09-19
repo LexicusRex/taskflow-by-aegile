@@ -7,13 +7,19 @@ import {
   Tooltip,
   InputLabel,
   Button,
+  Skeleton,
 } from '@mui/material';
 import { Droppable } from 'react-beautiful-dnd';
 import TaskPriority from './TaskPriority';
 import TaskCard from './TaskCard';
+import { Modal } from '../../components';
+import useModal from '../../hooks/useModal';
+import TaskForm from './TaskForm';
+import { useState } from 'react';
 
 import CloseIcon from '@mui/icons-material/Close';
 import SpeedIcon from '@mui/icons-material/Speed';
+import EditIcon from '@mui/icons-material/Edit';
 
 const TaskDetails = ({
   taskData,
@@ -24,6 +30,7 @@ const TaskDetails = ({
   allImagesLoaded,
   handleImageLoad,
   setIsEdit,
+  isLoading,
 }) => {
   const splitDate = taskData.deadline?.split('/') || undefined;
   const isOverdue =
@@ -31,6 +38,13 @@ const TaskDetails = ({
       Date.parse(`${splitDate[1]}/${splitDate[0]}/${splitDate[2]}`) <=
         Date.now()) ||
     false;
+  
+  const { isModalShown, toggleModal } = useModal();
+  
+  const [isSubtaskModalShown, setSubtaskModalShown] = useState(false);
+  const toggleSubtaskModal = () => {
+    setSubtaskModalShown(!isSubtaskModalShown);
+  };
 
   return (
     <Box
@@ -47,88 +61,186 @@ const TaskDetails = ({
         maxHeight: '80dvh',
       }}
     >
-      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <TaskPriority
-          priority={taskData.priority}
-          isOverdue={isOverdue}
-          isLarge
+      <Modal
+        isModalShown={isModalShown}
+        toggleModal={toggleModal}
+        modalTitle="Edit Task"
+      >
+        <TaskForm
+          purpose={'edit'}
+          toggleModal={toggleModal}
+          taskData={taskData}
+          setIsEdit={setIsEdit}
         />
-        <IconButton size="small" onClick={() => setSelectedTask({})}>
-          <CloseIcon />
-        </IconButton>
-      </Box>
-      <Typography fontSize={24} sx={{ my: 1 }}>
-        {taskData.name}
-      </Typography>
-      <Box sx={{ px: 2 }}>
-        <Typography
-          fontSize={16}
-          color="text.secondary"
-          sx={{ my: 1, textWrap: 'balanced' }}
-        >
-          {taskData.description}
-        </Typography>
-        <Box
-          sx={{
-            borderRadius: '2px',
-            backgroundColor: isOverdue
-              ? '#FF6C7433'
-              : 'rgba(222, 222, 222, 0.26)',
-            border: '0.5px solid #B4B4B4',
-            fontSize: '13px',
-            fontWeight: 600,
-            color: isOverdue ? '#FF6C74' : '#776E6E',
-            width: 'fit-content',
-            px: 1,
-            my: 2,
-          }}
-        >
-          Due:{' '}
-          {taskData.deadline === 'Invalid Date'
-            ? 'No Deadline'
-            : taskData.deadline}
+      </Modal>
+      <Modal
+        isModalShown={isSubtaskModalShown}
+        toggleModal={toggleSubtaskModal}
+        modalTitle="Create New Subtask"
+        purpose="new"
+      >
+        <TaskForm
+          purpose={'create'}
+          toggleModal={toggleSubtaskModal}
+          parentId={taskData.id}
+          taskStatus={'notstarted'}
+          setIsEdit={setIsEdit}
+        />
+      </Modal>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        {isLoading ? (
+          <Skeleton
+            variant="rounded"
+            width={80}
+            height={25}
+            sx={{ mt: '3px' }}
+          />
+        ) : (
+          <TaskPriority
+            priority={taskData.priority}
+            isOverdue={isOverdue}
+            isLarge
+          />
+        )}
+        <Box>
+          <IconButton size="small" onClick={toggleModal}>
+            <EditIcon />
+          </IconButton>
+          <IconButton size="small" onClick={() => setSelectedTask({})}>
+            <CloseIcon />
+          </IconButton>
         </Box>
+      </Box>
+      {isLoading ? (
+        <Skeleton
+          variant="rounded"
+          width="80%"
+          height={30}
+          sx={{ my: '5px' }}
+        />
+      ) : (
+        <Typography fontSize={24} sx={{ my: 1 }}>
+          {taskData.name}
+        </Typography>
+      )}
+      <Box sx={{ px: 2 }}>
+        {isLoading ? (
+          <Skeleton 
+            variant="rounded"
+            width="90%"
+            height={30}
+            sx={{ my: 1 }}
+          />
+        ) : (
+          <Typography
+            fontSize={16}
+            color="text.secondary"
+            sx={{ my: 1, textWrap: 'balanced' }}
+          >
+            {taskData.description}
+          </Typography>
+        )}
+        {isLoading ? (
+          <Skeleton
+            variant="rounded"
+            width="35%"
+            height={20}
+            sx={{ my: '5px' }}
+          />
+        ) : (
+          <Box
+            sx={{
+              borderRadius: '2px',
+              backgroundColor: isOverdue
+                ? '#FF6C7433'
+                : 'rgba(222, 222, 222, 0.26)',
+              border: '0.5px solid #B4B4B4',
+              fontSize: '13px',
+              fontWeight: 600,
+              color: isOverdue ? '#FF6C74' : '#776E6E',
+              width: 'fit-content',
+              px: 1,
+              my: 2,
+            }}
+          >
+            Due:{' '}
+            {taskData.deadline === 'Invalid Date'
+              ? 'No Deadline'
+              : taskData.deadline}
+          </Box>
+        )}
         <InputLabel>Members</InputLabel>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <AvatarGroup /*max={4}*/ sx={{ my: 1 }}>
-            {Object.keys(taskData.assigneesData)
-              .filter((handle) => taskData.assignees.includes(handle))
-              .map((handle, index) => (
-                <Tooltip
-                  key={'tooltip-' + taskData.assigneesData[handle].handle}
-                  title={taskData.assigneesData[handle].name}
-                  placement="top"
-                >
-                  <Avatar
-                    key={taskData.assigneesData[handle].handle}
-                    alt={taskData.assigneesData[handle].name}
-                    src={taskData.assigneesData[handle].image}
+          {isLoading ? (
+            <Box sx={{ display: 'flex' }}>
+              <Skeleton variant="circular" width={40} height={40} />
+              <Skeleton variant="circular" width={40} height={40} />
+              <Skeleton variant="circular" width={40} height={40} />
+            </Box>
+          ) : (
+            <AvatarGroup /*max={4}*/ sx={{ my: 1 }}>
+              {Object.keys(taskData.assigneesData)
+                .filter((handle) => taskData.assignees.includes(handle))
+                .map((handle, index) => (
+                  <Tooltip
+                    key={'tooltip-' + taskData.assigneesData[handle].handle}
+                    title={taskData.assigneesData[handle].name}
+                    placement="top"
                   >
-                    {taskData.assigneesData[handle].name}
-                  </Avatar>
-                </Tooltip>
-              ))}
-          </AvatarGroup>
+                    <Avatar
+                      key={taskData.assigneesData[handle].handle}
+                      alt={taskData.assigneesData[handle].name}
+                      src={taskData.assigneesData[handle].image}
+                    >
+                      {taskData.assigneesData[handle].name}
+                    </Avatar>
+                  </Tooltip>
+                ))}
+            </AvatarGroup>
+          )}
         </Box>
         <InputLabel>Workload</InputLabel>
-        <Box
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            color: '#776E6E',
-            mt: 1,
-          }}
-        >
-          <SpeedIcon sx={{ mr: 0.5 }} />
-          <Typography sx={{ mt: 0.2 }}>{taskData.weighting}</Typography>
-        </Box>
+        {isLoading ? (
+          <Skeleton
+            variant="rounded"
+            width="15%"
+            height={25}
+            sx={{ my: '5px' }}
+          />
+        ) : (
+          <Box
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              color: '#776E6E',
+              mt: 1,
+            }}
+          >
+            <SpeedIcon sx={{ mr: 0.5 }} />
+            <Typography sx={{ mt: 0.2 }}>{taskData.weighting}</Typography>
+          </Box>
+        )}
         <Box sx={{ my: 1 }}>
           <InputLabel>Attachment</InputLabel>
-          <Typography>{taskData.attachmentName || 'No attachment'}</Typography>
+          {isLoading ? (
+            <Skeleton
+              variant="rounded"
+              width="80%"
+              height={25}
+              sx={{ my: '5px' }}
+            />
+          ) : (
+            <Typography>{taskData.attachmentName || 'No attachment'}</Typography>
+          )}
         </Box>
       </Box>
       {/* Subtasks */}
-      <Button sx={{ mb: 1 }}>+ Add subtask</Button>
+      <Button 
+        sx={{ mb: 1 }}
+        onClick={toggleSubtaskModal}  
+      >
+        + Add subtask
+      </Button>
       <Droppable droppableId="subtask-list">
         {(provided) => (
           <ul
