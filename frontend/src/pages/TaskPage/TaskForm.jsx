@@ -46,6 +46,7 @@ const TaskForm = ({
   taskStatus,
   taskData,
   setIsEdit,
+  parentId
 }) => {
   const { projectId } = useParams();
   let editDate = null;
@@ -501,18 +502,32 @@ const TaskForm = ({
                   priority: priority,
                   assignees: members,
                 }
-              : {
-                  project_id: projectId,
-                  name: taskName,
-                  description: description,
-                  deadline: dayjs(date).format('DD/MM/YYYY'),
-                  status: status,
-                  attachment: attachment,
-                  attachment_name: attachmentName,
-                  weighting: workLoad,
-                  priority: priority,
-                  assignees: members,
-                }
+              : parentId 
+                ? {
+                    project_id: projectId,
+                    name: taskName,
+                    description: description,
+                    deadline: dayjs(date).format('DD/MM/YYYY'),
+                    status: status,
+                    attachment: attachment,
+                    attachment_name: attachmentName,
+                    weighting: workLoad,
+                    priority: priority,
+                    assignees: members,
+                    parent_id: parentId,
+                  }
+                  : {
+                      project_id: projectId,
+                      name: taskName,
+                      description: description,
+                      deadline: dayjs(date).format('DD/MM/YYYY'),
+                      status: status,
+                      attachment: attachment,
+                      attachment_name: attachmentName,
+                      weighting: workLoad,
+                      priority: priority,
+                      assignees: members,
+                    }
           }
           toggleModal={toggleModal}
           setIsEdit={setIsEdit}

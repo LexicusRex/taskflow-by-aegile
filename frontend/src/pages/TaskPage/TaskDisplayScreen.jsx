@@ -76,6 +76,15 @@ export default function TaskDisplayScreen({ isEdit, setIsEdit }) {
           `/connections/task?projectId=${projectId}`,
           'GET'
         );
+        // Render side bar if there is a selected task
+        if (Object.keys(selectedTask).length > 0) {
+          for (const task of tasks) {
+            if (task.id === selectedTask.id) {
+              setSelectedTask(task);
+              setCurrentSubtasks(task.subtasks);
+            }
+          }
+        }
         setProjectMembers(connections);
         const blockedList = [];
         const notStartedList = [];
@@ -337,6 +346,7 @@ export default function TaskDisplayScreen({ isEdit, setIsEdit }) {
             taskData={selectedTask}
             subtasks={currentSubtasks}
             setSelectedTask={setSelectedTask}
+            isLoading={!allImagesLoaded}
           />
         ) : (
           <TaskPageAnalytics
