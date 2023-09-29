@@ -49,7 +49,7 @@ const theme = {
     Editor: {
       backgroundColor: theme.colors.editor.background,
       borderRadius: '10px',
-      margin: '0 50px',
+      // margin: '0 50px',
       border: `1px solid ${theme.colors.border}`,
       // boxShadow: `0 3px 3px ${theme.colors.shadow}`,
       padding: `20px 0px`,
