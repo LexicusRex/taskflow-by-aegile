@@ -7,6 +7,7 @@ from src.helpers import get_db, add_notification, update_achievement
 # from src.error import InputError, AccessError
 from src.classes.task import Task
 from src.classes.project import Project
+from src.classes.comment import Comment
 from src.constants import get_active_task, set_task_active, delete_active_task
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -172,114 +173,104 @@ def get_user_ids(users_handles):
     return users_ids
 
 
-def task_comment(email, task_id, text, replied_comment_id):
-    conn = get_db()
-    with conn:
-        cur = conn.cursor()
-        (poster_id, poster_handle) = cur.execute(
-            "SELECT id, handle FROM users WHERE email=?", (email,)
-        ).fetchone()
-
-        cur.execute(
-            "INSERT INTO comments (task, poster, text, time, replyId) VALUES (?, ?, ?, ?, ?)",
-            (task_id, poster_id, text, time.time(), replied_comment_id),
-        )
-
-        project_id = cur.execute(
-            """
-                SELECT tasks.project
-                FROM users
-                JOIN tasks
-                ON users.id = tasks.creator
-                WHERE tasks.id=?
-            """,
-            (task_id,),
-        ).fetchone()[0]
+def task_comment(handle, task_id, text, replied_comment_id):
+    Comment(task_id).new(handle, text, replied_comment_id)
+    # TODO - notifications and achievements
+        # project_id = cur.execute(
+        #     """
+        #         SELECT tasks.project
+        #         FROM users
+        #         JOIN tasks
+        #         ON users.id = tasks.creator
+        #         WHERE tasks.id=?
+        #     """,
+        #     (task_id,),
+        # ).fetchone()[0]
 
         #  Achievements: Write comments
-        conn.commit()
-        update_achievement("First!", poster_id)
-        update_achievement("Thread Weaver", poster_id)
+        # update_achievement("First!", poster_id)
+        # update_achievement("Thread Weaver", poster_id)
 
-        if replied_comment_id == -1:
-            # task creator gets a notification from a comment on the task
-            # people assigned to the task will also get a comment
-            creator_email = cur.execute(
-                """
-                    SELECT email
-                    FROM users
-                    JOIN tasks
-                    ON users.id = tasks.creator
-                    WHERE tasks.id=?
-                """,
-                (task_id,),
-            ).fetchone()[0]
+        # if replied_comment_id == -1:
+        #     # task creator gets a notification from a comment on the task
+        #     # people assigned to the task will also get a comment
+        #     creator_email = cur.execute(
+        #         """
+        #             SELECT email
+        #             FROM users
+        #             JOIN tasks
+        #             ON users.id = tasks.creator
+        #             WHERE tasks.id=?
+        #         """,
+        #         (task_id,),
+        #     ).fetchone()[0]
 
-            assignees_data = cur.execute(
-                """
-                SELECT users.email
-                FROM tasks
-                JOIN assigned
-                ON tasks.id = assigned.task                
-                JOIN users
-                ON users.id = assigned.user
-                WHERE tasks.id=?
-            """,
-                (task_id,),
-            ).fetchall()
+        #     assignees_data = cur.execute(
+        #         """
+        #         SELECT users.email
+        #         FROM tasks
+        #         JOIN assigned
+        #         ON tasks.id = assigned.task                
+        #         JOIN users
+        #         ON users.id = assigned.user
+        #         WHERE tasks.id=?
+        #     """,
+        #         (task_id,),
+        #     ).fetchall()
 
-            # Send notifications to assignees of the task being commented on
-            # unless they are the task creator, or were the commentor
-            for assignees_email in assignees_data:
-                if assignees_email[0] != creator_email and assignees_email[0] != email:
-                    conn.commit()
-                    add_notification(
-                        assignees_email[0],
-                        poster_handle,
-                        "comment",
-                        "comment",
-                        f"has commented on a task you were assigned",
-                        project_id,
-                    )
+        #     # Send notifications to assignees of the task being commented on
+        #     # unless they are the task creator, or were the commentor
+        #     for assignees_email in assignees_data:
+        #         if assignees_email[0] != creator_email and assignees_email[0] != email:
+        #             conn.commit()
+        #             add_notification(
+        #                 assignees_email[0],
+        #                 poster_handle,
+        #                 "comment",
+        #                 "comment",
+        #                 f"has commented on a task you were assigned",
+        #                 project_id,
+        #             )
 
-            if email != creator_email:
-                # no notification when commenting to your own task
-                conn.commit()
-                add_notification(
-                    creator_email,
-                    poster_handle,
-                    "comment",
-                    "comment",
-                    f"has commented on your task",
-                    project_id,
-                )
-        else:
-            # user gets a notification if someone replies to their comment
-            poster_email = cur.execute(
-                """
-                    SELECT email 
-                    FROM users
-                    JOIN comments
-                    ON users.id = comments.poster
-                    WHERE comments.id=?
-                """,
-                (replied_comment_id,),
-            ).fetchone()[0]
+        #     if email != creator_email:
+        #         # no notification when commenting to your own task
+        #         conn.commit()
+        #         add_notification(
+        #             creator_email,
+        #             poster_handle,
+        #             "comment",
+        #             "comment",
+        #             f"has commented on your task",
+        #             project_id,
+        #         )
+        # else:
+        #     # user gets a notification if someone replies to their comment
+        #     poster_email = cur.execute(
+        #         """
+        #             SELECT email 
+        #             FROM users
+        #             JOIN comments
+        #             ON users.id = comments.poster
+        #             WHERE comments.id=?
+        #         """,
+        #         (replied_comment_id,),
+        #     ).fetchone()[0]
 
-            if email != poster_email:
-                # no notification when replying to your own comment
-                conn.commit()
-                add_notification(
-                    poster_email,
-                    poster_handle,
-                    "comment",
-                    "reply",
-                    f"has replied to your comment",
-                    project_id,
-                )
+        #     if email != poster_email:
+        #         # no notification when replying to your own comment
+        #         conn.commit()
+        #         add_notification(
+        #             poster_email,
+        #             poster_handle,
+        #             "comment",
+        #             "reply",
+        #             f"has replied to your comment",
+        #             project_id,
+        #         )
 
 
 def task_get_comment(task_id):
+    Comment.get_all(task_id)
     conn = get_db()
     comments_list = []
 
@@ -288,10 +279,10 @@ def task_get_comment(task_id):
 
         comments = cur.execute(
             """
-                SELECT comments.id, comments.text, users.handle, comments.time, comments.replyId
+                SELECT comments.id, comments.text, users.handle, comments.time, comments.reply_id
                 FROM comments
                 JOIN users
-                ON comments.poster = users.id
+                ON comments.poster = users.handle
                 WHERE comments.task = ?
             """,
             (task_id,),
@@ -315,7 +306,7 @@ def task_get_comment(task_id):
                     SELECT comments.text, users.handle
                     FROM comments 
                     JOIN users
-                    ON comments.poster = users.id
+                    ON comments.poster = users.handle
                     WHERE comments.id = ?
                 """
                 data = cur.execute(sql, (comment[4],)).fetchone()

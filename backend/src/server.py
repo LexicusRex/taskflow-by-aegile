@@ -473,25 +473,17 @@ def do_get_user_tasks():
 
 
 @APP.route("/task/comment", methods=["POST"])
-def do_task_comment():
+@token_auth
+def do_task_comment(handle):
     data = request.get_json()
-    token = request.headers.get("Authorization").split()[1]
-
-    if not check_auth(token):
-        raise AccessError("Invalid token")
-    email = jwt.decode(token, SECRET, algorithms=["HS256"])["email"]
-
-    task_comment(email, data["taskId"], data["text"], data["repliedCommentId"])
+    task_comment(handle, data["taskId"], data["text"], data["repliedCommentId"])
     return dumps({})
 
 
 @APP.route("/task/get/comment", methods=["GET"])
-def do_task_get_comment():
+@token_auth
+def do_task_get_comment(handle):
     task_id = request.args["taskId"]
-    token = request.headers.get("Authorization").split()[1]
-    if not check_auth(token, "handle"):
-        raise AccessError("Invalid token")
-
     return dumps(task_get_comment(task_id))
 
 @APP.route("/task/get/content", methods=["GET"])

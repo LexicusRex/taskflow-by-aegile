@@ -83,12 +83,12 @@ CREATE TABLE IF NOT EXISTS assigned (
 CREATE TABLE IF NOT EXISTS comments (
     id INTEGER PRIMARY KEY,
     task INTEGER NOT NULL,
-    poster INTEGER NOT NULL,
+    poster TEXT NOT NULL,
     text TEXT NOT NULL,
     time TEXT NOT NULL,
-    replyId INTEGER,
+    reply_id INTEGER,
     FOREIGN KEY(task) REFERENCES tasks(id) ON DELETE CASCADE,
-    FOREIGN KEY(poster) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY(poster) REFERENCES users(handle) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS connections (
