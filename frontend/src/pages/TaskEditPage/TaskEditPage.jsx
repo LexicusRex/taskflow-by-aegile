@@ -3,6 +3,7 @@ import { fetchAPIRequest } from '../../helpers';
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { LoadingScreen, Editor } from '../../components';
+import TaskActionBtnGroup from './TaskActionBtnGroup';
 
 const TaskEditPage = () => {
   const { projectId } = useParams();
@@ -51,9 +52,12 @@ const TaskEditPage = () => {
       </Box>
       {taskList.map((task, index) => (
         <Box key={index} sx={{ mt: 5 }}>
-          <Typography sx={{ fontSize: '24px', fontWeight: 600, mb: 3 }}>
-            {task.name}
-          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Typography sx={{ fontSize: '24px', fontWeight: 600, mb: 3 }}>
+              {task.name}
+            </Typography>
+            <TaskActionBtnGroup />
+          </Box>
           <Editor initialBlocks={task.blocks} taskId={task.id} />
         </Box>
       ))}

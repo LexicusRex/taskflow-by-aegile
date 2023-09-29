@@ -5,7 +5,7 @@ import CommentIcon from '@mui/icons-material/Comment';
 import DoneIcon from '@mui/icons-material/Done';
 import TaskActionBtn from './TaskActionBtn';
 
-const TaskEditBtnPanel = () => {
+const TaskActionBtnGroup = () => {
   return (
     <Box
       sx={{
@@ -26,4 +26,4 @@ const TaskEditBtnPanel = () => {
     </Box>
   );
 };
-export default TaskEditBtnPanel;
+export default TaskActionBtnGroup;
