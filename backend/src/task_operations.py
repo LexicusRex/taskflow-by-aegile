@@ -26,7 +26,13 @@ def delete_task(handle, task_id):
     delete_active_task(task_id)
 
 
-def get_task(project_id):
+def get_task(task_id):
+    with get_db() as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM tasks WHERE id = ?", (task_id,))
+        return Task(task_id).data(cur.fetchone())
+
+def get_all_tasks(project_id):
     return Task.get_all(project_id)
 
 

@@ -54,6 +54,7 @@ from src.task_operations import (
     create_task,
     delete_task,
     get_task,
+    get_all_tasks,
     update_task_specs,
     get_user_tasks,
     task_comment,
@@ -431,14 +432,16 @@ def do_delete_task(handle):
 
 
 @APP.route("/task/get", methods=["GET"])
-def do_get_task():
-    project_id = request.args["projectId"]
-    token = request.headers.get("Authorization").split()[1]
-    if not check_auth(token, "handle"):
-        raise AccessError("Invalid token")
-    handle = jwt.decode(token, SECRET, algorithms=["HS256"])["handle"]
+@token_auth
+def do_get_task(handle):
+    task_id = request.args["taskId"]
+    return dumps(get_task(task_id))
 
-    return dumps(get_task(project_id))
+@APP.route("/task/get/all", methods=["GET"])
+@token_auth
+def do_get_all_tasks(handle):
+    project_id = request.args["projectId"]
+    return dumps(get_all_tasks(project_id))
 
 
 @APP.route("/task/update/specs", methods=["PUT"])
