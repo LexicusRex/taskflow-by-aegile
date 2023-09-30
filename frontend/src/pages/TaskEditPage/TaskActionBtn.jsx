@@ -1,15 +1,12 @@
-import React, { useState } from 'react';
 import { Tooltip, IconButton } from '@mui/material';
-import SidePanel from '../../components/SidePanel';
-const TaskActionBtn = ({ icon, tooltip, sidebarOff = false }) => {
-  const [openPanel, setOpenPanel] = useState(false);
+const TaskActionBtn = ({ action, icon, tooltip }) => {
   return (
     <>
       <Tooltip title={tooltip} placement="top">
         <IconButton
           onClick={(e) => {
             e.stopPropagation();
-            !sidebarOff && setOpenPanel(true);
+            action();
           }}
           sx={{
             width: 30,
@@ -19,7 +16,6 @@ const TaskActionBtn = ({ icon, tooltip, sidebarOff = false }) => {
           {icon}
         </IconButton>
       </Tooltip>
-      <SidePanel isOpen={openPanel} setIsOpen={setOpenPanel} />
     </>
   );
 };
