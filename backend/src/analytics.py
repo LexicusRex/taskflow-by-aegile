@@ -4,7 +4,7 @@ from zoneinfo import ZoneInfo
 from time import time
 import pandas as pd
 from src.helpers import get_db
-from src.task_operations import get_user_tasks, get_task
+from src.task_operations import get_user_tasks, get_all_tasks
 from src.performance import calc_total_busyness
 from src.project_operations import get_projects, get_project_members
 from src.__config__ import ANALYTICS_TIMESPAN
@@ -78,7 +78,7 @@ def update_analytics():
         proj_path = os.path.join(BASE_DIR, "analytics/projects")
         email = conn.execute("SELECT email FROM users").fetchone()["email"]
         for project in all_projects:
-            proj_tasks = get_task(project["id"])
+            proj_tasks = get_all_tasks(project["id"])
             members = get_project_members(email, project["id"])["members"]
             # mem_dict stores total completed tasks for each member hashed to
             # their handle
@@ -137,7 +137,7 @@ def get_performance_analytics(handle):
         proj_completed = 0
         user_projects = get_projects(handle)["projects"]
         for project in user_projects:
-            proj_tasks = get_task(project["id"])
+            proj_tasks = get_all_tasks(project["id"])
             for task in proj_tasks:
                 if task["status"] == "completed":
                     proj_completed += 1
@@ -176,7 +176,7 @@ def get_project_analytics(handle, project_id):
         user_completed = 0
         proj_completed = 0
         # Count up all user's and project's completed tasks
-        proj_tasks = get_task(project_id)
+        proj_tasks = get_all_tasks(project_id)
         for task in proj_tasks:
             if task["status"] == "completed":
                 proj_completed += 1
