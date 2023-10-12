@@ -126,6 +126,7 @@ export default function NotificationBell({
     >
       <Badge
         sx={{
+          zIndex: -2,
           position: 'fixed',
           top: 25,
           right: 25,
