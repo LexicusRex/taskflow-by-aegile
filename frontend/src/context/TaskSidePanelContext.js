@@ -14,6 +14,7 @@ import SendIcon from '@mui/icons-material/Send';
 import ClearIcon from '@mui/icons-material/Clear';
 import { fetchAPIRequest } from '../helpers';
 import { TaskPriority } from '../pages/TaskPage';
+import TaskHistoryOutline from '../pages/TaskEditPage/TaskHistoryOutline';
 
 const renderTaskInfo = (taskData) => {
   console.log(taskData);
@@ -87,6 +88,16 @@ const renderTaskInfo = (taskData) => {
       </Box>
     </>
   );
+};
+
+const renderTaskEditHistory = (editHistory) => {
+  return editHistory.map((edit, index) => (
+    <TaskHistoryOutline
+      index={index}
+      editTimestamp={edit.time}
+      editContent={edit.content}
+    />
+  ));
 };
 
 const renderTaskComments = (
@@ -207,10 +218,16 @@ export default function TaskProvider({ children }) {
     setBody(renderTaskInfo(taskData));
     toggleOn();
   };
-  const history = (taskId) => {
+  const history = async (taskId) => {
     clear();
     setTitle('Editor History');
     setType('history');
+    const history = await fetchAPIRequest(
+      `/task/edit/history?taskId=${taskId}`,
+      'GET'
+    );
+    console.log(history);
+    setBody(renderTaskEditHistory(history));
     toggleOn();
   };
   const comment = async (taskId) => {

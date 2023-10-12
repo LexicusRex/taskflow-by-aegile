@@ -64,6 +64,7 @@ from src.task_operations import (
     task_update_status,
     task_set_as_subtask,
     task_remove_as_subtask,
+    get_task_edit_history,
 )
 
 from src.analytics import (
@@ -501,6 +502,12 @@ def edit_task_content(handle):
     task_id = request.args["taskId"]
     data = request.get_json()
     return dumps(update_task_edit(task_id, data["blocks"]))
+
+@APP.route("/task/edit/history", methods=["GET"])
+@token_auth
+def task_edit_history(handle):
+    task_id = request.args["taskId"]
+    return dumps(get_task_edit_history(task_id))
 
 
 @APP.route("/task/update/status", methods=["PUT"])

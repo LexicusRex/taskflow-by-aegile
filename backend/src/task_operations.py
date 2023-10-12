@@ -5,7 +5,7 @@ from pprint import pprint
 from src.helpers import get_db, add_notification, update_achievement
 
 # from src.performance import calc_task_busyness
-# from src.error import InputError, AccessError
+from src.error import InputError
 from src.classes.task import Task
 from src.classes.project import Project
 from src.classes.comment import Comment
@@ -377,3 +377,11 @@ def update_task_edit(task_id, task_content: list):
     })
     with open(f"{BASE_DIR}/task_content/{task_id}.json", "w", encoding="utf-8") as fp:
         json.dump(edit_history, fp)
+
+
+def get_task_edit_history(task_id):
+    try:
+        with open(f"{BASE_DIR}/task_content/{task_id}.json", "r", encoding="utf-8") as fp:
+            return sorted(json.load(fp), key=lambda edit: edit["time"], reverse=True)
+    except FileNotFoundError:
+        raise InputError("Task edit history not found")
