@@ -6,12 +6,18 @@ import {
   AvatarGroup,
   Avatar,
   Tooltip,
+  IconButton,
+  TextField,
 } from '@mui/material';
+import ReplyIcon from '@mui/icons-material/Reply';
+import SendIcon from '@mui/icons-material/Send';
+import ClearIcon from '@mui/icons-material/Clear';
 import { fetchAPIRequest } from '../helpers';
 import { TaskPriority } from '../pages/TaskPage';
 
 const renderTaskInfo = (taskData) => {
-  const splitDate = taskData.deadline?.split('/') || undefined;
+  console.log(taskData);
+  const splitDate = taskData?.deadline?.split('/') || 'Invalid Date';
   const isOverdue =
     (splitDate &&
       Date.parse(`${splitDate[1]}/${splitDate[0]}/${splitDate[2]}`) <=
@@ -21,12 +27,12 @@ const renderTaskInfo = (taskData) => {
   return (
     <>
       <TaskPriority
-        priority={taskData.priority}
+        priority={taskData?.priority}
         isOverdue={isOverdue}
         isLarge
       />
       <Typography fontSize={20} sx={{ my: 1 }}>
-        {taskData.name}
+        {taskData?.name}
       </Typography>
       <Box sx={{ px: 2 }}>
         <Typography
@@ -34,7 +40,7 @@ const renderTaskInfo = (taskData) => {
           color="text.secondary"
           sx={{ my: 1, textWrap: 'balanced' }}
         >
-          {taskData.description}
+          {taskData?.description}
         </Typography>
         <Box
           sx={{
@@ -83,25 +89,116 @@ const renderTaskInfo = (taskData) => {
   );
 };
 
+const renderTaskComments = (
+  commentData,
+  setReplyUser,
+  setReplyId,
+  setIsReplying
+) => {
+  return commentData.map((comment, cmntIndex) => {
+    return (
+      <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+        <Box
+          key={'comment' + comment.id}
+          sx={{
+            py: 1,
+            px: 2,
+            flexGrow: 1,
+            boxSizing: 'border-box',
+            border: '1px solid darkcyan',
+            borderRadius: 3,
+            mb: 2,
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignContent: 'center',
+            }}
+          >
+            <Typography key={'comment-poster' + comment.id} sx={{ mb: 1 }}>
+              <b>{comment.name}</b>
+            </Typography>
+            <IconButton
+              key={'comment-reply' + comment.id}
+              sx={{ width: 25, height: 25 }}
+              onClick={() => {
+                setReplyUser(`${comment.name} @${comment.poster}`);
+                setReplyId(comment.id);
+                setIsReplying(true);
+              }}
+            >
+              <ReplyIcon />
+            </IconButton>
+          </Box>
+          <Typography key={'comment-text' + comment.id}>
+            {comment.text}
+          </Typography>
+        </Box>
+        {comment?.replies?.map((reply, replyIndex) => {
+          return (
+            <Box
+              key={'reply' + reply.id}
+              sx={{
+                ml: 3,
+                py: 1,
+                px: 2,
+                flexGrow: 1,
+                boxSizing: 'border-box',
+                border: '1px solid darkcyan',
+                borderRadius: 3,
+                mb: 2,
+              }}
+            >
+              <Typography key={'reply-poster' + reply.id}>
+                <b>{reply.name}</b>
+              </Typography>
+              <Typography key={'reply-text' + reply.id}>
+                {reply.text}
+              </Typography>
+            </Box>
+          );
+        })}
+      </Box>
+    );
+  });
+};
+
 export const TaskContext = createContext({
   title: null,
+  type: null,
   isOpen: false,
   body: null,
+  isReplying: false,
+  replyId: null,
+  replyTaskId: null,
+  replyUser: null,
   toggleOn: () => {},
   toggleOff: () => {},
   info: () => {},
   history: () => {},
   comment: () => {},
   complete: () => {},
+  cancelReply: () => {},
+  refresh: () => {},
 });
 
 export default function TaskProvider({ children }) {
   const [title, setTitle] = useState(null);
+  const [type, setType] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [body, setBody] = useState(null);
+  const [action, setAction] = useState(null);
+  const [isReplying, setIsReplying] = useState(false);
+  const [replyUser, setReplyUser] = useState('');
+  const [replyId, setReplyId] = useState(-1);
+  const [replyTaskId, setReplyTaskId] = useState(-1);
+  const [isRefresh, setIsRefresh] = useState(false);
 
   const info = async (taskId) => {
-    setBody(null);
+    clear();
+    setType('info');
     setTitle('Task Info');
     if (taskId === -1) {
       return;
@@ -111,13 +208,28 @@ export default function TaskProvider({ children }) {
     toggleOn();
   };
   const history = (taskId) => {
-    setBody(null);
+    clear();
     setTitle('Editor History');
+    setType('history');
     toggleOn();
   };
-  const comment = (taskId) => {
-    setBody(null);
+  const comment = async (taskId) => {
+    clear();
+    setType('comments');
     setTitle('Comments');
+    if (taskId === -1) {
+      return;
+    }
+
+    const commentData = await fetchAPIRequest(
+      `/task/get/comment?taskId=${taskId}`,
+      'GET'
+    );
+    setReplyTaskId(taskId);
+    setBody(
+      renderTaskComments(commentData, setReplyUser, setReplyId, setIsReplying)
+    );
+
     toggleOn();
   };
   const complete = (taskId) => {};
@@ -129,22 +241,39 @@ export default function TaskProvider({ children }) {
     setIsOpen(false);
   };
 
+  const cancelReply = () => {
+    setIsReplying(false);
+  };
+
   const clear = () => {
-    setTitle(null);
+    setBody(null);
+    setAction(null);
+  };
+
+  const refresh = () => {
+    setIsRefresh((prev) => !prev);
   };
 
   return (
     <TaskContext.Provider
       value={{
         title,
+        type,
         isOpen,
         body,
+        action,
+        isReplying,
+        replyId,
+        replyTaskId,
+        replyUser,
         toggleOn,
         toggleOff,
         info,
         history,
         comment,
         complete,
+        cancelReply,
+        refresh,
       }}
     >
       {children}
