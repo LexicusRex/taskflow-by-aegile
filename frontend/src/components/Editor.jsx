@@ -57,100 +57,13 @@ const theme = {
   }),
 };
 
-const ImageBlockWrapper = createReactBlockSpec({
-  type: 'image',
-  propSchema: {
-    ...defaultProps,
-    src: {
-      default: 'https://via.placeholder.com/1000',
-    },
-    alt: {
-      default: 'image',
-    },
-  },
-  containsInlineContent: false,
-  render: ({ block }) => {
-    return (
-      <div
-        id="image-wrapper"
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <img
-          src={block.props.src}
-          alt={block.props.alt}
-          contentEditable={false}
-          style={{
-            display: block.props.src ? 'block' : 'none',
-            maxWidth: '100%',
-          }}
-        />
-        <div
-          style={{
-            display: block.props.src ? 'none' : 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <TextField
-            label="Image Embed URL"
-            size="small"
-            onChange={(e) => (block.props.src = e.target.value)}
-          />
-          <div style={{ padding: '0 10px' }}>or</div>
-          <ImageUploadBtn
-            callback={(src) => (block.props.src = src)}
-            compressedCallback={() => {}}
-            btnText={'Upload Image'}
-          />
-        </div>
-        <div style={{ display: block.props.src ? 'none' : 'block' }}>
-          Click to another block to render image.
-        </div>
-      </div>
-    );
-  },
-});
-
 // The custom schema, which includes the default blocks and the custom image
 // block.
 const customSchema = {
   // Adds all default blocks.
   ...defaultBlockSchema,
   // Adds the custom image block.
-  image: ImageBlockWrapper,
-};
-
-// Creates a slash menu item for inserting an image block.
-const insertImage = {
-  name: 'Insert Image',
-  execute: (editor) => {
-    // const src = prompt('Enter image URL');
-    // const alt = prompt("Enter image alt text");
-    const src = '';
-    const alt = 'image';
-    editor.getTextCursorPosition().block.content.text = '---';
-    editor.insertBlocks(
-      [
-        {
-          type: 'image',
-          props: {
-            src: src || '',
-            alt: alt || 'image',
-          },
-        },
-      ],
-      editor.getTextCursorPosition().block,
-      'before'
-    );
-  },
-  aliases: ['image', 'img', 'picture', 'media'],
-  group: 'Media',
-  icon: <ImageOutlinedIcon />,
-  hint: 'Insert an image',
+  // image: ImageBlockWrapper,
 };
 
 const Editor = ({ initialBlocks, taskId }) => {
@@ -158,10 +71,7 @@ const Editor = ({ initialBlocks, taskId }) => {
   const editor = useBlockNote({
     initialContent: initialBlocks.length > 0 ? initialBlocks : placeholder,
     blockSchema: customSchema,
-    slashMenuItems: [
-      ...getDefaultReactSlashMenuItems(customSchema),
-      insertImage,
-    ],
+    slashMenuItems: [...getDefaultReactSlashMenuItems(customSchema)],
   });
   editor.onEditorContentChange(() => {
     clearTimeout(timeoutId);
