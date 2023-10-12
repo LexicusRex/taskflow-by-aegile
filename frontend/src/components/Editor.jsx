@@ -19,7 +19,7 @@ import '@blocknote/core/style.css';
 import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined';
 import { fetchAPIRequest } from '../helpers';
 import { Box, TextField, Button, Typography } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ImageUploadBtn from './ImageUploadBtn';
 const placeholder = [
   {
@@ -67,6 +67,13 @@ const customSchema = {
 };
 
 const Editor = ({ initialBlocks, taskId }) => {
+  const [initRender, setInitRender] = useState(true);
+  useEffect(() => {
+    setTimeout(() => {
+      setInitRender(false);
+    }, 2000);
+  }, []);
+
   let timeoutId;
   const editor = useBlockNote({
     initialContent: initialBlocks.length > 0 ? initialBlocks : placeholder,
@@ -74,6 +81,7 @@ const Editor = ({ initialBlocks, taskId }) => {
     slashMenuItems: [...getDefaultReactSlashMenuItems(customSchema)],
   });
   editor.onEditorContentChange(() => {
+    if (initRender) return;
     clearTimeout(timeoutId);
     timeoutId = setTimeout(async () => {
       console.log('saving...');
