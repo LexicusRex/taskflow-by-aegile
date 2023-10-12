@@ -1,6 +1,7 @@
 import time
 import os
 import json
+from pprint import pprint
 from src.helpers import get_db, add_notification, update_achievement
 
 # from src.performance import calc_task_busyness
@@ -343,12 +344,13 @@ def register_edit_task_lock(handle, task_id):
 
 
 def get_task_edit(task_id):
-    if not os.path.exists(f"{BASE_DIR}/task_content/{task_id}.json"):
+    try:
+        with open(f"{BASE_DIR}/task_content/{task_id}.json", "r", encoding="utf-8") as fp:
+            edit_history = sorted(json.load(fp), key=lambda edit: edit["time"])
+            return edit_history[-1]["content"]
+    except FileNotFoundError:
         return []
-        # raise AccessError("Task is being edited by another user")
-    with open(f"{BASE_DIR}/task_content/{task_id}.json", "r", encoding="utf-8") as fp:
-        return json.load(fp)
-
+    
 def get_task_content(project_id):
     data = []
     with get_db() as conn:
@@ -360,5 +362,20 @@ def get_task_content(project_id):
         return data
 
 def update_task_edit(task_id, task_content: list):
+    edit_history = []
+    
+    
+    try:
+        with open(f"{BASE_DIR}/task_content/{task_id}.json", "r", encoding="utf-8") as fp:
+            edit_history = json.load(fp)
+    except FileNotFoundError:
+        print("Task edit history not found")
+
+    edit_history.append({
+        "time": time.time(),
+        "content": task_content
+    })
+    print(edit_history)
+
     with open(f"{BASE_DIR}/task_content/{task_id}.json", "w", encoding="utf-8") as fp:
-        json.dump(task_content, fp)
+        json.dump(edit_history, fp)
