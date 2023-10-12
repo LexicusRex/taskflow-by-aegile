@@ -375,7 +375,5 @@ def update_task_edit(task_id, task_content: list):
         "time": time.time(),
         "content": task_content
     })
-    print(edit_history)
-
     with open(f"{BASE_DIR}/task_content/{task_id}.json", "w", encoding="utf-8") as fp:
         json.dump(edit_history, fp)
