@@ -35,11 +35,7 @@ class Comment:
                 if "replies" not in parent:
                     parent["replies"] = []
                 parent["replies"].append(dict(comment))
-
-            print('new')
-            pprint(cmnt_list, indent=4)
-
-
+            return cmnt_list
 
     def __init__(self, task_id, comment_id=None):
         self.t_id = task_id
@@ -51,7 +47,7 @@ class Comment:
             (task, poster, text, time, reply_id) 
             VALUES (?, ?, ?, ?, ?)
         """
-        print(self.t_id, handle, text, reply)
+        
         with get_db() as conn:
             cur = conn.cursor()
             cur.execute(query, (self.t_id, handle, text, time(), reply))
