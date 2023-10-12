@@ -30,11 +30,10 @@ def get_task(task_id):
     with get_db() as conn:
         cur = conn.cursor()
         cur.execute("SELECT * FROM tasks WHERE id = ?", (task_id,))
-        return Task(task_id).data(cur.fetchone())
+        return Task().data(cur.fetchone())
 
 def get_all_tasks(project_id):
     return Task.get_all(project_id)
-
 
 def update_task_specs(handle, data):
     Project(data["project_id"]).check_permission(handle, "creator")
@@ -276,7 +275,7 @@ def task_comment(handle, task_id, text, replied_comment_id):
 
 
 def task_get_comment(task_id):
-    Comment.get_all(task_id)
+    return Comment.get_all(task_id)
     conn = get_db()
     comments_list = []
 
