@@ -16,6 +16,7 @@ import { Modal } from '../../components';
 import useModal from '../../hooks/useModal';
 import TaskForm from './TaskForm';
 import { useState } from 'react';
+import TaskHistoryBtn from './TaskHistoryBtn';
 
 import CloseIcon from '@mui/icons-material/Close';
 import SpeedIcon from '@mui/icons-material/Speed';
@@ -106,6 +107,7 @@ const TaskDetails = ({
           <IconButton size="small" onClick={toggleModal}>
             <EditIcon />
           </IconButton>
+          <TaskHistoryBtn />
           <IconButton size="small" onClick={() => setSelectedTask({})}>
             <CloseIcon />
           </IconButton>
