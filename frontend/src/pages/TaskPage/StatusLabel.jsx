@@ -13,43 +13,61 @@ export default function StatusLabel({ status, setIsEdit }) {
     };
     return String(converter[stat]);
   };
+  const statusColour = (stat) => {
+    const colours = {
+      Blocked: 'rgb(240,102,127)',
+      'Not Started': 'rgb(1,148,255)',
+      'In Progress': 'rgb(151,71,255)',
+      Completed: 'rgb(39,199,112)',
+    };
+    return colours[stat];
+  };
   return (
     <Box
       sx={{
         mt: 3,
-        backgroundColor: 'white',
+        backgroundColor: statusColour(status),
         width: '250px',
-        borderRadius: '10px',
-        display: 'flex',
-        alignItems: 'center',
+        borderRadius: '11px',
+        pt: '3px'
       }}
     >
-      <Box sx={{ px: 2, py: '6px' }}>
-        <Typography variant="h6" sx={{}}>
-          {status}
-        </Typography>
-      </Box>
-      {/* Buttons */}
       <Box
         sx={{
+          backgroundColor: 'white',
+          width: '250px',
+          borderRadius: '10px',
           display: 'flex',
-          marginLeft: 'auto',
-          marginRight: '10px',
-          gap: '5px',
+          alignItems: 'center',
         }}
       >
-        <MoreHorizIcon
+        <Box sx={{ px: 2, py: '6px' }}>
+          <Typography variant="h6" sx={{}}>
+            {status}
+          </Typography>
+        </Box>
+        {/* Buttons */}
+        <Box
           sx={{
-            '&:hover': {
-              cursor: 'pointer',
-            },
-            color: '#8A8A8A',
+            display: 'flex',
+            marginLeft: 'auto',
+            marginRight: '10px',
+            gap: '5px',
           }}
-        />
-        <NewTaskButton
-          taskStatus={convertStatus(status)}
-          setIsEdit={setIsEdit}
-        />
+        >
+          <MoreHorizIcon
+            sx={{
+              '&:hover': {
+                cursor: 'pointer',
+              },
+              color: '#8A8A8A',
+            }}
+          />
+          <NewTaskButton
+            taskStatus={convertStatus(status)}
+            setIsEdit={setIsEdit}
+          />
+        </Box>
       </Box>
     </Box>
   );

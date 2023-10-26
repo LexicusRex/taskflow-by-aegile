@@ -8,6 +8,7 @@ import {
   InputLabel,
   Button,
   Skeleton,
+  Divider
 } from '@mui/material';
 import { Droppable } from 'react-beautiful-dnd';
 import TaskPriority from './TaskPriority';
@@ -50,16 +51,20 @@ const TaskDetails = ({
   return (
     <Box
       sx={{
-        px: 2,
-        py: 2,
+        ml: 2,
+        p: 2,
         flexGrow: 1,
-        width: '320px',
+        minWidth: '250px',
+        maxWidth: '320px',
         display: 'flex',
         flexDirection: 'column',
         // alignItems: 'center',
         boxSize: 'border-box',
         overflowY: 'auto',
         maxHeight: '80dvh',
+        backgroundColor: 'rgb(251,249,255)',
+        borderTopLeftRadius: '10px',
+        borderTopRightRadius: '10px',
       }}
     >
       <Modal
@@ -125,7 +130,7 @@ const TaskDetails = ({
           {taskData.name}
         </Typography>
       )}
-      <Box sx={{ px: 2 }}>
+      <Box>
         {isLoading ? (
           <Skeleton 
             variant="rounded"
@@ -137,7 +142,7 @@ const TaskDetails = ({
           <Typography
             fontSize={16}
             color="text.secondary"
-            sx={{ my: 1, textWrap: 'balanced' }}
+            sx={{ textWrap: 'balanced' }}
           >
             {taskData.description}
           </Typography>
@@ -235,6 +240,7 @@ const TaskDetails = ({
             <Typography>{taskData.attachmentName || 'No attachment'}</Typography>
           )}
         </Box>
+        <Divider sx={{ my: 2 }} />
       </Box>
       {/* Subtasks */}
       <Button 

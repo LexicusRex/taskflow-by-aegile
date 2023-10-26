@@ -37,6 +37,8 @@ export default function TaskPage() {
       sx={{
         display: 'flex',
         flexDirection: 'column',
+        boxSizing: 'border-box',
+        width: '100%',
         height: '100vh',
         px: 4,
       }}
