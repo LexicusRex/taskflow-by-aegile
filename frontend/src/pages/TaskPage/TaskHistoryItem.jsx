@@ -1,4 +1,4 @@
-import { Box, Typography, Checkbox } from '@mui/material';
+import { Box, Typography, Checkbox, Avatar, AvatarGroup } from '@mui/material';
 import React, { useState } from 'react';
 
 export default function TaskHistoryItem({
@@ -21,6 +21,9 @@ export default function TaskHistoryItem({
         onClick={() => setIsChecked((prev) => !prev)}
       >
         <Checkbox disableRipple checked={isChecked} />
+
+        <Avatar sx={{ mr: 1 }}>{taskData.editor}</Avatar> 
+
         <Box
           sx={{
             ml: '10px',

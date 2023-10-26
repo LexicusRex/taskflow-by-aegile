@@ -28,6 +28,7 @@ const Modal = ({
         aria-describedby="modal-dialog-description"
         fullWidth={true}
         maxWidth={size ? size : "sm"}
+        PaperProps={{ sx: { borderRadius: "15px" } }}
       >
         <DialogTitle id="modal-dialog-title">
           <Typography sx={{ fontSize: 32 }}>{modalTitle}</Typography>

@@ -67,25 +67,24 @@ const TaskInfoList = ({
     'blocked': 'Blocked'
   }
 
-  const dateColour = () => {
-    if (!compTaskData || taskData.deadline === compTaskData.deadline) {
-      return 'rgba(222, 222, 222, 0.26)';
+  const priorityMap = {
+    'low': 'Low',
+    'medium': 'Medium',
+    'high': 'High'
+  }
+
+  const underlineStyle = {
+    textDecoration: 'underline',
+    textDecorationColor: 'rgb(227, 113, 113)',
+    textDecorationThickness: '1.5px',
+    textUnderlineOffset: '3px'
+  }
+
+  const diffDeadline = () => {
+    if (!compTaskData) {
+      return false;
     }
-    if (taskData.deadline === 'Invalid Date' || compTaskData.deadline === 'Invalid Date') {
-      return 'rgba(255, 107, 0, 0.4)';
-    }
-    const splitA = taskData.deadline.split("/");
-    const splitB = compTaskData.deadline.split("/");
-    const dateObjA = Date.parse(`${splitA[1]}/${splitA[0]}/${splitA[2]}`);
-    const dateObjB = Date.parse(`${splitB[1]}/${splitB[0]}/${splitB[2]}`);
-    
-    if (dateObjA > dateObjB) {
-      return 'rgba(131, 201, 106, 0.6)';
-    } else if (dateObjA < dateObjB) {
-      return 'rgba(229, 107, 107, 0.5)';
-    } else {
-      return 'rgba(222, 222, 222, 0.26)';
-    }
+    return taskData.deadline !== compTaskData.deadline;
   }
 
   const diffDesc = () => {
@@ -131,16 +130,20 @@ const TaskInfoList = ({
           mb: 2,
           display: 'flex',
           flexDirection: 'column',
-          gap: 0.5,
         }}
       >
         <InputLabel>Task Name</InputLabel>
         {compTaskData && taskData.name !== compTaskData.name ? (
           <Typography 
-            sx={{
-              backgroundColor: 'yellow',
-              alignSelf: 'flex-start'
-            }}
+            sx={
+              // borderColor: 'rgb(229, 107, 107)',
+              // borderStyle: 'solid',
+              // borderWidth: '2px',
+              // borderRadius: '8px',
+              // alignSelf: 'flex-start',
+              // px: '5px'
+              underlineStyle
+            }
           >
             {taskData.name}
           </Typography>
@@ -164,23 +167,12 @@ const TaskInfoList = ({
         </Box>
         <Box sx={{ width: '50%' }}>
           <InputLabel>Deadline</InputLabel>
-          <Box
-            sx={{
-              borderRadius: '2px',
-              backgroundColor: dateColour(),
-              border: '0.5px solid #B4B4B4',
-              fontSize: '13px',
-              fontWeight: 600,
-              color: '#776E6E',
-              width: 'fit-content',
-              px: 1,
-              mt: 0.5,
-            }}
+          <Typography
+            sx={{ ...(diffDeadline() && underlineStyle) }}
           >
             {taskData.deadline === 'Invalid Date'
-              ? 'No Deadline'
-              : taskData.deadline}
-          </Box>
+              ? 'No Deadline' : taskData.deadline}
+          </Typography>
         </Box>
       </Box>
       {/* Priority and Weighting */}
@@ -194,40 +186,26 @@ const TaskInfoList = ({
         {/* Slider */}
         <Box sx={{ width: '50%' }}>
           <InputLabel>Work Load</InputLabel>
-          <Box
+          <Typography
             sx={{
-              maxWidth: '300px',
-              minWidth: '100px',
-              display: 'flex',
-              gap: 2,
-              mt: '3px',
+              ...(compTaskData && taskData.weighting !== 
+                compTaskData.weighting && underlineStyle)
             }}
           >
-            {/* Weight display */}
-            <Box
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                color: '#776E6E',
-                mt: 1,
-                ...(compTaskData && taskData.weighting !== 
-                  compTaskData.weighting && {
-                  backgroundColor: 'rgb(255, 194, 89)'
-                })
-              }}
-            >
-              <SpeedIcon sx={{ mr: 0.5 }} />
-              <Typography sx={{ mt: 0.2 }}>{taskData.weighting}</Typography>
-            </Box>
-          </Box>
+            {taskData.weighting}/5
+          </Typography>
         </Box>
         {/* Priority */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', width: '50%' }}>
+        <Box sx={{ width: '50%' }}>
           <InputLabel>Priority</InputLabel>
-          <TaskPriority 
-            priority={taskData.priority}
-            isLarge 
-          />
+          <Typography
+            sx={{
+              ...(compTaskData && taskData.weighting !== 
+                compTaskData?.weighting && underlineStyle)
+            }}
+          >
+            {priorityMap[taskData.priority]}
+          </Typography>
         </Box>
       </Box>
       <Box
@@ -237,33 +215,25 @@ const TaskInfoList = ({
           mb: 2
         }}
       >
-        <InputLabel sx={{ mb: '4px' }}>Description</InputLabel>
+        <InputLabel>Description</InputLabel>
         {taskData.description ? (
           <Typography
             sx={{
-              ...(diffDesc() && {
-                backgroundColor: 'rgb(99, 239, 255)',
-                alignSelf: 'flex-start'
-              }),
+              ...(diffDesc() && underlineStyle),
               textWrap: 'balanced',
             }}
           >
             {taskData.description}
           </Typography>
         ) : (
-          
           <Typography 
             sx={{
-              ...(diffDesc() && {
-                backgroundColor: 'rgb(99, 239, 255)',
-                alignSelf: 'flex-start'
-              })
+              ...(diffDesc() && underlineStyle)
             }}
           >
             No description
           </Typography>
         )}
-
       </Box>
 
       {/* Members */}
