@@ -46,7 +46,7 @@ class Task:
             sql_cursor.execute("""
                 UPDATE project_task_order
                 SET task_index = task_index + 1
-                WHERE project = ? AND task_index > 1 ;
+                WHERE project = ? AND task_index >= 1 ;
             """, (project_id,)) 
             sql_cursor.execute("""
                 UPDATE project_task_order
