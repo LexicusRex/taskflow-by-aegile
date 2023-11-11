@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS projects;
 DROP TABLE IF EXISTS has;
 DROP TABLE IF EXISTS tasks;
+DROP TABLE IF EXISTS project_task_order;
 DROP TABLE IF EXISTS assigned;
 DROP TABLE IF EXISTS comments;
 DROP TABLE IF EXISTS connections;
@@ -70,6 +71,15 @@ CREATE TABLE IF NOT EXISTS tasks (
     FOREIGN KEY(parent) REFERENCES tasks(id),
     FOREIGN KEY(project) REFERENCES projects(id) ON DELETE CASCADE,
     FOREIGN KEY(creator) REFERENCES users(handle) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS project_task_order (
+    project INTEGER NOT NULL,
+    task INTEGER NOT NULL,
+    task_index INTEGER NOT NULL,
+    FOREIGN KEY(project) REFERENCES projects(id) ON DELETE CASCADE,
+    FOREIGN KEY(task) REFERENCES tasks(id) ON DELETE CASCADE,
+    PRIMARY KEY (project, task)
 );
 
 CREATE TABLE IF NOT EXISTS assigned (
