@@ -1,8 +1,13 @@
 // import { BlockNoteEditor } from '@blocknote/core';
 import {
   BlockNoteView,
-  lightDefaultTheme,
+  FormattingToolbarPositioner,
+  HyperlinkToolbarPositioner,
+  ImageToolbarPositioner,
+  SideMenuPositioner,
+  SlashMenuPositioner,
   useBlockNote,
+  lightDefaultTheme,
   createReactBlockSpec,
   InlineContent,
   getDefaultReactSlashMenuItems,
@@ -48,11 +53,11 @@ const theme = {
     // Adds basic styling to the editor.
     Editor: {
       backgroundColor: theme.colors.editor.background,
-      borderRadius: '10px',
+      // borderRadius: '10px',
       // margin: '0 50px',
-      border: `1px solid ${theme.colors.border}`,
+      // border: `1px solid ${theme.colors.border}`,
       // boxShadow: `0 3px 3px ${theme.colors.shadow}`,
-      padding: `20px 0px`,
+      padding: `0px 0px 20px`,
     },
   }),
 };
@@ -79,8 +84,14 @@ const Editor = ({ initialBlocks, taskId }) => {
     initialContent: initialBlocks.length > 0 ? initialBlocks : placeholder,
     blockSchema: customSchema,
     slashMenuItems: [...getDefaultReactSlashMenuItems(customSchema)],
+    domAttributes: {
+      // Adds a class to all `blockContainer` elements.
+      blockContainer: {
+        class: 'block-container',
+      },
+    },
   });
-  editor.onEditorContentChange(() => {
+  editor.onEditorContentChange((e) => {
     if (initRender) return;
     clearTimeout(timeoutId);
     timeoutId = setTimeout(async () => {
@@ -89,12 +100,20 @@ const Editor = ({ initialBlocks, taskId }) => {
       await fetchAPIRequest(`/task/edit/content?taskId=${taskId}`, 'PUT', {
         blocks,
       });
-    }, 5000);
+    }, 500);
 
     // console.table(blocks);
   });
 
   // Renders the editor instance using a React component.
-  return <BlockNoteView editor={editor} theme={theme} />;
+  return (
+    <BlockNoteView editor={editor} theme={theme}>
+      <FormattingToolbarPositioner editor={editor} />
+      <HyperlinkToolbarPositioner editor={editor} />
+      <SlashMenuPositioner editor={editor} />
+      {/* <SideMenuPositioner editor={editor} /> */}
+      <ImageToolbarPositioner editor={editor} />
+    </BlockNoteView>
+  );
 };
 export default Editor;
