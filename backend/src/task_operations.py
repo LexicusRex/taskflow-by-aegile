@@ -352,22 +352,35 @@ def get_task_edit(task_id):
         return []
     
 def get_task_content(project_id):
+    query = """
+        SELECT t.name, t.id 
+        FROM tasks t
+        JOIN project_task_order pto
+        ON t.id = pto.task
+        WHERE t.project = ?
+        ORDER BY pto.task_index ASC
+    """ 
     data = []
     with get_db() as conn:
         cur = conn.cursor()
-        tasks = cur.execute("SELECT name, id FROM tasks WHERE project = ?", (project_id, )).fetchall()
+        tasks = cur.execute(query, (project_id, )).fetchall()
         for task in tasks:
             data.append({'id': task['id'], 'name': task['name'], 'blocks': get_task_edit(task['id'])})
 
         return data
 
+def get_edit_difference(edit_history, task_content):
+    # print("removed", [x["content"] for x in edit_history if x not in task_content])
+    # print("added", [x["content"] for x in task_content if x not in edit_history])
+    return 
+    
 def update_task_edit(task_id, task_content: list):
     edit_history = []
-    
     
     try:
         with open(f"{BASE_DIR}/task_content/{task_id}.json", "r", encoding="utf-8") as fp:
             edit_history = json.load(fp)
+            get_edit_difference(edit_history[-1]["content"], task_content)
     except FileNotFoundError:
         print("Task edit history not found")
 
@@ -385,3 +398,8 @@ def get_task_edit_history(task_id):
             return sorted(json.load(fp), key=lambda edit: edit["time"], reverse=True)
     except FileNotFoundError:
         raise InputError("Task edit history not found")
+
+def set_task_editor_index(project_id, task_id, parent_id):
+    with get_db() as conn:
+        cur = conn.cursor()
+        Task(task_id).set_subtask_index(cur, project_id, parent_id)

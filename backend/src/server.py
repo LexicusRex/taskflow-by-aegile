@@ -62,6 +62,7 @@ from src.task_operations import (
     get_task_content,
     update_task_edit,
     task_update_status,
+    set_task_editor_index,
     task_set_as_subtask,
     task_remove_as_subtask,
     get_task_edit_history,
@@ -517,6 +518,14 @@ def update_task_status(handle):
     status = request.args["status"]
     return dumps(task_update_status(handle, task_id, status))
 
+@APP.route("/task/set/index", methods=["PUT"])
+@token_auth
+def set_task_index(handle):
+    task_id = request.args["taskId"]
+    parent_id = request.args["parentId"]
+    project_id = request.args["projectId"]
+    return dumps(set_task_editor_index( project_id, task_id, parent_id))
+
 @APP.route("/task/set/subtask", methods=["PUT"])
 @token_auth
 def set_task_subtask(handle):
@@ -822,7 +831,7 @@ scheduler = APScheduler()
 # )
 @scheduler.task("interval", id="update_analytics", minutes=(ANALYTICS_TIMESPAN // 60))
 def schedule_update():
-    # update_analytics()
+    update_analytics()
     pass
 
 
