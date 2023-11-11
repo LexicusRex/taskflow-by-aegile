@@ -76,8 +76,8 @@ export default function TaskCard({
 
   const setCompleted = async () => {
     const bodyData = {
-      projectId,
-      taskId: id,
+      project_id: projectId,
+      task_id: id,
       name,
       description,
       deadline,
