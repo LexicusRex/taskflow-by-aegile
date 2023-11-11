@@ -42,6 +42,20 @@ class Task:
     
 
     def set_subtask_index(self, sql_cursor, project_id, parent_id):
+        if parent_id == "null":
+            sql_cursor.execute("""
+                UPDATE project_task_order
+                SET task_index = task_index + 1
+                WHERE project = ? AND task_index > 1 ;
+            """, (project_id,)) 
+            sql_cursor.execute("""
+                UPDATE project_task_order
+                SET task_index = 1
+                WHERE project = ? AND task = ?;
+            """, (project_id, self.t_id))
+            return
+        
+
         query = """
             SELECT task_index FROM project_task_order WHERE task = ?
         """
