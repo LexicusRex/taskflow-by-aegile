@@ -7,6 +7,8 @@ import TaskActionBtn from './TaskActionBtn';
 import { TaskContext } from '../../context/TaskSidePanelContext';
 import { useContext } from 'react';
 
+const iconSize = 20;
+
 const TaskActionBtnGroup = ({ taskId }) => {
   const taskCtx = useContext(TaskContext);
 
@@ -15,29 +17,29 @@ const TaskActionBtnGroup = ({ taskId }) => {
       sx={{
         display: 'flex',
         alignItems: 'center',
-        minWidth: 200,
-        justifyContent: 'space-evenly',
+        minWidth: 150,
+        justifyContent: 'space-between',
       }}
     >
       <TaskActionBtn
         action={() => taskCtx.info(taskId)}
         tooltip="Task Info"
-        icon={<InfoIcon />}
+        icon={<InfoIcon sx={{ width: iconSize }} />}
       />
       <TaskActionBtn
         action={() => taskCtx.history(taskId)}
         tooltip="Task Editor History"
-        icon={<HistoryIcon />}
+        icon={<HistoryIcon sx={{ width: iconSize }} />}
       />
       <TaskActionBtn
         action={() => taskCtx.comment(taskId)}
         tooltip="Comment on task"
-        icon={<CommentIcon />}
+        icon={<CommentIcon sx={{ width: iconSize }} />}
       />
       <TaskActionBtn
         action={() => taskCtx.complete(taskId)}
         tooltip="Mark task as complete"
-        icon={<DoneIcon />}
+        icon={<DoneIcon sx={{ width: iconSize }} />}
       />
     </Box>
   );

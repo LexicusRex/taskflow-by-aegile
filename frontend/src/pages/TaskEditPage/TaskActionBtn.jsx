@@ -9,8 +9,8 @@ const TaskActionBtn = ({ action, icon, tooltip }) => {
             action();
           }}
           sx={{
-            width: 30,
-            height: 30,
+            width: 20,
+            height: 20,
           }}
         >
           {icon}
