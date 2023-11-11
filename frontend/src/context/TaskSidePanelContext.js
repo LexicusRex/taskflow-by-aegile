@@ -15,6 +15,8 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { fetchAPIRequest } from '../helpers';
 import { TaskPriority } from '../pages/TaskPage';
 import TaskHistoryOutline from '../pages/TaskEditPage/TaskHistoryOutline';
+import Comment from '../components/Comment';
+import CommentThread from '../components/CommentThread';
 
 const renderTaskInfo = (taskData) => {
   console.log(taskData);
@@ -108,70 +110,13 @@ const renderTaskComments = (
 ) => {
   return commentData.map((comment, cmntIndex) => {
     return (
-      <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
-        <Box
-          key={'comment' + comment.id}
-          sx={{
-            py: 1,
-            px: 2,
-            flexGrow: 1,
-            boxSizing: 'border-box',
-            border: '1px solid darkcyan',
-            borderRadius: 3,
-            mb: 2,
-          }}
-        >
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignContent: 'center',
-            }}
-          >
-            <Typography key={'comment-poster' + comment.id} sx={{ mb: 1 }}>
-              <b>{comment.name}</b>
-            </Typography>
-            <IconButton
-              key={'comment-reply' + comment.id}
-              sx={{ width: 25, height: 25 }}
-              onClick={() => {
-                setReplyUser(`${comment.name} @${comment.poster}`);
-                setReplyId(comment.id);
-                setIsReplying(true);
-              }}
-            >
-              <ReplyIcon />
-            </IconButton>
-          </Box>
-          <Typography key={'comment-text' + comment.id}>
-            {comment.text}
-          </Typography>
-        </Box>
-        {comment?.replies?.map((reply, replyIndex) => {
-          return (
-            <Box
-              key={'reply' + reply.id}
-              sx={{
-                ml: 3,
-                py: 1,
-                px: 2,
-                flexGrow: 1,
-                boxSizing: 'border-box',
-                border: '1px solid darkcyan',
-                borderRadius: 3,
-                mb: 2,
-              }}
-            >
-              <Typography key={'reply-poster' + reply.id}>
-                <b>{reply.name}</b>
-              </Typography>
-              <Typography key={'reply-text' + reply.id}>
-                {reply.text}
-              </Typography>
-            </Box>
-          );
-        })}
-      </Box>
+      <CommentThread
+        parent={comment}
+        replies={comment?.replies}
+        setReplyUser={(user) => setReplyUser(user)}
+        setReplyId={(id) => setReplyId(id)}
+        setIsReplying={(state) => setIsReplying(state)}
+      />
     );
   });
 };
