@@ -11,6 +11,88 @@ from src.__config__ import ANALYTICS_TIMESPAN
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+def avg(dividend, divisor):
+    if not divisor:
+        return 0
+    return round(dividend / divisor, 3)
+
+
+def update_user_analytics(all_users, curr_date, path):
+    for user in all_users:
+        busyness = calc_total_busyness(user["email"])
+        user_tasks = get_user_tasks(user["handle"], False)
+        daily_completed = 0
+        num_completed = 0
+        completion_hours = 0
+        task_time_till_due = 0
+        for task in user_tasks:
+            if task["status"] != "completed":
+                continue
+            if task["time_end"] >= time() - ANALYTICS_TIMESPAN:
+                daily_completed += 1
+            num_completed+= 1
+
+            completion_hours += (task["time_end"] - task["time_start"]) / 3600
+            if task["deadline"] != "Invalid Date" and task["complete_till_due"] != None:
+                task_time_till_due += task["complete_till_due"]
+        average_time = avg(
+            completion_hours,
+            num_completed
+        )
+        average_time_till_due = avg(
+            task_time_till_due, 
+            num_completed
+        )
+        row = [
+            [
+                curr_date,
+                int(busyness),
+                daily_completed,
+                num_completed,
+                average_time,
+                average_time_till_due,
+            ]
+        ]
+        row_df = pd.DataFrame(data=row)
+        # row_df.drop_duplicates(ignore_index=True, inplace=True)
+        row_df.to_csv(
+            path + f"/{user['handle']}.csv", mode="a", index=False, header=False
+        )
+
+
+def update_project_analytics(all_projects, curr_date, proj_path, handle):
+    for project in all_projects:
+        proj_tasks = get_all_tasks(project["id"])
+        members = get_project_members(handle, project["id"])["members"]
+        # mem_dict stores total completed tasks for each member hashed to
+        # their handle
+        mem_dict = {}
+        for member in members:
+            mem_dict[member["handle"]] = 0
+        # Iterate through all project tasks to sum up user's completed tasks
+        proj_completed = 0
+        daily_proj_completed = 0
+        for task in proj_tasks:
+            if task["status"] == "completed":
+                if task["time_end"] >= time() - ANALYTICS_TIMESPAN:
+                    daily_proj_completed += 1
+                proj_completed += 1
+                for handle in task["assignees"]:
+                    mem_dict[handle] += 1
+
+        data = [curr_date]
+        curr_df = pd.read_csv(proj_path + f"/{project['id']}.csv")
+        # curr_df.drop_duplicates(ignore_index=True, inplace=True)
+        for col in curr_df.columns[1:-2]:
+            data.append(mem_dict[col])
+        data.append(proj_completed)
+        data.append(daily_proj_completed)
+        proj_df = pd.DataFrame(data=[data])
+        proj_df.to_csv(
+            proj_path + f"/{project['id']}.csv", mode="a", index=False, header=False
+        )
+
+
 
 def update_analytics():
     """
@@ -31,82 +113,13 @@ def update_analytics():
         all_users = conn.execute("SELECT id, email, handle FROM users").fetchall()
         path = os.path.join(BASE_DIR, f"analytics/users")
 
-        for user in all_users:
-            busyness = calc_total_busyness(user["email"])
-            user_tasks = get_user_tasks(user["email"], False)["tasks"]
-            daily_completed = 0
-            num_completed = 0
-            completion_hours = 0
-            task_time_till_due = 0
-
-            for task in user_tasks:
-                if task["status"] == "completed":
-                    if task["time_end"] >= time() - ANALYTICS_TIMESPAN:
-                        daily_completed += 1
-                    num_completed += 1
-
-                    completion_hours += (task["time_end"] - task["time_start"]) / 3600
-                    if task["deadline"] != "Invalid Date":
-                        task_time_till_due += task["complete_till_due"]
-
-            average_time = (
-                round(completion_hours / num_completed, 3) if num_completed else 0
-            )
-
-            average_time_till_due = (
-                round(task_time_till_due / num_completed, 3) if num_completed else 0
-            )
-
-            row = [
-                [
-                    curr_date,
-                    int(busyness),
-                    daily_completed,
-                    num_completed,
-                    average_time,
-                    average_time_till_due,
-                ]
-            ]
-            row_df = pd.DataFrame(data=row)
-            # row_df.drop_duplicates(ignore_index=True, inplace=True)
-            row_df.to_csv(
-                path + f"/{user['handle']}.csv", mode="a", index=False, header=False
-            )
+        update_user_analytics(all_users, curr_date, path)
 
         # Update overall analytics for projects
         all_projects = conn.execute("SELECT id FROM projects").fetchall()
         proj_path = os.path.join(BASE_DIR, "analytics/projects")
-        email = conn.execute("SELECT email FROM users").fetchone()["email"]
-        for project in all_projects:
-            proj_tasks = get_all_tasks(project["id"])
-            members = get_project_members(email, project["id"])["members"]
-            # mem_dict stores total completed tasks for each member hashed to
-            # their handle
-            mem_dict = {}
-            for member in members:
-                mem_dict[member["handle"]] = 0
-            # Iterate through all project tasks to sum up user's completed tasks
-            proj_completed = 0
-            daily_proj_completed = 0
-            for task in proj_tasks:
-                if task["status"] == "completed":
-                    if task["time_end"] >= time() - ANALYTICS_TIMESPAN:
-                        daily_proj_completed += 1
-                    proj_completed += 1
-                    for handle in task["assignees"]:
-                        mem_dict[handle] += 1
-
-            data = [curr_date]
-            curr_df = pd.read_csv(proj_path + f"/{project['id']}.csv")
-            # curr_df.drop_duplicates(ignore_index=True, inplace=True)
-            for col in curr_df.columns[1:-2]:
-                data.append(mem_dict[col])
-            data.append(proj_completed)
-            data.append(daily_proj_completed)
-            proj_df = pd.DataFrame(data=[data])
-            proj_df.to_csv(
-                proj_path + f"/{project['id']}.csv", mode="a", index=False, header=False
-            )
+        handle = conn.execute("SELECT handle FROM users").fetchone()["handle"]
+        update_project_analytics(all_projects, curr_date, proj_path, handle)
 
 
 def get_performance_analytics(handle):
@@ -212,10 +225,11 @@ def get_user_project_contribution(handle):
             FROM has h
             JOIN projects p
             ON h.project = p.id
-            WHERE user = (SELECT id FROM users WHERE handle = ?)
+            WHERE user = ? AND accepted = 'TRUE'
         """
 
         projects = cur.execute(query, (handle,)).fetchall()
+        print(f"{tuple(projects)=}")
         handle = cur.execute(
             "SELECT handle FROM users WHERE handle = ?", (handle,)
         ).fetchone()["handle"]
@@ -223,10 +237,12 @@ def get_user_project_contribution(handle):
         path = os.path.join(BASE_DIR, "analytics/projects")
         for project in projects:
             df = pd.read_csv(path + f"/{project['id']}.csv")
+            print(f"{df=}")
             results[project["name"]] = [
                 {"label": "Your contribution", "data": int(df[handle].sum())},
                 {"label": "Others", "data": int(df["total_tasks_completed"].sum())},
             ]
+        print(f"{results=}")
         return results
 
 

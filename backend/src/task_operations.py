@@ -39,22 +39,19 @@ def get_all_tasks(project_id):
 def update_task_specs(handle, data):
     Project(data["project_id"]).check_permission(handle, "creator")
     task = get_active_task(data["task_id"])
-    print(f"{task.is_edit=}")
     task.edit(data)
     # todo - notification
     return {}
 
 
-def get_user_tasks(identifier, is_handle):
-    # Given a user's handle, gets all of their assigned tasks
-    """
-    json request for get_user_tasks():
-    {
-        "handle": TEXT,
-    }
-    """
-    conn = get_db()
+def get_user_tasks(handle, is_handle):
     task_list = []
+    with get_db() as conn:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM tasks t JOIN assigned a ON t.id = a.task WHERE a.user = ?", (handle,))
+        
+        return [Task().data(task) for task in cur.fetchall()]
+    
     with conn:
         if is_handle:
             user_id = conn.execute(
