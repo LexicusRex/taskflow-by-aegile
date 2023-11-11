@@ -153,7 +153,6 @@ class Project:
                 new_proj_query, (self.creator, name, subheading, description, end_date)
             )
             self.p_id = int(cur.lastrowid)
-            print(f"{self.p_id=}")
             # Add creator of project into the has table (automatically admin)
             cur.execute(
                 creator_query,
