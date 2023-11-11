@@ -1,7 +1,7 @@
 import useModal from '../../hooks/useModal';
 import { Modal } from '../../components';
 import { Editor } from '../../components';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Typography, Divider } from '@mui/material';
 
 const TaskHistoryOutline = ({ index, editTimestamp, editContent }) => {
   const { isModalShown, toggleModal } = useModal();
@@ -19,8 +19,17 @@ const TaskHistoryOutline = ({ index, editTimestamp, editContent }) => {
         actions={<Button onClick={toggleModal}>Close</Button>}
       >
         <Typography color="text.secondary">
-          {Date(editTimestamp * 1000).toLocaleString('en-GB')}
+          {new Date(editTimestamp * 1000).toLocaleString('en-GB', {
+            // weekday: 'short',
+            year: 'numeric',
+            day: 'numeric',
+            month: 'short',
+            hour12: true,
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
         </Typography>
+        <Divider sx={{ my: 1 }} />
         <Editor initialBlocks={editContent} />
       </Modal>
       <Box
@@ -30,9 +39,11 @@ const TaskHistoryOutline = ({ index, editTimestamp, editContent }) => {
           px: 2,
           flexGrow: 1,
           boxSizing: 'border-box',
-          border: '1px solid darkcyan',
+          borderBottom: '1px solid #ddd',
           borderRadius: 3,
+          width: '100%',
           mb: 2,
+          cursor: 'pointer',
         }}
         onClick={(e) => {
           e.preventDefault();
@@ -40,7 +51,10 @@ const TaskHistoryOutline = ({ index, editTimestamp, editContent }) => {
           toggleModal();
         }}
       >
-        <Typography key={'edit-poster' + editTimestamp}>
+        <Typography
+          key={'edit-poster' + editTimestamp}
+          sx={{ fontWeight: index > 0 && 300 }}
+        >
           {new Date(editTimestamp * 1000).toLocaleString()}
         </Typography>
       </Box>
