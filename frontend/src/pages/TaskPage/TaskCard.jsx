@@ -75,21 +75,11 @@ export default function TaskCard({
   const alertCtx = useContext(AlertContext);
 
   const setCompleted = async () => {
-    const bodyData = {
-      project_id: projectId,
-      task_id: id,
-      name,
-      description,
-      deadline,
-      status: 'completed',
-      attachment,
-      attachmentName,
-      weighting,
-      priority,
-      assignees,
-    };
     try {
-      await fetchAPIRequest('/task/update/specs', 'PUT', bodyData);
+      await fetchAPIRequest(
+        `/task/update/status?taskId=${id}&status=completed`,
+        'PUT'
+      );
       setIsEdit((prevState) => !prevState);
       alertCtx.success('Task successfully completed!');
       setBtnLock(false);
