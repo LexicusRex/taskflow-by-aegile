@@ -20,6 +20,7 @@ import { ProtectedRoute, SnackAlert, MenuBar } from './components';
 import AlertProvider from './context/AlertContext';
 import NotificationBell from './components/NotificationBell';
 import { useState } from 'react';
+import DocumentPreviewPage from './pages/DocumentPreviewPage/DocumentPreviewPage.jsx';
 
 const theme = createTheme({
   typography: {
@@ -127,6 +128,10 @@ function App() {
                   <Route path="/performance" element={<PerformancePage />} />
                   <Route path="/reports" element={<ReportsPage />} />
                   <Route path="/edit/:projectId" element={<TaskEditPage />} />
+                  <Route
+                    path="/document/preview/:projectId"
+                    element={<DocumentPreviewPage />}
+                  />
                 </Route>
               </Routes>
             </AlertProvider>
