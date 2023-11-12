@@ -19,7 +19,7 @@ def avg(dividend, divisor):
 
 def update_user_analytics(all_users, curr_date, path):
     for user in all_users:
-        busyness = calc_total_busyness(user["email"])
+        busyness = calc_total_busyness(user["handle"])
         user_tasks = get_user_tasks(user["handle"], False)
         daily_completed = 0
         num_completed = 0
@@ -137,9 +137,6 @@ def get_performance_analytics(handle):
     # Busyness data
     conn = get_db()
     with conn:
-        handle = conn.execute(
-            "SELECT handle FROM users WHERE handle = ?", (handle,)
-        ).fetchone()["handle"]
         path = os.path.join(BASE_DIR, f"analytics/users")
         df = pd.read_csv(path + f"/{handle}.csv")
         # df.drop_duplicates(ignore_index=True, inplace=True)
@@ -183,9 +180,6 @@ def get_project_analytics(handle, project_id):
         df = pd.read_csv(path + f"/{project_id}.csv")
         # df.drop_duplicates(ignore_index=True, inplace=True)
 
-        handle = conn.execute(
-            "SELECT handle FROM users WHERE handle = ?", (handle,)
-        ).fetchone()["handle"]
         user_completed = 0
         proj_completed = 0
         # Count up all user's and project's completed tasks
@@ -229,20 +223,14 @@ def get_user_project_contribution(handle):
         """
 
         projects = cur.execute(query, (handle,)).fetchall()
-        print(f"{tuple(projects)=}")
-        handle = cur.execute(
-            "SELECT handle FROM users WHERE handle = ?", (handle,)
-        ).fetchone()["handle"]
         results = {}
         path = os.path.join(BASE_DIR, "analytics/projects")
         for project in projects:
-            df = pd.read_csv(path + f"/{project['id']}.csv")
-            print(f"{df=}")
+            df = pd.read_csv(path + f"/{project['id']}.csv").tail(1)
             results[project["name"]] = [
-                {"label": "Your contribution", "data": int(df[handle].sum())},
-                {"label": "Others", "data": int(df["total_tasks_completed"].sum())},
+                {"label": "Your contribution", "data": int(df[handle])},
+                {"label": "Others", "data": int(df["total_tasks_completed"] - df[handle])},
             ]
-        print(f"{results=}")
         return results
 
 
@@ -265,7 +253,6 @@ def get_user_line_data(handle):
             FROM users
             WHERE handle = ?
         """
-        handle = cur.execute(query, (handle,)).fetchone()["handle"]
         analytics_path = os.path.join(BASE_DIR, "analytics/users")
         df = pd.read_csv(analytics_path + f"/{handle}.csv")
         # df.drop_duplicates(ignore_index=True, inplace=True)
@@ -327,14 +314,11 @@ def get_project_member_contributions(handle, project_id):
             JOIN projects p
             ON h.project = p.id
             JOIN users u
-            ON h.user = u.id
+            ON h.user = u.handle
             WHERE p.id = ?
-            ORDER BY handle = ? DESC
+            ORDER BY u.handle = ? DESC
         """
 
-        handle = cur.execute(
-            "SELECT handle FROM users WHERE handle = ?", (handle,)
-        ).fetchone()["handle"]
         members = cur.execute(query, (project_id, handle)).fetchall()
         results = {}
         path = os.path.join(BASE_DIR, "analytics/projects")
@@ -348,7 +332,7 @@ def get_project_member_contributions(handle, project_id):
                 date_string = f"{date[0]}/{date[1]}"
 
             for member in members:
-                member_key = f"{member['first_name']} {member['last_name']} → @{member['handle']}"
+                member_key = f"{member['first_name']} {member['last_name']}"
                 if member_key not in results:
                     results[member_key] = []
                 results[member_key].append(
