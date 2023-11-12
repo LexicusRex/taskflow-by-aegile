@@ -184,7 +184,7 @@ class Task:
         cur.execute(
             f"UPDATE tasks SET time_end= ? WHERE id = ?", (time(), self.t_id)
         )
-        cur.execute("DELETE FROM assigned WHERE task=?", (self.t_id,))
+        # cur.execute("DELETE FROM assigned WHERE task=?", (self.t_id,))
         conn.commit()
         conn.close()
         self.assign_users(data["assignees"])
@@ -193,7 +193,8 @@ class Task:
         with get_db() as conn:
             cur = conn.cursor()
             cur.execute(
-                f"UPDATE tasks SET status= ? WHERE id = ?", (new_status, self.t_id)
+                "UPDATE tasks SET status= ?, time_end= ? WHERE id = ?", 
+                (new_status, time(), self.t_id)
             )
 
     def delete(self, handle):
