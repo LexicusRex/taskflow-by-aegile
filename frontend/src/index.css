@@ -1,3 +1,7 @@
+html {
+  scroll-padding-top: 100px;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -31,3 +35,18 @@ code {
   box-shadow: rgba(100, 100, 111, 0.25) 0px 8px 28px 0px;
   border: 0.5px solid #cfcfcf;
 } */
+
+.ellipsis-break {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.link {
+  color: #000;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}

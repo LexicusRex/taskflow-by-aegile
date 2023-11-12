@@ -14,7 +14,7 @@ const TaskEditPage = () => {
   const { projectId } = useParams();
   const [isLoading, setIsLoading] = useState(true);
   const [taskContentList, setTaskContentList] = useState([]);
-
+  const [activeCard, setActiveCard] = useState(0);
   useEffect(() => {
     const getDashboard = async () => {
       setIsLoading(true);
@@ -55,57 +55,77 @@ const TaskEditPage = () => {
   return isLoading ? (
     <LoadingScreen />
   ) : (
-    <Box sx={{ width: '100%', border: '1px solid red', position: 'relative' }}>
+    <Box
+      sx={{
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'space-between',
+        position: 'relative',
+        boxSizing: 'border-box',
+      }}
+    >
       <DragDropContext onDragEnd={handleDragEnd}>
-        <TaskOrderPanel taskList={taskContentList} />
-        <TaskProvider>
-          <Box sx={{ display: 'flex' }}>
+        <TaskOrderPanel
+          taskList={taskContentList}
+          activeCard={activeCard}
+          setActiveCard={setActiveCard}
+        />
+      </DragDropContext>
+      <Box
+        sx={{
+          height: '98vh',
+          minWidth: '280px',
+        }}
+      />
+      <TaskProvider>
+        <Box sx={{ display: 'flex', width: '100%' }}>
+          <Box
+            sx={{
+              py: 4,
+              px: 4,
+              boxSizing: 'border-box',
+              height: 'fit-content',
+              width: '100%',
+            }}
+          >
             <Box
               sx={{
-                py: 4,
-                px: 4,
-                boxSizing: 'border-box',
-                height: 'fit-content',
-                width: '100%',
+                textAlign: 'left',
+                py: 2,
+                mb: 2,
               }}
             >
-              <Box
-                sx={{
-                  textAlign: 'left',
-                  py: 2,
-                  mb: 2,
-                }}
+              <Typography
+                variant="h1"
+                sx={{ fontSize: '30px', fontWeight: 600, mb: 3 }}
               >
-                <Typography
-                  variant="h1"
-                  sx={{ fontSize: '30px', fontWeight: 600, mb: 3 }}
-                >
-                  Task Edit
-                </Typography>
-              </Box>
-              {taskContentList.map((task, index) => (
-                <TaskEditorCard
-                  key={task.name.slice(0, 10) + task.id + index}
-                  name={task.name}
-                  taskId={task.id}
-                  taskBlocks={task.blocks}
-                  index={index}
-                />
-                // <Box key={index} sx={{ mt: 5 }}>
-                //   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                //     <Typography sx={{ fontSize: '24px', fontWeight: 600, mb: 3 }}>
-                //       {task.name}
-                //     </Typography>
-                //     <TaskActionBtnGroup taskId={task.id} />
-                //   </Box>
-                //   <Editor initialBlocks={task.blocks} taskId={task.id} />
-                // </Box>
-              ))}
+                Task Edit
+              </Typography>
             </Box>
-            <SidePanel />
+            {taskContentList.map((task, index) => (
+              <TaskEditorCard
+                key={task.name.slice(0, 10) + task.id + index}
+                name={task.name}
+                taskId={task.id}
+                taskBlocks={task.blocks}
+                index={index}
+                activeCard={activeCard}
+                setActiveCard={setActiveCard}
+              />
+              // <Box key={index} sx={{ mt: 5 }}>
+              //   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              //     <Typography sx={{ fontSize: '24px', fontWeight: 600, mb: 3 }}>
+              //       {task.name}
+              //     </Typography>
+              //     <TaskActionBtnGroup taskId={task.id} />
+              //   </Box>
+              //   <Editor initialBlocks={task.blocks} taskId={task.id} />
+              // </Box>
+            ))}
           </Box>
-        </TaskProvider>
-      </DragDropContext>
+          <SidePanel />
+        </Box>
+      </TaskProvider>
     </Box>
   );
 };
