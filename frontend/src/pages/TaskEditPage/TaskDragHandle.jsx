@@ -62,7 +62,10 @@ const TaskDragHandle = ({
                 smoothScrollToTarget(taskId);
               }}
             >
-              <Typography className="ellipsis-break" sx={{ width: '180px' }}>
+              <Typography
+                className="ellipsis-break"
+                sx={{ width: '180px', fontWeight: 500 }}
+              >
                 {taskName}
               </Typography>
             </a>
