@@ -748,11 +748,8 @@ def project_analytics(handle):
 #                                   Dashboard
 # =============================================================================
 @APP.route("/dashboard", methods=["GET"])
-def get_dashboard():
-    token = request.headers.get("Authorization").split()[1]
-    if not check_auth(token, "handle"):
-        raise AccessError("Invalid token")
-    handle = jwt.decode(token, SECRET, algorithms=["HS256"])["handle"]
+@token_auth
+def get_dashboard(handle):
     return dumps(
         {
             "connections": get_dashboard_connections(handle),
