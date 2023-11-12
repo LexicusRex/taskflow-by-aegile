@@ -1,11 +1,18 @@
+import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Typography } from '@mui/material';
 import { Droppable } from 'react-beautiful-dnd';
 import TaskDragHandle from './TaskDragHandle';
 import TuneIcon from '@mui/icons-material/Tune';
+import ArticleIcon from '@mui/icons-material/Article';
+
 const TaskOrderPanel = ({ taskList, activeCard, setActiveCard }) => {
+  const navigate = useNavigate();
+  const { projectId } = useParams();
   return (
     <Box
       sx={{
+        display: 'flex',
+        flexDirection: 'column',
         height: '100vh',
         width: '280px',
         boxSizing: 'border-box',
@@ -36,7 +43,7 @@ const TaskOrderPanel = ({ taskList, activeCard, setActiveCard }) => {
             className="list-item"
             {...provided.droppableProps}
             ref={provided.innerRef}
-            style={{ height: '100%', flexGrow: 1 }}
+            style={{ height: '100%', flexGrow: 1, overflowY: 'auto' }}
           >
             {taskList.map((task, index) => (
               <TaskDragHandle
@@ -52,6 +59,24 @@ const TaskOrderPanel = ({ taskList, activeCard, setActiveCard }) => {
           </ul>
         )}
       </Droppable>
+      <Box
+        sx={{
+          '&:hover': {
+            textDecoration: 'underline',
+          },
+          cursor: 'pointer',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          color: '#484848',
+        }}
+        onClick={() => navigate(`/document/preview/${projectId}`)}
+      >
+        <ArticleIcon />
+        <Typography sx={{ fontSize: '1.15rem', ml: 1 }}>
+          Preview Document
+        </Typography>
+      </Box>
     </Box>
   );
 };

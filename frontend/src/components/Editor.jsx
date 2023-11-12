@@ -71,7 +71,7 @@ const customSchema = {
   // image: ImageBlockWrapper,
 };
 
-const Editor = ({ initialBlocks, taskId }) => {
+const Editor = ({ initialBlocks, taskId, canEdit = true }) => {
   const [initRender, setInitRender] = useState(true);
   useEffect(() => {
     setTimeout(() => {
@@ -81,6 +81,7 @@ const Editor = ({ initialBlocks, taskId }) => {
 
   let timeoutId;
   const editor = useBlockNote({
+    editable: canEdit,
     initialContent: initialBlocks.length > 0 ? initialBlocks : placeholder,
     blockSchema: customSchema,
     slashMenuItems: [...getDefaultReactSlashMenuItems(customSchema)],
