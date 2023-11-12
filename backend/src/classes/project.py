@@ -1,7 +1,7 @@
 from src.helpers import get_db
 from src.error import InputError, AccessError
 from src.classes.invite import Invite
-
+from src.performance import calc_total_busyness
 
 class Project:
     @classmethod
@@ -219,8 +219,7 @@ class Project:
                     else {},
                     "image": member["image"],
                     "handle": member["handle"],
-                    # "busyness": calc_total_busyness(member["email"]),
-                    "busyness": 16,
+                    "busyness": calc_total_busyness(member["handle"]),
                     "assigned": False,
                 }
 
