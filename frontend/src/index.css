@@ -26,3 +26,8 @@ code {
 ._bnEditor_12je0_3 {
   padding-inline: 0px !important;
 }
+
+/* .task-editor-card:has(.ProseMirror-focused) {
+  box-shadow: rgba(100, 100, 111, 0.25) 0px 8px 28px 0px;
+  border: 0.5px solid #cfcfcf;
+} */

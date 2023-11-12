@@ -5,6 +5,7 @@ import TaskActionBtnGroup from './TaskActionBtnGroup';
 const TaskEditorCard = ({ name, taskId, taskBlocks, index }) => {
   return (
     <Box
+      className="task-editor-card"
       key={index}
       sx={{
         mt: 5,
@@ -13,9 +14,17 @@ const TaskEditorCard = ({ name, taskId, taskBlocks, index }) => {
         borderRadius: 3,
         p: 2,
         mx: 'auto',
+        '&:has(.ProseMirror-focused)': {
+          boxShadow: 'rgba(100, 100, 111, 0.25) 0px 8px 28px 0px',
+          border: '0.5px solid #cfcfcf',
+        },
       }}
     >
-      <Typography id={taskId} sx={{ fontSize: '24px', fontWeight: 600, mb: 1 }}>
+      <Typography
+        className="test-active"
+        id={taskId}
+        sx={{ fontSize: '24px', fontWeight: 600, mb: 1 }}
+      >
         {name}
       </Typography>
       <Editor initialBlocks={taskBlocks} taskId={taskId} />
