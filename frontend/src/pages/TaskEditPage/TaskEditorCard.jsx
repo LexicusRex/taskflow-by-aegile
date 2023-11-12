@@ -27,7 +27,7 @@ const TaskEditorCard = ({
         p: 2,
         mx: 'auto',
         opacity: isRearranging ? 0 : 1,
-        transition: 'all 0.5s ease-in-out',
+        transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
         '&:has(.ProseMirror-focused)': {
           transition: isActive && 'all 0.2s ease-in-out',
           boxShadow: isActive && 'rgba(100, 100, 111, 0.25) 0px 8px 28px 0px',

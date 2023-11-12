@@ -33,18 +33,20 @@ const TaskEditPage = () => {
   }, []);
 
   const setTaskIndex = async (taskId, parentId) => {
-    setIsRearranging(true);
     await fetchAPIRequest(
       `/task/set/index?projectId=${projectId}&taskId=${taskId}&parentId=${parentId}`,
       'PUT'
     );
-    setTimeout(() => {
-      setIsRearranging(false);
-    }, 500);
+    setIsRearranging(false);
+  };
+
+  const handleDragStart = () => {
+    setIsRearranging(true);
   };
 
   const handleDragEnd = (result) => {
     if (!result.destination) return;
+
     const { source, destination } = result;
     const items = Array.from(taskContentList);
     const [reorderedItem] = items.splice(source.index, 1);
@@ -54,9 +56,7 @@ const TaskEditPage = () => {
     destination.index === 0
       ? setTaskIndex(reorderedItem.id, null)
       : setTaskIndex(reorderedItem.id, items[destination.index - 1].id);
-    setTimeout(() => {
-      setTaskContentList(items);
-    }, 250);
+    setTaskContentList(items);
   };
 
   return isLoading ? (
@@ -71,7 +71,7 @@ const TaskEditPage = () => {
         boxSizing: 'border-box',
       }}
     >
-      <DragDropContext onDragEnd={handleDragEnd}>
+      <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <TaskOrderPanel
           taskList={taskContentList}
           activeCard={activeCard}
