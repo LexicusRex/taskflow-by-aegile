@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, CircularProgress } from '@mui/material';
 import { fetchAPIRequest } from '../../helpers';
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
@@ -13,6 +13,7 @@ import { DragDropContext } from 'react-beautiful-dnd';
 const TaskEditPage = () => {
   const { projectId } = useParams();
   const [isLoading, setIsLoading] = useState(true);
+  const [isRearranging, setIsRearranging] = useState(false);
   const [taskContentList, setTaskContentList] = useState([]);
   const [activeCard, setActiveCard] = useState(0);
   useEffect(() => {
@@ -32,10 +33,14 @@ const TaskEditPage = () => {
   }, []);
 
   const setTaskIndex = async (taskId, parentId) => {
+    setIsRearranging(true);
     await fetchAPIRequest(
       `/task/set/index?projectId=${projectId}&taskId=${taskId}&parentId=${parentId}`,
       'PUT'
     );
+    setTimeout(() => {
+      setIsRearranging(false);
+    }, 500);
   };
 
   const handleDragEnd = (result) => {
@@ -49,7 +54,9 @@ const TaskEditPage = () => {
     destination.index === 0
       ? setTaskIndex(reorderedItem.id, null)
       : setTaskIndex(reorderedItem.id, items[destination.index - 1].id);
-    setTaskContentList(items);
+    setTimeout(() => {
+      setTaskContentList(items);
+    }, 250);
   };
 
   return isLoading ? (
@@ -78,7 +85,7 @@ const TaskEditPage = () => {
         }}
       />
       <TaskProvider>
-        <Box sx={{ display: 'flex', width: '100%' }}>
+        <Box sx={{ display: 'flex', width: '100%', position: 'relative' }}>
           <Box
             sx={{
               py: 4,
@@ -111,6 +118,7 @@ const TaskEditPage = () => {
                 index={index}
                 activeCard={activeCard}
                 setActiveCard={setActiveCard}
+                isRearranging={isRearranging}
               />
               // <Box key={index} sx={{ mt: 5 }}>
               //   <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>

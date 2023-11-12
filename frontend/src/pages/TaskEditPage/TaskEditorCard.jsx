@@ -9,7 +9,9 @@ const TaskEditorCard = ({
   index,
   activeCard,
   setActiveCard,
+  isRearranging,
 }) => {
+  const isActive = activeCard === taskId;
   return (
     <Box
       className="task-editor-card"
@@ -17,22 +19,23 @@ const TaskEditorCard = ({
       sx={{
         mt: 5,
         maxWidth: '750px',
-        border:
-          activeCard === taskId ? '0.5px solid #cfcfcf' : '0.5px solid #efefef',
-        boxShadow:
-          activeCard === taskId
-            ? 'rgba(100, 100, 111, 0.25) 0px 8px 28px 0px'
-            : 'none',
+        border: isActive ? '0.5px solid #cfcfcf' : '0.5px solid #efefef',
+        boxShadow: isActive
+          ? 'rgba(100, 100, 111, 0.25) 0px 8px 28px 0px'
+          : 'none',
         borderRadius: 3,
         p: 2,
         mx: 'auto',
+        opacity: isRearranging ? 0 : 1,
+        transition: 'all 0.5s ease-in-out',
         '&:has(.ProseMirror-focused)': {
-          transition: 'all 0.2s ease-in-out',
-          boxShadow: 'rgba(100, 100, 111, 0.25) 0px 8px 28px 0px',
-          border: '0.5px solid #cfcfcf',
+          transition: isActive && 'all 0.2s ease-in-out',
+          boxShadow: isActive && 'rgba(100, 100, 111, 0.25) 0px 8px 28px 0px',
+          border: isActive && '0.5px solid #cfcfcf',
         },
       }}
       onClick={() => setActiveCard(taskId)}
+      onBlur={() => setActiveCard(-1)}
     >
       <Typography
         id={taskId}
