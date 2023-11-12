@@ -228,8 +228,8 @@ def get_user_project_contribution(handle):
         for project in projects:
             df = pd.read_csv(path + f"/{project['id']}.csv").tail(1)
             results[project["name"]] = [
-                {"label": "Your contribution", "data": int(df[handle])},
-                {"label": "Others", "data": int(df["total_tasks_completed"] - df[handle])},
+                {"label": "Your contribution", "data": int(df[handle].iloc[0])},
+                {"label": "Others", "data": int(df["total_tasks_completed"].iloc[0] - df[handle].iloc[0])},
             ]
         return results
 
