@@ -127,7 +127,10 @@ function App() {
                   <Route path="/projects/:projectId" element={<TaskPage />} />
                   <Route path="/performance" element={<PerformancePage />} />
                   <Route path="/reports" element={<ReportsPage />} />
-                  <Route path="/edit/:projectId" element={<TaskEditPage />} />
+                  <Route
+                    path="/document/edit/:projectId"
+                    element={<TaskEditPage />}
+                  />
                   <Route
                     path="/document/preview/:projectId"
                     element={<DocumentPreviewPage />}
