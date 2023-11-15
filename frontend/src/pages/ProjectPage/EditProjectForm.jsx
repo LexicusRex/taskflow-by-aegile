@@ -7,6 +7,7 @@ import {
   Button,
   AvatarGroup,
   Avatar,
+  Tooltip,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { FetchBtn } from '../../components';
@@ -146,15 +147,23 @@ export default function EditProjectForm({
                 <Box sx={{ display: 'flex' }}>
                   {/* Member icons */}
                   <AvatarGroup max={4}>
-                    {userData.members.map((member) => (
-                      <Avatar
-                        key={member}
-                        alt={connections[member]?.name}
-                        src={connections[member]?.image}
-                        sx={{ ml: -2 }}
+                    {userData.members.map((handle) => (
+                      <Tooltip
+                        key={'tooltip-' + handle}
+                        title={
+                          connections[handle] ? connections[handle].name : 'Me'
+                        }
+                        placement="top"
                       >
-                        {connections[member]?.name}
-                      </Avatar>
+                        <Avatar
+                          key={handle}
+                          alt={connections[handle]?.name}
+                          src={connections[handle]?.image}
+                          sx={{ ml: -2 }}
+                        >
+                          {connections[handle]?.name}
+                        </Avatar>
+                      </Tooltip>
                     ))}
                     {/* {addMembers.map((member) => (
                       <Avatar

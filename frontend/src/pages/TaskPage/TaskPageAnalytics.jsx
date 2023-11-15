@@ -21,7 +21,7 @@ export default function TaskPageAnalytics({ projectId, isEdit }) {
       // Grab user handle
       const user = await fetchAPIRequest(`/profile`, 'GET');
       const tasks = await fetchAPIRequest(
-        `/task/get?projectId=${projectId}`,
+        `/task/get/all?projectId=${projectId}`,
         'GET'
       );
       for (const task of tasks) {

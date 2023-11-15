@@ -2,7 +2,7 @@ import hashlib
 import random
 from src.helpers import get_db, exec_query
 from src.error import InputError
-
+from src.performance import calc_total_busyness
 
 class User:
     def __init__(self, handle=None):
@@ -42,7 +42,7 @@ class User:
 
             self.data["numProjects"] = self.count_stat("has", "user", self.u_id)
             # HERE - placeholder
-            self.data["busyness"] = 16
+            self.data["busyness"] = calc_total_busyness(self.handle)
 
     def count_stat(self, table: str, field: str, input):
         sql = f"""

@@ -40,8 +40,7 @@ def get_dashboard_connections(handle):
                     "image": connection["image"],
                     "name": connection["first_name"] + " " + connection["last_name"],
                     "handle": connection["handle"],
-                    "busyness": 16,  # TODO
-                    # "busyness": calc_total_busyness(connection["email"]),
+                    "busyness": calc_total_busyness(connection["handle"]),
                 }
             )
         return results
@@ -67,7 +66,7 @@ def get_dashboard_tasks(handle):
             ON t.id = a.task
             JOIN projects p
             ON p.id = t.project
-            WHERE a.user = (SELECT id FROM users WHERE handle = ?)
+            WHERE a.user = ?
         """
         tasks = cur.execute(query, (handle,))
         results = []
@@ -97,24 +96,16 @@ def get_dashboard_task_chart(handle):
     Returns:
     List
     """
-    with get_db() as conn:
-        cur = conn.cursor()
-        query = """
-            SELECT handle
-            FROM users
-            WHERE handle = ?
-        """
-        handle = cur.execute(query, (handle,)).fetchone()["handle"]
-        df = pd.read_csv(analytics_path + f"/{handle}.csv")
-        result = []
-        for _, row in df.tail(7).iterrows():
-            date_string = row["date"]
-            if ANALYTICS_TIMESPAN == 86400:
-                date = row["date"].split("/")
-                date_string = f"{date[1]}/{date[0]}"
-            result.append({"date": date_string, "count": row["daily_tasks_completed"]})
-        return result
 
+    df = pd.read_csv(analytics_path + f"/{handle}.csv")
+    result = []
+    for _, row in df.tail(7).iterrows():
+        date_string = row["date"]
+        if ANALYTICS_TIMESPAN == 86400:
+            date = row["date"].split("/")
+            date_string = f"{date[1]}/{date[0]}"
+        result.append({"date": date_string, "count": row["daily_tasks_completed"]})
+    return result
 
 def get_overview(handle):
     """
@@ -129,18 +120,13 @@ def get_overview(handle):
     conn = get_db()
     with conn:
         cur = conn.cursor()
-
-        user_id = cur.execute(
-            "SELECT id FROM users WHERE handle=?", (handle,)
-        ).fetchone()[0]
-
         num_projects = cur.execute(
             """
             SELECT count(*) 
             FROM has
             WHERE has.user = ?
             """,
-            (user_id,),
+            (handle,),
         ).fetchone()[0]
 
         num_tasks = cur.execute(
@@ -152,7 +138,7 @@ def get_overview(handle):
             WHERE assigned.user = ?
             AND tasks.status <> ?
             """,
-            (user_id, "completed"),
+            (handle, "completed"),
         ).fetchone()[0]
 
         num_connections = cur.execute(
@@ -162,7 +148,7 @@ def get_overview(handle):
             WHERE inviter = ?
             AND accepted = ?
             """,
-            (user_id, "TRUE"),
+            (handle, "TRUE"),
         ).fetchone()[0]
 
         return {

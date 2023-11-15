@@ -75,21 +75,11 @@ export default function TaskCard({
   const alertCtx = useContext(AlertContext);
 
   const setCompleted = async () => {
-    const bodyData = {
-      projectId,
-      taskId: id,
-      name,
-      description,
-      deadline,
-      status: 'completed',
-      attachment,
-      attachmentName,
-      weighting,
-      priority,
-      assignees,
-    };
     try {
-      await fetchAPIRequest('/task/update/specs', 'PUT', bodyData);
+      await fetchAPIRequest(
+        `/task/update/status?taskId=${id}&status=completed`,
+        'PUT'
+      );
       setIsEdit((prevState) => !prevState);
       alertCtx.success('Task successfully completed!');
       setBtnLock(false);
@@ -272,14 +262,20 @@ export default function TaskCard({
                         {Object.keys(assigneesData)
                           .filter((handle) => assignees.includes(handle))
                           .map((handle, index) => (
-                            <Avatar
-                              key={assigneesData[handle].handle}
-                              alt={assigneesData[handle].name}
-                              src={assigneesData[handle].image}
-                              sx={{ ml: -2 }}
+                            <Tooltip
+                              key={'tooltip-' + assigneesData[handle].handle}
+                              title={assigneesData[handle].name}
+                              placement="top"
                             >
-                              {assigneesData[handle].name}
-                            </Avatar>
+                              <Avatar
+                                key={assigneesData[handle].handle}
+                                alt={assigneesData[handle].name}
+                                src={assigneesData[handle].image}
+                                sx={{ ml: -2 }}
+                              >
+                                {assigneesData[handle].name}
+                              </Avatar>
+                            </Tooltip>
                           ))}
                       </AvatarGroup>
                     )}

@@ -9,6 +9,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 USERS_PATH = os.path.join(BASE_DIR, "analytics/users/")
 PROJECTS_PATH = os.path.join(BASE_DIR, "analytics/projects/")
 REPORTS_PATH = os.path.join(BASE_DIR, "reports/")
+DOCUMENTS_PATH = os.path.join(BASE_DIR, "task_content/")
 
 
 def delete_directory_contents(dir_path, file_type=".csv"):
@@ -27,6 +28,7 @@ def initialise_analytics():
     delete_directory_contents(USERS_PATH)
     delete_directory_contents(PROJECTS_PATH)
     delete_directory_contents(REPORTS_PATH, ".json")
+    delete_directory_contents(DOCUMENTS_PATH, ".json")
 
 
 if not DATA_PERSISTENCE:
