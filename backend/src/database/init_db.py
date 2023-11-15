@@ -10,6 +10,7 @@ from src.auth import register_new_user
 from src.project_operations import add_project, invite_users, accept_invite
 from src.connections import accept_connection_request, create_connection_request
 from src.task_operations import create_task
+from src.users import edit_profile
 
 
 def initialise_db():
@@ -93,6 +94,7 @@ def initialise_db():
     register_new_user("terrance@email.com", "TerranceNguyen123!", "Terrance", "Nguyen")
     register_new_user("vincent@email.com", "VincentWong123!", "Vincent", "Wong")
 
+
     connection.commit()
 
     alex_handle = cur.execute(
@@ -108,6 +110,28 @@ def initialise_db():
         "SELECT handle FROM users WHERE email='terrance@email.com'"
     ).fetchone()[0]
     print(f"{alex_handle=}\n{sam_handle=}\n{philip_handle=}\n{terrance_handle=}\n")
+    edit_profile(alex_handle, {
+        "email": "alex@email.com",
+        "firstName": "Alex",
+        "lastName": "Xu",
+        "skills": "",
+        "description": "",
+        "image": "http://unsplash.it/50/50",
+        "rawImage": "http://unsplash.it/50/50",
+        "banner": "",
+        "password": "AlexXu123!"
+    })
+    edit_profile(sam_handle, {
+        "email": "sam@email.com",
+        "firstName": "Sam",
+        "lastName": "Yu",
+        "skills": "",
+        "description": "",
+        "image": "http://unsplash.it/60/60",
+        "rawImage": "http://unsplash.it/60/60",
+        "banner": "",
+        "password": "SamYu123!"
+    })
 
     # Create 2 projects
     add_project(
