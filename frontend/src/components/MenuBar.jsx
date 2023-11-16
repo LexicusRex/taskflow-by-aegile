@@ -155,6 +155,10 @@ export default function MenuBar({ setIsLoggedIn }) {
       >
         <Box
           sx={{
+            '@media (max-width: 1000px)': {
+              opacity: 0,
+              cursor: 'auto',
+            },
             ml: 'auto',
             mt: 2,
             mr: 2,
@@ -177,6 +181,7 @@ export default function MenuBar({ setIsLoggedIn }) {
             marginX: 'auto',
             '@media (max-width: 1000px)': {
               width: '80%',
+              mt: 1,
             },
             width: isFold ? '80%' : '50%',
           }}
