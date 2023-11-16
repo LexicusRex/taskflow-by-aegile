@@ -85,7 +85,10 @@ const TaskEditPage = () => {
         }}
       />
       <TaskProvider>
-        <Box sx={{ display: 'flex', width: '100%', position: 'relative' }}>
+        <Box
+          sx={{ display: 'flex', width: '100%', position: 'relative' }}
+          onClick={() => setActiveCard(0)}
+        >
           <Box
             sx={{
               py: 4,
