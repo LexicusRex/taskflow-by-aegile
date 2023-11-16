@@ -61,22 +61,7 @@ function App() {
   return (
     <BrowserRouter>
       <Grid container>
-        {isLoggedIn && (
-          <Grid
-            item
-            sx={{
-              width: '250px',
-              overflow: 'auto',
-              display: {
-                '@media (max-width: 1000px)': {
-                  width: '70px',
-                },
-              },
-            }}
-          >
-            <MenuBar setIsLoggedIn={setIsLoggedIn} />
-          </Grid>
-        )}
+        {isLoggedIn && <MenuBar setIsLoggedIn={setIsLoggedIn} />}
         {isLoggedIn && (
           <Box
             sx={{

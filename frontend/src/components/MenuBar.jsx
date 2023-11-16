@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Grid } from '@mui/material';
 import { useState, useRef, useEffect } from 'react';
 
 // Logo
@@ -14,6 +14,8 @@ import AssessmentOutlinedIcon from '@mui/icons-material/AssessmentOutlined';
 import UnfoldMoreIcon from '@mui/icons-material/UnfoldMore';
 import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 // Other imports
 import ClickAwayListener from '@mui/material/ClickAwayListener';
@@ -30,6 +32,7 @@ export default function MenuBar({ setIsLoggedIn }) {
   // Use navigate
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [isFold, setIsFold] = useState(false);
 
   // Fetch user information
   useEffect(() => {
@@ -58,7 +61,7 @@ export default function MenuBar({ setIsLoggedIn }) {
         display: 'none',
       },
       '@media (min-width: 1000px)': {
-        display: 'flex',
+        display: isFold ? 'none' : 'flex',
       },
     },
     borderRadius: '10px',
@@ -124,256 +127,291 @@ export default function MenuBar({ setIsLoggedIn }) {
   }, [open]);
 
   return (
-    <Box
+    <Grid
+      item
       sx={{
-        height: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        '@media (max-width: 1000px)': {
-          alignItems: 'center',
-          justifyContent: 'center',
+        width: isFold ? '70px' : '250px',
+        overflow: 'auto',
+        display: {
+          '@media (max-width: 1000px)': {
+            width: '70px',
+          },
         },
-        overflowX: 'hidden',
       }}
     >
       <Box
         sx={{
-          mt: 3,
+          height: '100vh',
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '50%',
-          marginX: 'auto',
+          flexDirection: 'column',
           '@media (max-width: 1000px)': {
-            width: '80%',
+            alignItems: 'center',
+            justifyContent: 'center',
           },
+          alignItems: isFold && 'center',
+          justifyContent: isFold && 'center',
+          overflowX: 'hidden',
         }}
       >
-        <Logo />
-      </Box>
-      {/* Top Tabs */}
-      <Box sx={{ px: 2 }}>
         <Box
           sx={{
-            ...iconNameStyle,
-            textAlign: 'left',
-            ml: 1,
+            ml: 'auto',
+            mt: 2,
+            mr: 2,
+            cursor: 'pointer',
           }}
+          onClick={() => setIsFold((prev) => !prev)}
         >
-          <Typography
-            style={{
-              color: '#776E6E',
-              fontSize: '18px',
-              fontWeight: 600,
-            }}
-          >
-            Workflow
-          </Typography>
+          {isFold ? (
+            <ChevronRightIcon sx={{ fontSize: 30 }} />
+          ) : (
+            <ChevronLeftIcon sx={{ fontSize: 30 }} />
+          )}
         </Box>
-        <MenuItem sx={menuStyle} onClick={() => navigate('/')}>
-          <HomeOutlinedIcon sx={iconStyle} />
-          <Typography sx={iconNameStyle}>Dashboard</Typography>
-        </MenuItem>
-        <MenuItem sx={menuStyle} onClick={() => navigate('/projects')}>
-          <AccountTreeOutlinedIcon sx={iconStyle} />
-          <Typography sx={iconNameStyle}>Projects</Typography>
-        </MenuItem>
-        <MenuItem sx={menuStyle} onClick={() => navigate('/connections')}>
-          <PeopleAltOutlinedIcon sx={iconStyle} />
-
-          <Typography sx={iconNameStyle}>Connections</Typography>
-        </MenuItem>
-      </Box>
-      {/* Separation line */}
-      <Box
-        sx={{
-          width: '70%',
-          height: '4px',
-          backgroundColor: '#DEDEDE',
-          align: 'center',
-          margin: '0 auto',
-          my: 3,
-        }}
-      />
-
-      {/* Bottom tabs */}
-      <Box sx={{ px: 2 }}>
         <Box
           sx={{
-            ...iconNameStyle,
-            textAlign: 'left',
-            ml: 1,
+            mt: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginX: 'auto',
+            '@media (max-width: 1000px)': {
+              width: '80%',
+            },
+            width: isFold ? '80%' : '50%',
           }}
         >
-          <Typography
-            style={{
-              color: '#776E6E',
-              fontSize: '18px',
-              fontWeight: 600,
+          <Logo />
+        </Box>
+        {/* Top Tabs */}
+        <Box sx={{ px: 2 }}>
+          <Box
+            sx={{
+              ...iconNameStyle,
+              textAlign: 'left',
+              ml: 1,
             }}
           >
-            Analytics
-          </Typography>
-        </Box>
-        <MenuItem sx={menuStyle} onClick={() => navigate('/performance')}>
-          <TimelineOutlinedIcon sx={iconStyle} />
-          <Typography sx={iconNameStyle}>Performance</Typography>
-        </MenuItem>
-        <MenuItem sx={menuStyle} onClick={() => navigate('/reports')}>
-          <AssessmentOutlinedIcon sx={iconStyle} />
-          <Typography sx={iconNameStyle}>Reports</Typography>
-        </MenuItem>
-      </Box>
-
-      {/* User profile image */}
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginTop: 'auto',
-          marginBottom: '20px',
-        }}
-      >
-        {/* Profile Image */}
-        <Box>
-          <Stack direction="row" spacing={2}>
-            <Box
-              ref={anchorRef}
-              id="composition-button"
-              aria-controls={open ? 'composition-menu' : undefined}
-              aria-expanded={open ? 'true' : undefined}
-              aria-haspopup="true"
-              onClick={handleToggle}
-              sx={{
-                '&:hover': {
-                  cursor: 'pointer',
-                },
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+            <Typography
+              style={{
+                color: '#776E6E',
+                fontSize: '18px',
+                fontWeight: 600,
               }}
             >
+              Workflow
+            </Typography>
+          </Box>
+          <MenuItem sx={menuStyle} onClick={() => navigate('/')}>
+            <HomeOutlinedIcon sx={iconStyle} />
+            <Typography sx={iconNameStyle}>Dashboard</Typography>
+          </MenuItem>
+          <MenuItem sx={menuStyle} onClick={() => navigate('/projects')}>
+            <AccountTreeOutlinedIcon sx={iconStyle} />
+            <Typography sx={iconNameStyle}>Projects</Typography>
+          </MenuItem>
+          <MenuItem sx={menuStyle} onClick={() => navigate('/connections')}>
+            <PeopleAltOutlinedIcon sx={iconStyle} />
+
+            <Typography sx={iconNameStyle}>Connections</Typography>
+          </MenuItem>
+        </Box>
+        {/* Separation line */}
+        <Box
+          sx={{
+            width: '70%',
+            height: '4px',
+            backgroundColor: '#DEDEDE',
+            align: 'center',
+            margin: '0 auto',
+            my: 3,
+          }}
+        />
+
+        {/* Bottom tabs */}
+        <Box sx={{ px: 2 }}>
+          <Box
+            sx={{
+              ...iconNameStyle,
+              textAlign: 'left',
+              ml: 1,
+            }}
+          >
+            <Typography
+              style={{
+                color: '#776E6E',
+                fontSize: '18px',
+                fontWeight: 600,
+              }}
+            >
+              Analytics
+            </Typography>
+          </Box>
+          <MenuItem sx={menuStyle} onClick={() => navigate('/performance')}>
+            <TimelineOutlinedIcon sx={iconStyle} />
+            <Typography sx={iconNameStyle}>Performance</Typography>
+          </MenuItem>
+          <MenuItem sx={menuStyle} onClick={() => navigate('/reports')}>
+            <AssessmentOutlinedIcon sx={iconStyle} />
+            <Typography sx={iconNameStyle}>Reports</Typography>
+          </MenuItem>
+        </Box>
+
+        {/* User profile image */}
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: 'auto',
+            marginBottom: '20px',
+          }}
+        >
+          {/* Profile Image */}
+          <Box>
+            <Stack direction="row" spacing={2}>
               <Box
+                ref={anchorRef}
+                id="composition-button"
+                aria-controls={open ? 'composition-menu' : undefined}
+                aria-expanded={open ? 'true' : undefined}
+                aria-haspopup="true"
+                onClick={handleToggle}
                 sx={{
-                  overflow: 'hidden',
-                  mr: 1,
                   '&:hover': {
                     cursor: 'pointer',
                   },
-                  '@media (max-width: 1000px)': {
-                    marginX: 'auto',
-                  },
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
-                <img
-                  alt="profile-pic"
-                  src={user?.image}
-                  height={45}
-                  width={45}
-                  style={{ borderRadius: '50%' }}
-                ></img>
-              </Box>
-              <Box
-                sx={{
-                  textAlign: 'left',
-                  mr: 3,
-                  display: {
-                    '@media (max-width: 1000px)': {
-                      display: 'none',
-                    },
-                  },
-                }}
-              >
-                <Typography
+                <Box
                   sx={{
-                    fontWeight: 600,
-                    fontSize: '16px',
+                    overflow: 'hidden',
+                    mr: 1,
+                    '&:hover': {
+                      cursor: 'pointer',
+                    },
+                    '@media (max-width: 1000px)': {
+                      marginX: 'auto',
+                    },
+                    marginX: isFold && 'auto',
                   }}
                 >
-                  {user?.firstName} {user?.lastName}
-                </Typography>
-                <Typography
+                  <img
+                    alt="profile-pic"
+                    src={user?.image}
+                    height={45}
+                    width={45}
+                    style={{ borderRadius: '50%' }}
+                  ></img>
+                </Box>
+                <Box
                   sx={{
-                    fontWeight: 400,
-                    fontSize: '11px',
+                    textAlign: 'left',
+                    mr: 3,
+                    display: {
+                      '@media (max-width: 1000px)': {
+                        display: 'none',
+                      },
+                      display: isFold && 'none',
+                    },
                   }}
                 >
-                  UNSW
-                </Typography>
-              </Box>
-              <UnfoldMoreIcon
-                sx={{
-                  display: {
-                    '@media (max-width: 1000px)': {
-                      display: 'none',
-                    },
-                  },
-                }}
-              />
-              <Popper
-                open={open}
-                anchorEl={anchorRef.current}
-                role={undefined}
-                placement="bottom"
-                transition
-                disablePortal
-              >
-                {({ TransitionProps, placement }) => (
-                  <Grow
-                    {...TransitionProps}
+                  <Typography
                     sx={{
-                      transformOrigin: placement === 'left top',
-                      width: '200px',
-                      boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)',
-                      borderRadius: '10px',
-                      marginBottom: '15px',
+                      fontWeight: 600,
+                      fontSize: '16px',
                     }}
                   >
-                    <Paper>
-                      <ClickAwayListener onClickAway={handleClose}>
-                        <MenuList
-                          id="composition-menu"
-                          aria-labelledby="composition-button"
-                          onKeyDown={handleListKeyDown}
-                          sx={{
-                            // Adjuts the inside of each profuile, my account etc
-                            paddingX: '10px',
-                          }}
-                        >
-                          <MenuItem
-                            onClick={(handleClose, () => navigate('/profile'))}
-                            sx={menuStyle}
-                          >
-                            <PersonOutlineOutlinedIcon />
-                            <Box>View Profile</Box>
-                          </MenuItem>
-                          <Box
+                    {user?.firstName} {user?.lastName}
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontWeight: 400,
+                      fontSize: '11px',
+                    }}
+                  >
+                    UNSW
+                  </Typography>
+                </Box>
+                <UnfoldMoreIcon
+                  sx={{
+                    display: {
+                      '@media (max-width: 1000px)': {
+                        display: 'none',
+                      },
+                      display: isFold && 'none',
+                    },
+                  }}
+                />
+                <Popper
+                  open={open}
+                  anchorEl={anchorRef.current}
+                  role={undefined}
+                  placement="bottom"
+                  transition
+                  disablePortal
+                >
+                  {({ TransitionProps, placement }) => (
+                    <Grow
+                      {...TransitionProps}
+                      sx={{
+                        transformOrigin: placement === 'left top',
+                        width: '200px',
+                        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)',
+                        borderRadius: '10px',
+                        marginBottom: '15px',
+                      }}
+                    >
+                      <Paper>
+                        <ClickAwayListener onClickAway={handleClose}>
+                          <MenuList
+                            id="composition-menu"
+                            aria-labelledby="composition-button"
+                            onKeyDown={handleListKeyDown}
                             sx={{
-                              width: '95%',
-                              height: '1px',
-                              backgroundColor: '#CACACA',
-                              marginX: 'auto',
-                              marginY: '5px',
+                              // Adjuts the inside of each profuile, my account etc
+                              paddingX: '10px',
                             }}
-                          />
-                          <MenuItem
-                            onClick={(handleClose, logout)}
-                            sx={menuStyle}
                           >
-                            <LogoutOutlinedIcon />
-                            <Box>Logout</Box>
-                          </MenuItem>
-                        </MenuList>
-                      </ClickAwayListener>
-                    </Paper>
-                  </Grow>
-                )}
-              </Popper>
-            </Box>
-          </Stack>
+                            <MenuItem
+                              onClick={
+                                (handleClose, () => navigate('/profile'))
+                              }
+                              sx={menuStyle}
+                            >
+                              <PersonOutlineOutlinedIcon />
+                              <Box>View Profile</Box>
+                            </MenuItem>
+                            <Box
+                              sx={{
+                                width: '95%',
+                                height: '1px',
+                                backgroundColor: '#CACACA',
+                                marginX: 'auto',
+                                marginY: '5px',
+                              }}
+                            />
+                            <MenuItem
+                              onClick={(handleClose, logout)}
+                              sx={menuStyle}
+                            >
+                              <LogoutOutlinedIcon />
+                              <Box>Logout</Box>
+                            </MenuItem>
+                          </MenuList>
+                        </ClickAwayListener>
+                      </Paper>
+                    </Grow>
+                  )}
+                </Popper>
+              </Box>
+            </Stack>
+          </Box>
         </Box>
       </Box>
-    </Box>
+    </Grid>
   );
 }
