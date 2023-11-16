@@ -170,7 +170,7 @@ export default function MenuBar({ setIsLoggedIn }) {
         </Box>
         <Box
           sx={{
-            mt: 1,
+            mt: isFold ? 1 : -3,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
