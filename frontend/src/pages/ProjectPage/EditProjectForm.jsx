@@ -35,29 +35,11 @@ export default function EditProjectForm({
 
   const [subheading, setSubheading] = useState(userData.subheading);
 
-  const [connections, setConnections] = useState([]);
-
   const [description, setDescription] = useState(userData.description);
 
   const breakDown = userData.deadline.split('/');
   const editDate = `${breakDown[2]}, ${breakDown[1]}, ${breakDown[0]}`;
   const [date, setDate] = useState(dayjs(editDate));
-
-  useEffect(() => {
-    const fetchConnections = async () => {
-      try {
-        const connections = await fetchAPIRequest('/connections', 'GET');
-        const connectionsObj = {};
-        connections.connected.forEach((connection) => {
-          connectionsObj[connection.handle] = connection;
-        });
-        setConnections(connectionsObj);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchConnections();
-  }, []);
 
   return (
     <Box>
