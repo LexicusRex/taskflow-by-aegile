@@ -36,6 +36,8 @@ class User:
             self.password = user["password"]
             self.handle = user["handle"]
             self.data = dict(user)
+            self.data["firstName"] = user["first_name"]
+            self.data["lastName"] = user["last_name"]
             self.data["numConnections"] = self.count_stat(
                 "connections", "user", self.u_id
             )
