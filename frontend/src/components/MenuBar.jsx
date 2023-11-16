@@ -289,23 +289,26 @@ export default function MenuBar({ setIsLoggedIn }) {
                 <Box
                   sx={{
                     overflow: 'hidden',
-                    mr: 1,
                     '&:hover': {
                       cursor: 'pointer',
                     },
                     '@media (max-width: 1000px)': {
                       marginX: 'auto',
                     },
-                    marginX: isFold && 'auto',
+                    marginX: isFold ? 'auto' : 1,
                   }}
                 >
                   <img
                     alt="profile-pic"
-                    src={user?.image}
+                    src={
+                      user?.image
+                        ? user?.image
+                        : 'https://www.gstatic.com/images/branding/product/2x/avatar_square_blue_120dp.png'
+                    }
                     height={45}
                     width={45}
                     style={{ borderRadius: '50%' }}
-                  ></img>
+                  />
                 </Box>
                 <Box
                   sx={{
@@ -353,6 +356,7 @@ export default function MenuBar({ setIsLoggedIn }) {
                   placement="bottom"
                   transition
                   disablePortal
+                  sx={{ zIndex: 2 }}
                 >
                   {({ TransitionProps, placement }) => (
                     <Grow
@@ -363,6 +367,7 @@ export default function MenuBar({ setIsLoggedIn }) {
                         boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)',
                         borderRadius: '10px',
                         marginBottom: '15px',
+                        ml: isFold && 2,
                       }}
                     >
                       <Paper>
