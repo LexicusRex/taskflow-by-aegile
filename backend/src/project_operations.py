@@ -30,7 +30,7 @@ def add_project(creator, data):
 
 
 def edit_project(creator, project_data):
-    Project().edit(creator, project_data)
+    Project(project_data["project_id"]).edit(creator, project_data)
     return {}
 
 

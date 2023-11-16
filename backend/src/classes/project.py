@@ -179,7 +179,7 @@ class Project:
                     data["project_id"],
                 ),
             )
-        self.invite_project_members(creator_handle, data["members"])
+        self.invite_project_members(creator_handle, [])
         self.fetch()
 
     def delete(self, creator_handle):
