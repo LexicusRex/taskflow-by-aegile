@@ -164,7 +164,7 @@ export default function ProjectCard({
                         subheading,
                         description,
                         deadline,
-                        members: memberHandleList,
+                        members,
                       }}
                       setIsEditState={setIsEditState}
                       setIsEdit={setIsEdit}

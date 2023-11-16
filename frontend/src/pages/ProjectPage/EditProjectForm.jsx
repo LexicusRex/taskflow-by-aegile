@@ -147,34 +147,22 @@ export default function EditProjectForm({
                 <Box sx={{ display: 'flex' }}>
                   {/* Member icons */}
                   <AvatarGroup max={4}>
-                    {userData.members.map((handle) => (
+                    {userData.members.map((member) => (
                       <Tooltip
-                        key={'tooltip-' + handle}
-                        title={
-                          connections[handle] ? connections[handle].name : 'Me'
-                        }
+                        key={'tooltip-' + member.handle}
+                        title={member.name}
                         placement="top"
                       >
                         <Avatar
-                          key={handle}
-                          alt={connections[handle]?.name}
-                          src={connections[handle]?.image}
+                          key={member.handle}
+                          alt={member.name}
+                          src={member.image}
                           sx={{ ml: -2 }}
                         >
-                          {connections[handle]?.name}
+                          {member.name}
                         </Avatar>
                       </Tooltip>
                     ))}
-                    {/* {addMembers.map((member) => (
-                      <Avatar
-                        key={member}
-                        alt={connections[member]?.name}
-                        src={connections[member]?.image}
-                        sx={{ ml: -2 }}
-                      >
-                        {connections[member]?.name}
-                      </Avatar>
-                    ))} */}
                   </AvatarGroup>
                 </Box>
               </Box>
