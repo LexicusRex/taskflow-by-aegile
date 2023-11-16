@@ -9,7 +9,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import useModal from '../../hooks/useModal';
-import { Modal } from '../../components';
+import { Modal, SetCompleteButton } from '../../components';
 import TaskForm from './TaskForm';
 import SpeedIcon from '@mui/icons-material/Speed';
 import DoneIcon from '@mui/icons-material/Done';
@@ -333,25 +333,11 @@ export default function TaskCard({
                       !isLoading &&
                       !isCardLoading &&
                       status !== 'completed' && (
-                        <Tooltip title="Complete task" placement="top">
-                          <IconButton
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (btnLock) return;
-                              setBtnLock(true);
-                              setCompleted();
-                            }}
-                            sx={{
-                              width: 30,
-                              height: 30,
-                              transition: 'all 0.3s ease-in-out',
-                              visibility: isHover ? 'visible' : 'hidden',
-                              opacity: isHover ? 1 : 0,
-                            }}
-                          >
-                            <DoneIcon />
-                          </IconButton>
-                        </Tooltip>
+                        <SetCompleteButton
+                          id={id}
+                          isVisible={isHover}
+                          update={() => setIsEdit((prev) => !prev)}
+                        />
                       )}
                   </Box>
                 </Box>

@@ -6,6 +6,7 @@ import DoneIcon from '@mui/icons-material/Done';
 import TaskActionBtn from './TaskActionBtn';
 import { TaskContext } from '../../context/TaskSidePanelContext';
 import { useContext } from 'react';
+import { SetCompleteButton } from '../../components';
 
 const iconSize = 20;
 
@@ -36,11 +37,7 @@ const TaskActionBtnGroup = ({ taskId }) => {
         tooltip="Comment on task"
         icon={<CommentIcon sx={{ width: iconSize }} />}
       />
-      <TaskActionBtn
-        action={() => taskCtx.complete(taskId)}
-        tooltip="Mark task as complete"
-        icon={<DoneIcon sx={{ width: iconSize }} />}
-      />
+      <SetCompleteButton id={taskId} update={() => {}} />
     </Box>
   );
 };
