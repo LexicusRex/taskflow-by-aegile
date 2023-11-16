@@ -18,7 +18,7 @@ const TaskEditorCard = ({
       key={index}
       sx={{
         mt: 5,
-        maxWidth: '750px',
+        maxWidth: '950px',
         border: isActive ? '0.5px solid #cfcfcf' : '0.5px solid #efefef',
         boxShadow: isActive
           ? 'rgba(100, 100, 111, 0.25) 0px 8px 28px 0px'
@@ -34,8 +34,11 @@ const TaskEditorCard = ({
           border: isActive && '0.5px solid #cfcfcf',
         },
       }}
-      onClick={() => setActiveCard(taskId)}
-      onBlur={() => setActiveCard(-1)}
+      onClick={(e) => {
+        e.stopPropagation();
+        setActiveCard(taskId);
+      }}
+      onBlur={() => setActiveCard(0)}
     >
       <Typography
         id={taskId}

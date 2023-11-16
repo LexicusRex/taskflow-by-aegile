@@ -11,3 +11,4 @@ export { default as AddMemberDropDown } from './AddMemberDropDown.jsx';
 export { default as TeamAddMemberForm } from './TeamAddMemberForm.jsx';
 export { default as SearchBar } from './SearchBar.jsx';
 export { default as Editor } from './Editor.jsx';
+export { default as SetCompleteButton } from './SetCompleteButton.jsx';

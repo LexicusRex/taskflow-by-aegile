@@ -34,10 +34,6 @@ export default function TaskDisplayScreen({ isEdit, setIsEdit }) {
     }
   };
 
-  useEffect(() => {
-    console.log(selectedTask);
-  }, [selectedTask]);
-
   // const filterTasks = (taskList) => {
   //   return taskList.filter((task) => {
   //     let target = task.name;
