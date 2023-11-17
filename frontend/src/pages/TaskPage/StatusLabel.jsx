@@ -26,48 +26,42 @@ export default function StatusLabel({ status, setIsEdit }) {
     <Box
       sx={{
         mt: 3,
-        backgroundColor: statusColour(status),
+        backgroundColor: 'white',
         width: '250px',
-        borderRadius: '11px',
-        pt: '3px'
+        borderRadius: '10px',
+        display: 'flex',
+        alignItems: 'center',
+        borderStyle: 'solid none none none',
+        borderColor: statusColour(status),
+        borderWidth: '3px',
       }}
     >
+      <Box sx={{ px: 2, py: '6px' }}>
+        <Typography variant="h6" sx={{}}>
+          {status}
+        </Typography>
+      </Box>
+      {/* Buttons */}
       <Box
         sx={{
-          backgroundColor: 'white',
-          width: '250px',
-          borderRadius: '10px',
           display: 'flex',
-          alignItems: 'center',
+          marginLeft: 'auto',
+          marginRight: '10px',
+          gap: '5px',
         }}
       >
-        <Box sx={{ px: 2, py: '6px' }}>
-          <Typography variant="h6" sx={{}}>
-            {status}
-          </Typography>
-        </Box>
-        {/* Buttons */}
-        <Box
+        <MoreHorizIcon
           sx={{
-            display: 'flex',
-            marginLeft: 'auto',
-            marginRight: '10px',
-            gap: '5px',
+            '&:hover': {
+              cursor: 'pointer',
+            },
+            color: '#8A8A8A',
           }}
-        >
-          <MoreHorizIcon
-            sx={{
-              '&:hover': {
-                cursor: 'pointer',
-              },
-              color: '#8A8A8A',
-            }}
-          />
-          <NewTaskButton
-            taskStatus={convertStatus(status)}
-            setIsEdit={setIsEdit}
-          />
-        </Box>
+        />
+        <NewTaskButton
+          taskStatus={convertStatus(status)}
+          setIsEdit={setIsEdit}
+        />
       </Box>
     </Box>
   );
