@@ -11,25 +11,12 @@ import { useEffect, useRef, useState } from 'react';
 
 import InputLabel from '@mui/material/InputLabel';
 import Link from '@mui/material/Link';
-import { fetchAPIRequest } from '../../helpers';
-import TaskPriority from './TaskPriority';
-import SpeedIcon from '@mui/icons-material/Speed';
-
-const dummyMembers = [
-  {
-    name: 'Alex Xu',
-    handle: 'alexxu123' 
-  },
-  {
-    name: 'Philip Tran',
-    handle: 'philiptran123' 
-  },
-]
 
 const TaskInfoList = ({
   toggleModal,
   purpose,
   taskData,
+  projectMembers,
   compTaskData
 }) => {
  
@@ -47,18 +34,6 @@ const TaskInfoList = ({
       }, 200);
     }
   }, [isHovered]);
-
-  // useEffect(() => {
-  //   const getConnections = async () => {
-  //     const connections = await fetchAPIRequest(
-  //       `/connections/task?projectId=${projectId}`,
-  //       'GET'
-  //     );
-  //     setConnections(connections);
-  //     purpose !== 'edit' && setMembers([Object.keys(connections)[0]]);
-  //   };
-  //   getConnections();
-  // }, [projectId, purpose, taskData, isNewComment]);
 
   const statusMap = {
     'notstarted': 'Not Started',
@@ -104,7 +79,7 @@ const TaskInfoList = ({
           <>
             <Box>
               <Typography variant="h5" sx={{ mb: 0.5 }}>
-                {`${taskData.editName} - ${taskData.date_edited}`}
+                {`${taskData.editName} - ${taskData.dateEdited} at ${taskData.timeEdited}`}
               </Typography>
             </Box>
           </>
@@ -115,7 +90,7 @@ const TaskInfoList = ({
             variant={purpose === "compare" ? "h6" : "h5"} 
             sx={{ mb: 2 }}
           >
-            Edited by {taskData.editor}
+            Edited by {projectMembers[taskData.editor].name}
           </Typography>
         </Box>
         <Box>
@@ -135,15 +110,7 @@ const TaskInfoList = ({
         <InputLabel>Task Name</InputLabel>
         {compTaskData && taskData.name !== compTaskData.name ? (
           <Typography 
-            sx={
-              // borderColor: 'rgb(229, 107, 107)',
-              // borderStyle: 'solid',
-              // borderWidth: '2px',
-              // borderRadius: '8px',
-              // alignSelf: 'flex-start',
-              // px: '5px'
-              underlineStyle
-            }
+            sx={ underlineStyle }
           >
             {taskData.name}
           </Typography>
@@ -200,8 +167,8 @@ const TaskInfoList = ({
           <InputLabel>Priority</InputLabel>
           <Typography
             sx={{
-              ...(compTaskData && taskData.weighting !== 
-                compTaskData?.weighting && underlineStyle)
+              ...(compTaskData && taskData.priority !== 
+                compTaskData.priority && underlineStyle)
             }}
           >
             {priorityMap[taskData.priority]}
@@ -245,18 +212,18 @@ const TaskInfoList = ({
         <InputLabel>Members</InputLabel>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <AvatarGroup /*max={4}*/ sx={{ my: 1 }}>
-            {dummyMembers.map((member, index) => (
+            {taskData.assignees.map((handle, index) => (
               <Tooltip
-                key={'tooltip-' + member.handle}
-                title={member.name}
+                key={'tooltip-' + handle}
+                title={projectMembers[handle].name}
                 placement="top"
               >
                 <Avatar
-                  key={member.handle}
-                  alt={member.name}
-                  //src={taskData.assigneesData[handle].image}
+                  key={handle}
+                  alt={projectMembers[handle].name}
+                  src={projectMembers[handle].image}
                 >
-                  {member.name}
+                  {projectMembers[handle].name}
                 </Avatar>
               </Tooltip>
             ))}

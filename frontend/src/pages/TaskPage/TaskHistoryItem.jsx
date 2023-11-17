@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 
 export default function TaskHistoryItem({
   taskData,
+  projectMembers
 }) {
 
   const [isChecked, setIsChecked] = useState(false);
@@ -22,7 +23,14 @@ export default function TaskHistoryItem({
       >
         <Checkbox disableRipple checked={isChecked} />
 
-        <Avatar sx={{ mr: 1 }}>{taskData.editor}</Avatar> 
+        <Avatar
+          key={taskData.editor}
+          alt={projectMembers[taskData.editor].name}
+          src={projectMembers[taskData.editor].image}
+          sx={{ mr: 1 }}
+        >
+          {projectMembers[taskData.editor].name}
+        </Avatar>
 
         <Box
           sx={{
@@ -47,7 +55,7 @@ export default function TaskHistoryItem({
                   whiteSpace: 'normal',
                 }}
               >
-                Created on {taskData.date_edited}
+                Created on {taskData.dateEdited} at {taskData.timeEdited}
               </Typography>
             ) : (
               <Typography
@@ -58,7 +66,7 @@ export default function TaskHistoryItem({
                   whiteSpace: 'normal',
                 }}
               >
-                Edited on {taskData.date_edited}
+                Edited on {taskData.dateEdited} at {taskData.timeEdited}
               </Typography>
             )}
           </Box>

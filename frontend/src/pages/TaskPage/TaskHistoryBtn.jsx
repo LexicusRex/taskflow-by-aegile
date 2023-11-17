@@ -14,84 +14,6 @@ import useModal from '../../hooks/useModal';
 import { Modal } from '../../components';
 import TaskInfoList from './TaskInfoList';
 
-const dummyHistory = [
-  {
-    id: 1,
-    project: 1,
-    name: 'Task 0',
-    description: 'Yes sakjghkjrlasehgflasjfklhsljkajkfjk dfjasklfjsa;jfkc asljfak;slfjkaaaaa sofjsakfkaldjfkl;fs',
-    deadline: '01/10/2023',
-    status: 'notstarted',
-    attachment: '',
-    attachment_name: '',
-    weighting: 5,
-    priority: 'low',
-    busyness: 16,
-    date_edited: '19/09/2023 at 9:00pm',
-    editor: 'Philip Tran'
-  },
-  {
-    id: 1,
-    project: 1,
-    name: 'Task 1',
-    description: 'Yes',
-    deadline: '30/09/2023',
-    status: 'notstarted',
-    attachment: '',
-    attachment_name: '',
-    weighting: 4,
-    priority: 'high',
-    busyness: 16,
-    date_edited: '20/09/2023 at 9:00pm',
-    editor: 'Alex Xu'
-  },
-  {
-    id: 1,
-    project: 1,
-    name: 'Task 1',
-    description: 'Yes',
-    deadline: 'Invalid Date',
-    status: 'notstarted',
-    attachment: '',
-    attachment_name: '',
-    weighting: 5,
-    priority: 'low',
-    busyness: 16,
-    date_edited: '22/09/2023 at 9:00pm',
-    editor: 'Philip Tran'
-  },
-  {
-    id: 1,
-    project: 1,
-    name: 'Task 1',
-    description: '',
-    deadline: 'Invalid Date',
-    status: 'notstarted',
-    attachment: '',
-    attachment_name: '',
-    weighting: 5,
-    priority: 'low',
-    busyness: 16,
-    date_edited: '24/09/2023 at 9:00pm',
-    editor: 'Philip Tran'
-  },
-  {
-    id: 1,
-    project: 1,
-    name: 'Task 99',
-    description: 'Yes yayyy',
-    deadline: '02/10/2023',
-    status: 'inprogress',
-    attachment: '',
-    attachment_name: '',
-    weighting: 5,
-    priority: 'medium',
-    busyness: 16,
-    date_edited: '19/09/2023 at 9:00pm',
-    editor: 'Philip Tran'
-  },
-]
-
 const StyledMenu = styled((props) => (
   <Menu
     elevation={0}
@@ -136,7 +58,7 @@ const StyledMenu = styled((props) => (
   },
 }));
 
-export default function TaskHistoryBtn() {
+export default function TaskHistoryBtn({ taskId, projectMembers }) {
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -163,56 +85,32 @@ export default function TaskHistoryBtn() {
     setShowComparison(!showComparison);
   }
 
-  const fetchHistoryAndRender = () => {
-    // try {
-    //   await fetchAPIRequest('/notifications/all', 'GET').then((response) => {
-    //     // Render all fetched notifications
-    //     const toRender = [];
-    //     response.forEach((notif, index) => {
-    //       toRender.push(
-    //         <MenuItem sx={{ paddingRight: 0 }}>
-    //           <NotificationItem
-    //             key={index}
-    //             handle={notif.sender}
-    //             action={notif.message}
-    //             time={notif.timestamp}
-    //             notificationId={notif.id}
-    //             type={notif.type}
-    //             projectId={notif.project}
-    //             renderNotif={fetchNotificationsAndRender}
-    //             status={notif.status}
-    //           />
-    //         </MenuItem>
-    //       );
-    //       toRender.push(<Divider sx={{ my: 0.5 }} />);
-    //     });
-    //     setNotifications(toRender);
-    //   });
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    const toRender = [];
-    const toMap = {};
-    dummyHistory.forEach((edit, index) => {
-      const taskBody = edit;
-      taskBody.editNumber = index;
-      if (index === 0) {
-        taskBody.editName = "Original Version";
-      } else {
-        taskBody.editName = `Edit #${index}`
-      }
-      toMap[index] = taskBody;
-      toRender.push(taskBody);
-    });
-    toRender.reverse();
-    setHistory(toRender);
-    setEditMap(toMap);
-  };
+  const fetchHistoryAndRender = async () => {
+    try {
+      await fetchAPIRequest(`/task/specs/history?projectId=${taskId}`, 'GET').then((response) => {
+        // Render all fetched task edits
+        const toRender = [];
+        const toMap = {};
+        response.forEach((edit, index) => {
+          const taskBody = edit;
+          taskBody.editNumber = index;
+          if (index === 0) {
+            taskBody.editName = "Original Version";
+          } else {
+            taskBody.editName = `Edit #${index}`
+          }
+          toMap[index] = taskBody;
+          toRender.push(taskBody);
+        });
+        toRender.reverse();
+        setHistory(toRender);
+        setEditMap(toMap);
 
-  useEffect(() => {
-    console.log(selectedHistory)
-    console.log(selectedHistory.includes(0))
-  }, [anchorEl, selectedHistory])
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -221,13 +119,15 @@ export default function TaskHistoryBtn() {
           isModalShown={isModalShown}
           toggleModal={toggleModal}
           modalTitle={
-            `${editMap[selectedHistory[0]].editName} - ${editMap[selectedHistory[0]].date_edited}`
+            `${editMap[selectedHistory[0]].editName} - 
+            ${editMap[selectedHistory[0]].dateEdited} at ${editMap[selectedHistory[0]].timeEdited}`
           }
         >
           <TaskInfoList
             toggleModal={toggleModal}
             purpose='history'
             taskData={editMap[selectedHistory[0]]}
+            projectMembers={projectMembers}
           />    
         </Modal>
       )}
@@ -244,6 +144,7 @@ export default function TaskHistoryBtn() {
                 toggleModal={toggleComparisonModal}
                 purpose='compare'
                 taskData={editMap[selectedHistory[0]]}
+                projectMembers={projectMembers}
               />  
             </Box>
 
@@ -254,6 +155,7 @@ export default function TaskHistoryBtn() {
                 toggleModal={toggleComparisonModal}
                 purpose='compare'
                 taskData={editMap[selectedHistory[1]]}
+                projectMembers={projectMembers}
                 compTaskData={editMap[selectedHistory[0]]}
               />  
             </Box>
@@ -385,6 +287,7 @@ export default function TaskHistoryBtn() {
                   <TaskHistoryItem
                     key={task.editNumber}
                     taskData={task}
+                    projectMembers={projectMembers}
                   />
                 </MenuItem>
                 <Divider sx={{ my: 0.5 }} />
