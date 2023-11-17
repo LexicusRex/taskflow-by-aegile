@@ -7,6 +7,7 @@ from src.helpers import get_db, add_notification, update_achievement
 # from src.error import InputError, AccessError
 from src.classes.task import Task
 from src.classes.project import Project
+from src.classes.performance import Performance
 from src.constants import get_active_task, set_task_active, delete_active_task
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -15,6 +16,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 def create_task(handle, task_data):
     new_task = Task()
     new_task.new(handle, task_data["project_id"], task_data)
+    new_task.log_new_task_specs()
+    new_task.log_task_spec_history(handle, task_data)
     set_task_active(new_task.t_id, new_task)
     return {}
 
@@ -34,8 +37,13 @@ def update_task_specs(handle, data):
     task = get_active_task(data["task_id"])
     print(f"{task.is_edit=}")
     task.edit(data)
+    task.log_task_spec_history(handle, data)
     # todo - notification
     return {}
+
+
+def get_task_specs_history(task_id):
+    return Task(task_id).get_task_spec_history()
 
 
 def get_user_tasks(identifier, is_handle):
@@ -326,15 +334,18 @@ def task_get_comment(task_id):
 
     return comments_list
 
+
 def task_update_status(handle, task_id, status):
     task = get_active_task(task_id)
     task.update_status(status)
     return {}
 
+
 def task_set_as_subtask(handle, task_id, parent_id):
     task = get_active_task(task_id)
     task.set_as_subtask(parent_id)
     return {}
+
 
 def task_remove_as_subtask(handle, task_id, status):
     task = get_active_task(task_id)
@@ -353,15 +364,25 @@ def get_task_edit(task_id):
     with open(f"{BASE_DIR}/task_content/{task_id}.json", "r", encoding="utf-8") as fp:
         return json.load(fp)
 
+
 def get_task_content(project_id):
     data = []
     with get_db() as conn:
         cur = conn.cursor()
-        tasks = cur.execute("SELECT name, id FROM tasks WHERE project = ?", (project_id, )).fetchall()
+        tasks = cur.execute(
+            "SELECT name, id FROM tasks WHERE project = ?", (project_id,)
+        ).fetchall()
         for task in tasks:
-            data.append({'id': task['id'], 'name': task['name'], 'blocks': get_task_edit(task['id'])})
+            data.append(
+                {
+                    "id": task["id"],
+                    "name": task["name"],
+                    "blocks": get_task_edit(task["id"]),
+                }
+            )
 
         return data
+
 
 def update_task_edit(task_id, task_content: list):
     with open(f"{BASE_DIR}/task_content/{task_id}.json", "w", encoding="utf-8") as fp:

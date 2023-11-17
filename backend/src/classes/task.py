@@ -1,7 +1,13 @@
+import os.path
+import json
 from src.helpers import get_db
 from src.error import InputError, AccessError
 from time import time
 from pprint import pprint
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class Task:
@@ -85,6 +91,13 @@ class Task:
                 )
         self.assign_users(task_data["assignees"])
 
+    # Add a new json file to store the task's specs history
+    def log_new_task_specs(self):
+        with open(
+            BASE_DIR + f"/../task_specs/{self.t_id}.json", "w", encoding="utf-8"
+        ) as task_report:
+            task_report.write(json.dumps([], indent=2))
+
     def edit(self, data):
         accepted_fields = [
             "name",
@@ -108,6 +121,41 @@ class Task:
         conn.commit()
         conn.close()
         self.assign_users(data["assignees"])
+
+    def log_task_spec_history(self, handle, task_data):
+        date_edited = datetime.now(ZoneInfo("Australia/Sydney")).strftime("%d/%m/%Y")
+        time_edited = datetime.now(ZoneInfo("Australia/Sydney")).strftime("%H:%M")
+        format_time = datetime.strptime(time_edited, "%H:%M").strftime("%I:%M %p")
+
+        with open(
+            BASE_DIR + f"/../task_specs/{self.t_id}.json", "r", encoding="utf-8"
+        ) as task_report:
+            contents = json.load(task_report)
+            contents.append(
+                {
+                    "name": task_data["name"],
+                    "description": task_data["description"],
+                    "deadline": task_data["deadline"],
+                    "status": task_data["status"],
+                    # "attachment": task_data["attachment"],
+                    # "attachmentName": task_data["attachment_name"],
+                    "weighting": task_data["weighting"],
+                    "priority": task_data["priority"],
+                    "assignees": task_data["assignees"],
+                    "editor": handle,
+                    "dateEdited": date_edited,
+                    "timeEdited": format_time,
+                },
+            )
+        with open(
+            BASE_DIR + f"/../task_specs/{self.t_id}.json", "w", encoding="utf-8"
+        ) as task_report:
+            task_report.write(
+                json.dumps(
+                    contents,
+                    indent=2,
+                )
+            )
 
     def update_status(self, new_status):
         with get_db() as conn:
@@ -205,3 +253,10 @@ class Task:
                 f"UPDATE tasks SET parent = NULL, status=? WHERE id = ?",
                 (new_status, self.t_id),
             )
+
+    def get_task_spec_history(self):
+        with open(
+            BASE_DIR + f"/../task_specs/{self.t_id}.json", "r", encoding="utf-8"
+        ) as task_report:
+            contents = json.load(task_report)
+        return contents

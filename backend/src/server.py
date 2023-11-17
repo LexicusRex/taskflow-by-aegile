@@ -63,6 +63,7 @@ from src.task_operations import (
     task_update_status,
     task_set_as_subtask,
     task_remove_as_subtask,
+    get_task_specs_history,
 )
 
 from src.analytics import (
@@ -457,6 +458,16 @@ def do_update_task_specs():
     return dumps({})
 
 
+@APP.route("/task/specs/history", methods=["GET"])
+def do_get_task_specs_history():
+    token = request.headers.get("Authorization").split()[1]
+    project_id = request.args["projectId"]
+    if not check_auth(token, "handle"):
+        raise AccessError("Invalid token")
+
+    return dumps(get_task_specs_history(project_id))
+
+
 @APP.route("/task", methods=["GET"])
 def do_get_user_tasks():
     handle = request.args.get("handle")
@@ -494,11 +505,13 @@ def do_task_get_comment():
 
     return dumps(task_get_comment(task_id))
 
+
 @APP.route("/task/get/content", methods=["GET"])
 @token_auth
 def fetch_task_content(handle):
     project_id = request.args["projectId"]
     return dumps(get_task_content(project_id))
+
 
 @APP.route("/task/edit/content", methods=["PUT"])
 @token_auth
@@ -515,12 +528,14 @@ def update_task_status(handle):
     status = request.args["status"]
     return dumps(task_update_status(handle, task_id, status))
 
+
 @APP.route("/task/set/subtask", methods=["PUT"])
 @token_auth
 def set_task_subtask(handle):
     task_id = request.args["taskId"]
     parent_id = request.args["parentId"]
     return dumps(task_set_as_subtask(handle, task_id, parent_id))
+
 
 @APP.route("/task/remove/subtask", methods=["PUT"])
 @token_auth
