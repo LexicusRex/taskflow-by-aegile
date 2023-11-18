@@ -126,10 +126,10 @@ export default function NotificationBell({
     >
       <Badge
         sx={{
-          float: 'right',
-          mb: -10,
-          mt: 4,
-          mr: 3,
+          zIndex: -2,
+          position: 'fixed',
+          top: 25,
+          right: 25,
         }}
         // error when there is notification
         color={notificationStatus}

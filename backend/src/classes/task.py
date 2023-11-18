@@ -46,6 +46,94 @@ class Task:
         task_data["assigneesData"] = users
         return task_data
 
+    def set_subtask_index(self, sql_cursor, project_id, parent_id):
+        if parent_id == "null":
+            sql_cursor.execute(
+                """
+                UPDATE project_task_order
+                SET task_index = task_index + 1
+                WHERE project = ? AND task_index >= 1 ;
+            """,
+                (project_id,),
+            )
+            sql_cursor.execute(
+                """
+                UPDATE project_task_order
+                SET task_index = 1
+                WHERE project = ? AND task = ?;
+            """,
+                (project_id, self.t_id),
+            )
+            return
+
+        query = """
+            SELECT task_index FROM project_task_order WHERE task = ?
+        """
+        parent_idx = sql_cursor.execute(query, (parent_id,)).fetchone()["task_index"]
+        curr_idx = sql_cursor.execute(query, (self.t_id,)).fetchone()["task_index"]
+        if curr_idx > parent_idx:
+            sql_cursor.execute(
+                """
+                UPDATE project_task_order
+                SET task_index = task_index + 1
+                WHERE project = ? AND task_index >= ? AND task_index <= ?;
+            """,
+                (project_id, parent_idx + 1, curr_idx - 1),
+            )
+            sql_cursor.execute(
+                """
+                UPDATE project_task_order
+                SET task_index = ?
+                WHERE project = ? AND task = ?;
+            """,
+                (parent_idx + 1, project_id, self.t_id),
+            )
+
+        else:
+            sql_cursor.execute(
+                """
+                UPDATE project_task_order
+                SET task_index = task_index - 1
+                WHERE project = ? AND task_index >= ? AND task_index <= ?;
+            """,
+                (project_id, curr_idx + 1, parent_idx),
+            )
+            sql_cursor.execute(
+                """
+                UPDATE project_task_order
+                SET task_index = ?
+                WHERE project = ? AND task = ?;
+            """,
+                (parent_idx, project_id, self.t_id),
+            )
+
+    def set_new_task_index(self, sql_cursor, project_id):
+        query_select = """
+            SELECT COUNT(*) FROM project_task_order
+            WHERE project = ?
+        """
+
+        query_insert = """
+            INSERT INTO project_task_order 
+            (project, task, task_index) 
+            VALUES (?, ?, ?)
+        """
+
+        sql_cursor.execute(query_select, (project_id,))
+        count_result = sql_cursor.fetchone()
+        new_index = count_result["COUNT(*)"] + 1
+
+        sql_cursor.execute(query_insert, (project_id, self.t_id, new_index))
+
+    def delete_task_index(self, sql_cursor, project_id):
+        pass
+
+    def set_task_index(self, sql_cursor, project_id, parent_id):
+        if not parent_id:
+            self.set_new_task_index(sql_cursor, project_id)
+            return
+        self.set_subtask_index(sql_cursor, project_id, parent_id)
+
     def new(self, creator_handle, project_id, task_data):
         fields = [
             "name",
@@ -83,12 +171,15 @@ class Task:
                 ),
             )
             self.t_id = cur.lastrowid
+
             # Check if task being created is a subtask
             if task_data.get("parent_id") is not None:
                 cur.execute(
                     f"UPDATE tasks SET parent= ? WHERE id = ?",
                     (task_data["parent_id"], self.t_id),
                 )
+            self.set_task_index(cur, project_id, task_data.get("parent_id"))
+
         self.assign_users(task_data["assignees"])
 
     # Add a new json file to store the task's specs history
@@ -117,6 +208,7 @@ class Task:
             cur.execute(
                 f"UPDATE tasks SET {field}= ? WHERE id = ?", (data[field], self.t_id)
             )
+        cur.execute(f"UPDATE tasks SET time_end= ? WHERE id = ?", (time(), self.t_id))
         cur.execute("DELETE FROM assigned WHERE task=?", (self.t_id,))
         conn.commit()
         conn.close()
@@ -161,7 +253,8 @@ class Task:
         with get_db() as conn:
             cur = conn.cursor()
             cur.execute(
-                f"UPDATE tasks SET status= ? WHERE id = ?", (new_status, self.t_id)
+                "UPDATE tasks SET status= ?, time_end= ? WHERE id = ?",
+                (new_status, time(), self.t_id),
             )
 
     def delete(self, handle):
@@ -245,6 +338,10 @@ class Task:
             cur.execute(
                 f"UPDATE tasks SET parent= ? WHERE id = ?", (parent_task_id, self.t_id)
             )
+            project_id = cur.execute(
+                f"SELECT project FROM tasks WHERE id = ?", (self.t_id,)
+            ).fetchone()["project"]
+            self.set_subtask_index(cur, project_id, parent_task_id)
 
     def remove_as_subtask(self, new_status):
         with get_db() as conn:

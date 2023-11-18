@@ -6,6 +6,7 @@ import {
   AvatarGroup,
   Avatar,
   Skeleton,
+  Tooltip,
 } from '@mui/material';
 
 // Icons
@@ -163,7 +164,7 @@ export default function ProjectCard({
                         subheading,
                         description,
                         deadline,
-                        members: memberHandleList,
+                        members,
                       }}
                       setIsEditState={setIsEditState}
                       setIsEdit={setIsEdit}
@@ -290,14 +291,20 @@ export default function ProjectCard({
               ) : (
                 <AvatarGroup max={4}>
                   {members.map((member, index) => (
-                    <Avatar
-                      key={member.handle}
-                      alt={member.name}
-                      src={member.image}
-                      sx={{ ml: -2 }}
+                    <Tooltip
+                      key={'tooltip-' + member.handle}
+                      title={member.name}
+                      placement="top"
                     >
-                      {member.name}
-                    </Avatar>
+                      <Avatar
+                        key={member.handle}
+                        alt={member.name}
+                        src={member.image}
+                        sx={{ ml: -2 }}
+                      >
+                        {member.name}
+                      </Avatar>
+                    </Tooltip>
                   ))}
                 </AvatarGroup>
               )}

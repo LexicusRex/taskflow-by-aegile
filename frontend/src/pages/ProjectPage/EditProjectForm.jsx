@@ -7,6 +7,7 @@ import {
   Button,
   AvatarGroup,
   Avatar,
+  Tooltip,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { FetchBtn } from '../../components';
@@ -34,29 +35,11 @@ export default function EditProjectForm({
 
   const [subheading, setSubheading] = useState(userData.subheading);
 
-  const [connections, setConnections] = useState([]);
-
   const [description, setDescription] = useState(userData.description);
 
   const breakDown = userData.deadline.split('/');
   const editDate = `${breakDown[2]}, ${breakDown[1]}, ${breakDown[0]}`;
   const [date, setDate] = useState(dayjs(editDate));
-
-  useEffect(() => {
-    const fetchConnections = async () => {
-      try {
-        const connections = await fetchAPIRequest('/connections', 'GET');
-        const connectionsObj = {};
-        connections.connected.forEach((connection) => {
-          connectionsObj[connection.handle] = connection;
-        });
-        setConnections(connectionsObj);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchConnections();
-  }, []);
 
   return (
     <Box>
@@ -147,25 +130,21 @@ export default function EditProjectForm({
                   {/* Member icons */}
                   <AvatarGroup max={4}>
                     {userData.members.map((member) => (
-                      <Avatar
-                        key={member}
-                        alt={connections[member]?.name}
-                        src={connections[member]?.image}
-                        sx={{ ml: -2 }}
+                      <Tooltip
+                        key={'tooltip-' + member.handle}
+                        title={member.name}
+                        placement="top"
                       >
-                        {connections[member]?.name}
-                      </Avatar>
+                        <Avatar
+                          key={member.handle}
+                          alt={member.name}
+                          src={member.image}
+                          sx={{ ml: -2 }}
+                        >
+                          {member.name}
+                        </Avatar>
+                      </Tooltip>
                     ))}
-                    {/* {addMembers.map((member) => (
-                      <Avatar
-                        key={member}
-                        alt={connections[member]?.name}
-                        src={connections[member]?.image}
-                        sx={{ ml: -2 }}
-                      >
-                        {connections[member]?.name}
-                      </Avatar>
-                    ))} */}
                   </AvatarGroup>
                 </Box>
               </Box>

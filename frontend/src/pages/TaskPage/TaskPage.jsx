@@ -72,6 +72,11 @@ export default function TaskPage() {
           btnName={'Performance'}
           handleClick={setProjectTab}
         />
+        <MenuButton
+          isCurrentTab={projectTab === 'document'}
+          btnName={'Document'}
+          handleClick={() => navigate('/document/edit/' + projectId)}
+        />
       </Box>
       {/* Task display screen */}
       {projectTab === 'tasks' && (

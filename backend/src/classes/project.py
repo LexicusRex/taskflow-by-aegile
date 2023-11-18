@@ -1,7 +1,7 @@
 from src.helpers import get_db
 from src.error import InputError, AccessError
 from src.classes.invite import Invite
-
+from src.performance import calc_total_busyness
 
 class Project:
     @classmethod
@@ -153,7 +153,6 @@ class Project:
                 new_proj_query, (self.creator, name, subheading, description, end_date)
             )
             self.p_id = int(cur.lastrowid)
-            print(f"{self.p_id=}")
             # Add creator of project into the has table (automatically admin)
             cur.execute(
                 creator_query,
@@ -180,7 +179,7 @@ class Project:
                     data["project_id"],
                 ),
             )
-        self.invite_project_members(creator_handle, data["members"])
+        self.invite_project_members(creator_handle, [])
         self.fetch()
 
     def delete(self, creator_handle):
@@ -220,8 +219,7 @@ class Project:
                     else {},
                     "image": member["image"],
                     "handle": member["handle"],
-                    # "busyness": calc_total_busyness(member["email"]),
-                    "busyness": 16,
+                    "busyness": calc_total_busyness(member["handle"]),
                     "assigned": False,
                 }
 

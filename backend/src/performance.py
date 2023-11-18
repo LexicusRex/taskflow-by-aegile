@@ -9,21 +9,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 json_path = os.path.join(BASE_DIR, "keywords.json")
 
 
-def num_compelete_tasks(email):
-    """
-    Counts the number of tasks a user has completed
-
-    Parameters:
-    email (string): Email of user
-
-    Returns:
-    int: Number of completed tasks
-    """
+def num_compelete_tasks(handle):
     with get_db() as conn:
-        user_id = conn.execute(
-            "SELECT id FROM users WHERE email = ?", (email,)
-        ).fetchone()["id"]
-
         query = """
         SELECT COUNT(*)
         FROM tasks t
@@ -34,7 +21,7 @@ def num_compelete_tasks(email):
         """
 
         cur = conn.cursor()
-        num_complete = cur.execute(query, ("completed", user_id)).fetchone()["count"]
+        num_complete = cur.execute(query, ("completed", handle)).fetchone()["count"]
 
 
 def calc_task_busyness(deadline: str, workload: int, priority: str, assigned: int):
@@ -90,7 +77,7 @@ def calc_task_busyness(deadline: str, workload: int, priority: str, assigned: in
     )
 
 
-def calc_total_busyness(email, days_offset: int = 7):
+def calc_total_busyness(handle, days_offset: int = 7):
     """
     Calculates the busyness of a user
 
@@ -103,9 +90,6 @@ def calc_total_busyness(email, days_offset: int = 7):
     """
     with get_db() as conn:
         cur = conn.cursor()
-        user_id = conn.execute(
-            "SELECT id FROM users WHERE email = ?", (email,)
-        ).fetchone()["id"]
         query = """
             SELECT id, deadline, priority, weighting, num_assignees
             FROM tasks t
@@ -114,7 +98,7 @@ def calc_total_busyness(email, days_offset: int = 7):
             WHERE a.user = ? AND (status = ? OR status = ?)
         """
         tasks_ongoing = cur.execute(
-            query, (user_id, "notstarted", "inprogress")
+            query, (handle, "notstarted", "inprogress")
         ).fetchall()
         total_busyness = 0
         for task in tasks_ongoing:

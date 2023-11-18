@@ -54,6 +54,7 @@ from src.task_operations import (
     create_task,
     delete_task,
     get_task,
+    get_all_tasks,
     update_task_specs,
     get_user_tasks,
     task_comment,
@@ -61,9 +62,11 @@ from src.task_operations import (
     get_task_content,
     update_task_edit,
     task_update_status,
+    set_task_editor_index,
     task_set_as_subtask,
     task_remove_as_subtask,
     get_task_specs_history,
+    get_task_edit_history,
 )
 
 from src.analytics import (
@@ -432,14 +435,17 @@ def do_delete_task(handle):
 
 
 @APP.route("/task/get", methods=["GET"])
-def do_get_task():
-    project_id = request.args["projectId"]
-    token = request.headers.get("Authorization").split()[1]
-    if not check_auth(token, "handle"):
-        raise AccessError("Invalid token")
-    handle = jwt.decode(token, SECRET, algorithms=["HS256"])["handle"]
+@token_auth
+def do_get_task(handle):
+    task_id = request.args["taskId"]
+    return dumps(get_task(task_id))
 
-    return dumps(get_task(project_id))
+
+@APP.route("/task/get/all", methods=["GET"])
+@token_auth
+def do_get_all_tasks(handle):
+    project_id = request.args["projectId"]
+    return dumps(get_all_tasks(project_id))
 
 
 @APP.route("/task/update/specs", methods=["PUT"])
@@ -484,25 +490,17 @@ def do_get_user_tasks():
 
 
 @APP.route("/task/comment", methods=["POST"])
-def do_task_comment():
+@token_auth
+def do_task_comment(handle):
     data = request.get_json()
-    token = request.headers.get("Authorization").split()[1]
-
-    if not check_auth(token):
-        raise AccessError("Invalid token")
-    email = jwt.decode(token, SECRET, algorithms=["HS256"])["email"]
-
-    task_comment(email, data["taskId"], data["text"], data["repliedCommentId"])
+    task_comment(handle, data["taskId"], data["text"], data["repliedCommentId"])
     return dumps({})
 
 
 @APP.route("/task/get/comment", methods=["GET"])
-def do_task_get_comment():
+@token_auth
+def do_task_get_comment(handle):
     task_id = request.args["taskId"]
-    token = request.headers.get("Authorization").split()[1]
-    if not check_auth(token, "handle"):
-        raise AccessError("Invalid token")
-
     return dumps(task_get_comment(task_id))
 
 
@@ -521,12 +519,28 @@ def edit_task_content(handle):
     return dumps(update_task_edit(task_id, data["blocks"]))
 
 
+@APP.route("/task/edit/history", methods=["GET"])
+@token_auth
+def task_edit_history(handle):
+    task_id = request.args["taskId"]
+    return dumps(get_task_edit_history(task_id))
+
+
 @APP.route("/task/update/status", methods=["PUT"])
 @token_auth
 def update_task_status(handle):
     task_id = request.args["taskId"]
     status = request.args["status"]
     return dumps(task_update_status(handle, task_id, status))
+
+
+@APP.route("/task/set/index", methods=["PUT"])
+@token_auth
+def set_task_index(handle):
+    task_id = request.args["taskId"]
+    parent_id = request.args["parentId"]
+    project_id = request.args["projectId"]
+    return dumps(set_task_editor_index(project_id, task_id, parent_id))
 
 
 @APP.route("/task/set/subtask", methods=["PUT"])
@@ -752,11 +766,8 @@ def project_analytics(handle):
 #                                   Dashboard
 # =============================================================================
 @APP.route("/dashboard", methods=["GET"])
-def get_dashboard():
-    token = request.headers.get("Authorization").split()[1]
-    if not check_auth(token, "handle"):
-        raise AccessError("Invalid token")
-    handle = jwt.decode(token, SECRET, algorithms=["HS256"])["handle"]
+@token_auth
+def get_dashboard(handle):
     return dumps(
         {
             "connections": get_dashboard_connections(handle),
@@ -835,7 +846,7 @@ scheduler = APScheduler()
 # )
 @scheduler.task("interval", id="update_analytics", minutes=(ANALYTICS_TIMESPAN // 60))
 def schedule_update():
-    # update_analytics()
+    update_analytics()
     pass
 
 

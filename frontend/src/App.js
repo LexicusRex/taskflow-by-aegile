@@ -20,6 +20,7 @@ import { ProtectedRoute, SnackAlert, MenuBar } from './components';
 import AlertProvider from './context/AlertContext';
 import NotificationBell from './components/NotificationBell';
 import { useState } from 'react';
+import DocumentPreviewPage from './pages/DocumentPreviewPage/DocumentPreviewPage.jsx';
 
 const theme = createTheme({
   typography: {
@@ -60,22 +61,7 @@ function App() {
   return (
     <BrowserRouter>
       <Grid container>
-        {isLoggedIn && (
-          <Grid
-            item
-            sx={{
-              width: '250px',
-              overflow: 'auto',
-              display: {
-                '@media (max-width: 1000px)': {
-                  width: '70px',
-                },
-              },
-            }}
-          >
-            <MenuBar setIsLoggedIn={setIsLoggedIn} />
-          </Grid>
-        )}
+        {isLoggedIn && <MenuBar setIsLoggedIn={setIsLoggedIn} />}
         {isLoggedIn && (
           <Box
             sx={{
@@ -126,7 +112,14 @@ function App() {
                   <Route path="/projects/:projectId" element={<TaskPage />} />
                   <Route path="/performance" element={<PerformancePage />} />
                   <Route path="/reports" element={<ReportsPage />} />
-                  <Route path="/edit/:projectId" element={<TaskEditPage />} />
+                  <Route
+                    path="/document/edit/:projectId"
+                    element={<TaskEditPage />}
+                  />
+                  <Route
+                    path="/document/preview/:projectId"
+                    element={<DocumentPreviewPage />}
+                  />
                 </Route>
               </Routes>
             </AlertProvider>

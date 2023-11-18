@@ -34,10 +34,6 @@ export default function TaskDisplayScreen({ isEdit, setIsEdit }) {
     }
   };
 
-  useEffect(() => {
-    console.log(selectedTask);
-  }, [selectedTask]);
-
   // const filterTasks = (taskList) => {
   //   return taskList.filter((task) => {
   //     let target = task.name;
@@ -69,7 +65,7 @@ export default function TaskDisplayScreen({ isEdit, setIsEdit }) {
       setAllImagesLoaded(false);
       try {
         let tasks = await fetchAPIRequest(
-          `/task/get?projectId=${projectId}`,
+          `/task/get/all?projectId=${projectId}`,
           'GET'
         );
         const connections = await fetchAPIRequest(

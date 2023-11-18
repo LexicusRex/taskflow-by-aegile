@@ -9,7 +9,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import useModal from '../../hooks/useModal';
-import { Modal } from '../../components';
+import { Modal, SetCompleteButton } from '../../components';
 import TaskForm from './TaskForm';
 import SpeedIcon from '@mui/icons-material/Speed';
 import DoneIcon from '@mui/icons-material/Done';
@@ -75,21 +75,11 @@ export default function TaskCard({
   const alertCtx = useContext(AlertContext);
 
   const setCompleted = async () => {
-    const bodyData = {
-      projectId,
-      taskId: id,
-      name,
-      description,
-      deadline,
-      status: 'completed',
-      attachment,
-      attachmentName,
-      weighting,
-      priority,
-      assignees,
-    };
     try {
-      await fetchAPIRequest('/task/update/specs', 'PUT', bodyData);
+      await fetchAPIRequest(
+        `/task/update/status?taskId=${id}&status=completed`,
+        'PUT'
+      );
       setIsEdit((prevState) => !prevState);
       alertCtx.success('Task successfully completed!');
       setBtnLock(false);
@@ -143,7 +133,10 @@ export default function TaskCard({
             <Box
               sx={{
                 width: '250px',
-                borderRadius: '22px',
+                height: '170px',
+                backgroundColor: 'white',
+                borderRadius: '20px',
+                boxSizing: 'border-box',
                 mb: 2,
                 border: '1px solid',
                 borderColor: selectedId === id ? '#B4B4B4' : '#ECEFF1',
@@ -156,143 +149,139 @@ export default function TaskCard({
                   transitionTimingFunction: 'ease-in-out',
                 },
               }}
+              onClick={() => {
+                setSelectedTask(taskData);
+                setCurrentSubtasks(subtasks);
+              }}
+              // onClick={toggleModal}
+              onMouseEnter={() => setIsHover(true)}
+              onMouseLeave={() => setIsHover(false)}
             >
+              {/* Inner layer */}
               <Box
                 sx={{
-                  width: '250px',
-                  height: '170px',
-                  backgroundColor: 'white',
-                  borderRadius: '20px',
-                  boxSizing: 'border-box',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  height: '150px', // Add this to take full height of the parent box
+                  px: 2,
+                  py: 1,
                 }}
-                onClick={() => {
-                  setSelectedTask(taskData);
-                  setCurrentSubtasks(subtasks);
-                }}
-                // onClick={toggleModal}
-                onMouseEnter={() => setIsHover(true)}
-                onMouseLeave={() => setIsHover(false)}
               >
-                {/* Inner layer */}
-                <Box
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    height: '150px', // Add this to take full height of the parent box
-                    px: 2,
-                    py: 1,
-                  }}
-                >
-                  {/* Top layer */}
+                {/* Top layer */}
+                <Box sx={{ display: 'flex' }}>
+                  {isLoading || isCardLoading ? (
+                    <Skeleton
+                      variant="rounded"
+                      width={75}
+                      height={14}
+                      sx={{ mt: '3px' }}
+                    />
+                  ) : (
+                    <TaskPriority isOverdue={isOverdue} priority={priority} />
+                  )}
+                  <Tooltip title="More options" placement="top">
+                    <MoreHorizIcon
+                      sx={{ marginLeft: 'auto', color: '#8A8A8A' }}
+                      onClick={toggleModal}
+                    />
+                  </Tooltip>
+                </Box>
+                {/* Name of presentation */}
+                {isLoading || isCardLoading ? (
+                  <Skeleton
+                    variant="rounded"
+                    width="90%"
+                    height={30}
+                    sx={{ my: '5px' }}
+                  />
+                ) : (
+                  <Typography
+                    sx={{
+                      fontSize: 20,
+                      width: 200,
+                      textOverflow: 'ellipsis',
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      mt: 1,
+                    }}
+                  >
+                    {name}
+                  </Typography>
+                )}
+                {/* Description */}
+                {isLoading || isCardLoading ? (
+                  <Skeleton variant="rounded" width="100%" height={30} />
+                ) : (
+                  <Typography
+                    sx={{
+                      fontSize: '11px',
+                      color: '#776E6E',
+                      height: 30,
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
+                    {description}
+                  </Typography>
+                )}
+                {/* Deadline */}
+                {isLoading || isCardLoading ? (
+                  <Skeleton
+                    variant="rounded"
+                    width="30%"
+                    height={17}
+                    sx={{ my: '5px' }}
+                  />
+                ) : (
+                  <Box
+                    sx={{
+                      borderRadius: '2px',
+                      backgroundColor: isOverdue
+                        ? '#FF6C7433'
+                        : 'rgba(222, 222, 222, 0.26)',
+                      border: '0.5px solid #B4B4B4',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      color: isOverdue ? '#FF6C74' : '#776E6E',
+                      width: 'fit-content',
+                      px: 1,
+                      my: 'auto',
+                    }}
+                  >
+                    {deadline === 'Invalid Date' ? 'No Deadline' : deadline}
+                  </Box>
+                )}
+                {/* Bottom layer */}
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  {/* People */}
                   <Box sx={{ display: 'flex' }}>
                     {isLoading || isCardLoading ? (
-                      <Skeleton
-                        variant="rounded"
-                        width={75}
-                        height={14}
-                        sx={{ mt: '3px' }}
-                      />
+                      <Box sx={{ display: 'flex' }}>
+                        <Skeleton variant="circular" width={30} height={30} />
+                        <Skeleton variant="circular" width={30} height={30} />
+                        <Skeleton variant="circular" width={30} height={30} />
+                      </Box>
                     ) : (
-                      <TaskPriority isOverdue={isOverdue} priority={priority} />
-                    )}
-                    <Tooltip title="More options" placement="top">
-                      <MoreHorizIcon
-                        sx={{ marginLeft: 'auto', color: '#8A8A8A' }}
-                        onClick={toggleModal}
-                      />
-                    </Tooltip>
-                  </Box>
-                  {/* Name of presentation */}
-                  {isLoading || isCardLoading ? (
-                    <Skeleton
-                      variant="rounded"
-                      width="90%"
-                      height={30}
-                      sx={{ my: '5px' }}
-                    />
-                  ) : (
-                    <Typography
-                      sx={{
-                        fontSize: 20,
-                        width: 200,
-                        textOverflow: 'ellipsis',
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        mt: 1,
-                      }}
-                    >
-                      {name}
-                    </Typography>
-                  )}
-                  {/* Description */}
-                  {isLoading || isCardLoading ? (
-                    <Skeleton variant="rounded" width="100%" height={30} />
-                  ) : (
-                    <Typography
-                      sx={{
-                        fontSize: '11px',
-                        color: '#776E6E',
-                        height: 30,
-                        overflow: 'hidden',
-                        whiteSpace: 'nowrap',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      {description}
-                    </Typography>
-                  )}
-                  {/* Deadline */}
-                  {isLoading || isCardLoading ? (
-                    <Skeleton
-                      variant="rounded"
-                      width="30%"
-                      height={17}
-                      sx={{ my: '5px' }}
-                    />
-                  ) : (
-                    <Box
-                      sx={{
-                        borderRadius: '2px',
-                        backgroundColor: isOverdue
-                          ? '#FF6C7433'
-                          : 'rgba(222, 222, 222, 0.26)',
-                        border: '0.5px solid #B4B4B4',
-                        fontSize: '11px',
-                        fontWeight: 600,
-                        color: isOverdue ? '#FF6C74' : '#776E6E',
-                        width: 'fit-content',
-                        px: 1,
-                        my: 'auto',
-                      }}
-                    >
-                      {deadline === 'Invalid Date' ? 'No Deadline' : deadline}
-                    </Box>
-                  )}
-                  {/* Bottom layer */}
-                  <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    {/* People */}
-                    <Box sx={{ display: 'flex' }}>
-                      {isLoading || isCardLoading ? (
-                        <Box sx={{ display: 'flex' }}>
-                          <Skeleton variant="circular" width={30} height={30} />
-                          <Skeleton variant="circular" width={30} height={30} />
-                          <Skeleton variant="circular" width={30} height={30} />
-                        </Box>
-                      ) : (
-                        <AvatarGroup
-                          max={4}
-                          sx={{
-                            '& .MuiAvatar-root': {
-                              width: 30,
-                              height: 30,
-                              fontSize: 14,
-                            },
-                          }}
-                        >
-                          {Object.keys(assigneesData)
-                            .filter((handle) => assignees.includes(handle))
-                            .map((handle, index) => (
+                      <AvatarGroup
+                        max={4}
+                        sx={{
+                          '& .MuiAvatar-root': {
+                            width: 30,
+                            height: 30,
+                            fontSize: 14,
+                          },
+                        }}
+                      >
+                        {Object.keys(assigneesData)
+                          .filter((handle) => assignees.includes(handle))
+                          .map((handle, index) => (
+                            <Tooltip
+                              key={'tooltip-' + assigneesData[handle].handle}
+                              title={assigneesData[handle].name}
+                              placement="top"
+                            >
                               <Avatar
                                 key={assigneesData[handle].handle}
                                 alt={assigneesData[handle].name}
@@ -301,84 +290,70 @@ export default function TaskCard({
                               >
                                 {assigneesData[handle].name}
                               </Avatar>
-                            ))}
-                        </AvatarGroup>
-                      )}
-                    </Box>
-                    {/* Weight */}
-                    <Box
-                      sx={{
-                        fontSize: '14px',
-                        fontWeight: 600,
-                        color: '#776E6E',
-                        marginLeft: 'auto',
-                        marginTop: 'auto',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 0.5,
-                      }}
-                    >
-                      {!isLoading && !isCardLoading && (
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            transition: 'all 0.3s ease-in-out',
-                            visibility:
-                              !showStatus && isHover && status !== 'completed'
-                                ? 'hidden'
-                                : 'visible',
-                            opacity:
-                              !showStatus && isHover && status !== 'completed'
-                                ? 0
-                                : 1,
-                            marginRight:
-                              !showStatus && status !== 'completed' && -35,
-                          }}
-                        >
-                          {subtasks?.length > 0 ? (
-                            <>
-                              <SubtaskIcon
-                                style={{
-                                  width: '25px',
-                                  height: '25px',
-                                  marginRight: '0.2rem',
-                                }}
-                              />
-                              {subtasks.length}
-                            </>
-                          ) : (
-                            <>
-                              <SpeedIcon sx={{ mr: 0.5 }} /> {weighting}
-                            </>
-                          )}
-                        </div>
-                      )}
-                      {!showStatus &&
-                        !isLoading &&
-                        !isCardLoading &&
-                        status !== 'completed' && (
-                          <Tooltip title="Complete task" placement="top">
-                            <IconButton
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (btnLock) return;
-                                setBtnLock(true);
-                                setCompleted();
+                            </Tooltip>
+                          ))}
+                      </AvatarGroup>
+                    )}
+                  </Box>
+                  {/* Weight */}
+                  <Box
+                    sx={{
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      color: '#776E6E',
+                      marginLeft: 'auto',
+                      marginTop: 'auto',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                    }}
+                  >
+                    {!isLoading && !isCardLoading && (
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          transition: 'all 0.3s ease-in-out',
+                          visibility:
+                            !showStatus && isHover && status !== 'completed'
+                              ? 'hidden'
+                              : 'visible',
+                          opacity:
+                            !showStatus && isHover && status !== 'completed'
+                              ? 0
+                              : 1,
+                          marginRight:
+                            !showStatus && status !== 'completed' && -35,
+                        }}
+                      >
+                        {subtasks?.length > 0 ? (
+                          <>
+                            <SubtaskIcon
+                              style={{
+                                width: '25px',
+                                height: '25px',
+                                marginRight: '0.2rem',
                               }}
-                              sx={{
-                                width: 30,
-                                height: 30,
-                                transition: 'all 0.3s ease-in-out',
-                                visibility: isHover ? 'visible' : 'hidden',
-                                opacity: isHover ? 1 : 0,
-                              }}
-                            >
-                              <DoneIcon />
-                            </IconButton>
-                          </Tooltip>
+                            />
+                            {subtasks.length}
+                          </>
+                        ) : (
+                          <>
+                            <SpeedIcon sx={{ mr: 0.5 }} /> {weighting}
+                          </>
                         )}
-                    </Box>
+                      </div>
+                    )}
+                    {!showStatus &&
+                      !isLoading &&
+                      !isCardLoading &&
+                      status !== 'completed' && (
+                        <SetCompleteButton
+                          id={id}
+                          isVisible={isHover}
+                          update={() => setIsEdit((prev) => !prev)}
+                        />
+                      )}
                   </Box>
                 </Box>
               </Box>
