@@ -17,7 +17,7 @@ const TaskEditPage = () => {
   const [taskContentList, setTaskContentList] = useState([]);
   const [activeCard, setActiveCard] = useState(0);
   useEffect(() => {
-    const getDashboard = async () => {
+    const getTaskDocumentContent = async () => {
       setIsLoading(true);
       const taskContent = await fetchAPIRequest(
         `/task/get/content?projectId=${projectId}`,
@@ -29,7 +29,7 @@ const TaskEditPage = () => {
       }, 500);
     };
 
-    getDashboard();
+    getTaskDocumentContent();
   }, []);
 
   const setTaskIndex = async (taskId, parentId) => {
