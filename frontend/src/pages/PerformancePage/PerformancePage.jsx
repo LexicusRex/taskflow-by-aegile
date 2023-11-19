@@ -16,8 +16,8 @@ const PerformancePage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setIsLoading(true);
     const getDashboard = async () => {
-      setIsLoading(true);
       const performanceStats = await fetchAPIRequest(
         '/analytics/performance',
         'GET'
@@ -28,14 +28,38 @@ const PerformancePage = () => {
       setUserBusyness(performanceStats.dailyBusyness);
       setAvgTimeTillDue(performanceStats.avgTimeTillDue);
       setAvgCompletionDuration(performanceStats.avgCompletionDuration);
-
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 500);
     };
-
     getDashboard();
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+    const performanceInterval = setInterval(() => {
+      console.log('Updating performance stats');
+      getDashboard();
+    }, 20000);
+    return () => clearInterval(performanceInterval);
   }, []);
+  // useEffect(() => {
+  //   const getDashboard = async () => {
+  //     setIsLoading(true);
+  //     const performanceStats = await fetchAPIRequest(
+  //       '/analytics/performance',
+  //       'GET'
+  //     );
+  //     setProjectContributions(performanceStats.projectContributions);
+  //     setTaskCompletions(performanceStats.taskCompletions);
+  //     setTotalTaskCompletions(performanceStats.totalTaskCompletions);
+  //     setUserBusyness(performanceStats.dailyBusyness);
+  //     setAvgTimeTillDue(performanceStats.avgTimeTillDue);
+  //     setAvgCompletionDuration(performanceStats.avgCompletionDuration);
+
+  //     setTimeout(() => {
+  //       setIsLoading(false);
+  //     }, 500);
+  //   };
+
+  //   getDashboard();
+  // }, []);
   return isLoading ? (
     <LoadingScreen />
   ) : (

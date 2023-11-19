@@ -315,7 +315,7 @@ def get_project_member_contributions(handle, project_id):
             ON h.project = p.id
             JOIN users u
             ON h.user = u.handle
-            WHERE p.id = ?
+            WHERE p.id = ? AND h.accepted = 'TRUE'
             ORDER BY u.handle = ? DESC
         """
 
