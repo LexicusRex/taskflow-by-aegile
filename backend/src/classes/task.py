@@ -15,6 +15,17 @@ class Task:
             cur = conn.cursor()
             cur.execute(query, (project_id,))
             return [Task().data(task) for task in cur.fetchall()]
+    
+    @classmethod
+    def get_all_tasks(cls, project_id):
+        query = """
+            SELECT * FROM tasks
+            WHERE project = ?
+        """
+        with get_db() as conn:
+            cur = conn.cursor()
+            cur.execute(query, (project_id,))
+            return [Task().data(task) for task in cur.fetchall()]
 
     def __init__(self, task_id=None):
         self.t_id = task_id
