@@ -29,7 +29,7 @@ def create_task(handle, task_data):
 def delete_task(handle, task_id):
     task = get_active_task(task_id)
     task.delete(handle)
-    delete_active_task(task_id)
+    # delete_active_task(task_id)
 
 
 def get_task(task_id):

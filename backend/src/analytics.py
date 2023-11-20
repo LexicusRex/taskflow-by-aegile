@@ -3,6 +3,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from time import time
 import pandas as pd
+from src.classes.task import Task
 from src.helpers import get_db
 from src.task_operations import get_user_tasks, get_all_tasks
 from src.performance import calc_total_busyness
@@ -62,7 +63,7 @@ def update_user_analytics(all_users, curr_date, path):
 
 def update_project_analytics(all_projects, curr_date, proj_path, handle):
     for project in all_projects:
-        proj_tasks = get_all_tasks(project["id"])
+        proj_tasks = Task.get_all_tasks(project["id"])
         members = get_project_members(handle, project["id"])["members"]
         # mem_dict stores total completed tasks for each member hashed to
         # their handle
