@@ -81,7 +81,6 @@ export default function TaskHistoryItem({
               }}
             >
               {taskData.dateEdited} {'\u00B7'} {taskData.timeEdited}
-
             </Typography>
           </Box>
 
@@ -90,7 +89,6 @@ export default function TaskHistoryItem({
               pt: 1,
               display: 'flex',
               flexDirection: 'column'
-
             }}
           >
             <Typography
@@ -126,7 +124,6 @@ export default function TaskHistoryItem({
                     }}
                   >
                     {field.charAt(0).toUpperCase() + field.slice(1)}
-
                   </Typography>
         
                   {field === "assignees" ? (
