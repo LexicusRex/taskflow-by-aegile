@@ -109,7 +109,7 @@ const Editor = ({ initialBlocks, taskId, canEdit = true }) => {
       <FormattingToolbarPositioner editor={editor} />
       <HyperlinkToolbarPositioner editor={editor} />
       <SlashMenuPositioner editor={editor} />
-      {/* <SideMenuPositioner editor={editor} /> */}
+      <SideMenuPositioner editor={editor} />
       {/* <ImageToolbarPositioner editor={editor} /> */}
     </BlockNoteView>
   );
