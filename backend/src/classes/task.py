@@ -227,7 +227,9 @@ class Task:
                 {
                     "name": task_data["name"],
                     "description": task_data["description"],
-                    "deadline": task_data["deadline"],
+                    "deadline": task_data["deadline"]
+                    if task_data["deadline"] != "Invalid Date"
+                    else "No Deadline",
                     "status": task_data["status"],
                     # "attachment": task_data["attachment"],
                     # "attachmentName": task_data["attachment_name"],

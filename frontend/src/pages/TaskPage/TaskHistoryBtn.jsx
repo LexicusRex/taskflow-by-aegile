@@ -9,6 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import { fetchAPIRequest } from '../../helpers';
 import HistoryIcon from '@mui/icons-material/History';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import TaskHistoryItem from './TaskHistoryItem';
 import useModal from '../../hooks/useModal';
 import { Modal } from '../../components';
@@ -31,8 +32,8 @@ const StyledMenu = styled((props) => (
   '& .MuiPaper-root': {
     borderRadius: 6,
     marginTop: theme.spacing(1),
-    minWidth: 350,
-    height: 450,
+    maxWidth: 500,
+    maxHeight: 650,
     color:
       theme.palette.mode === 'light'
         ? 'rgb(55, 65, 81)'
@@ -111,6 +112,11 @@ export default function TaskHistoryBtn({ taskId, projectMembers }) {
       console.log(error);
     }
   };
+
+  const swapSelectedHistory = () => {
+    const swappedHistory = [selectedHistory[1], selectedHistory[0]]
+    setSelectedHistory(swappedHistory)
+  }
 
   return (
     <>
@@ -242,23 +248,39 @@ export default function TaskHistoryBtn({ taskId, projectMembers }) {
             )}
             
             {selectedHistory.length === 1 && (
-              <Box>
+              <Box
+                sx={{
+                  display: 'flex'
+                }}
+              >
                 <Typography
-                  sx={{ px: 2, py: 1 }}
+                  sx={{ pl: 2, py: 1 }}
                 >
-                  {`Compare ${editMap[selectedHistory[0]].editName} ${'\u2794'}`}
+                  {`Compare ${editMap[selectedHistory[0]].editName}`}
                 </Typography>
+                <IconButton size="small" disabled>
+                   <SwapHorizIcon />
+                 </IconButton>
               </Box>
             )}
             {selectedHistory.length === 2 && (
-              <Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                }}
+              >
                 <Typography
-                  sx={{ px: 2, py: 1 }}
+                  sx={{ pl: 2, py: 1 }}
                 >
-                  {
-                    `Compare ${editMap[selectedHistory[0]].editName} ${'\u2794'} 
-                    ${editMap[selectedHistory[1]].editName}`
-                  }
+                  {`Compare ${editMap[selectedHistory[0]].editName}`}
+                </Typography>
+                 <IconButton size="small" onClick={() => swapSelectedHistory({})}>
+                   <SwapHorizIcon />
+                 </IconButton>
+                <Typography 
+                  sx={{ pr: 2, py: 1 }}
+                >
+                  {`${editMap[selectedHistory[1]].editName}`}
                 </Typography>
               </Box>
             )}
@@ -284,11 +306,20 @@ export default function TaskHistoryBtn({ taskId, projectMembers }) {
                     !selectedHistory.includes(task.editNumber) ? true : false }
                   sx={{ p: 0, zIndex: 1 }}
                 >
-                  <TaskHistoryItem
-                    key={task.editNumber}
-                    taskData={task}
-                    projectMembers={projectMembers}
-                  />
+                  {task.editNumber === 0 ? (
+                     <TaskHistoryItem
+                      key={task.editNumber}
+                      taskData={task}
+                      projectMembers={projectMembers}
+                    />
+                  ) : (
+                    <TaskHistoryItem
+                      key={task.editNumber}
+                      prevTaskData={history[index + 1]}
+                      taskData={task}
+                      projectMembers={projectMembers}
+                    />
+                  )}
                 </MenuItem>
                 <Divider sx={{ my: 0.5 }} />
               </>
