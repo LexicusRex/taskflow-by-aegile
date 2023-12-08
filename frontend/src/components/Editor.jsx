@@ -82,7 +82,17 @@ const Editor = ({ initialBlocks, taskId, canEdit = true }) => {
   let timeoutId;
   const editor = useBlockNote({
     editable: canEdit,
-    initialContent: initialBlocks.length > 0 ? initialBlocks : placeholder,
+    initialContent: initialBlocks.length > 0 ? initialBlocks : undefined,
+    onEditorContentChange: (editor) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(async () => {
+        console.log('saving...');
+        const blocks = editor.topLevelBlocks;
+        await fetchAPIRequest(`/task/edit/content?taskId=${taskId}`, 'PUT', {
+          blocks,
+        });
+      }, 1000);
+    },
     blockSchema: customSchema,
     slashMenuItems: [...getDefaultReactSlashMenuItems(customSchema)],
     domAttributes: {
@@ -91,19 +101,6 @@ const Editor = ({ initialBlocks, taskId, canEdit = true }) => {
         class: 'block-container',
       },
     },
-  });
-  editor.onEditorContentChange((e) => {
-    if (initRender) return;
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(async () => {
-      console.log('saving...');
-      const blocks = editor.topLevelBlocks;
-      await fetchAPIRequest(`/task/edit/content?taskId=${taskId}`, 'PUT', {
-        blocks,
-      });
-    }, 500);
-
-    // console.table(blocks);
   });
 
   // Renders the editor instance using a React component.

@@ -125,11 +125,11 @@ class User:
                     f"UPDATE users SET {field[1]}=? WHERE handle=?",
                     (new_data[field[0]], self.handle),
                 )
-
-            new_password = hashlib.sha256(new_data["password"].encode()).hexdigest()
-            if self.password != new_password:
-                cur.execute(
-                    "UPDATE users SET password=? WHERE handle=?",
-                    (new_password, self.handle),
-                )
+            if len(new_data["password"]) >= 8 and len(new_data["password"]) <= 20:
+                new_password = hashlib.sha256(new_data["password"].encode()).hexdigest()
+                if self.password != new_password:
+                    cur.execute(
+                        "UPDATE users SET password=? WHERE handle=?",
+                        (new_password, self.handle),
+                    )
         self.fetch(self.handle)

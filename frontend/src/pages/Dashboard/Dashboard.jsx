@@ -14,19 +14,39 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setIsLoading(true);
     const getDashboard = async () => {
-      setIsLoading(true);
       const dashboard = await fetchAPIRequest('/dashboard', 'GET');
       setDashConnections(dashboard.connections);
       setDashTasks(dashboard.tasks);
       setDashChart(dashboard.chart);
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 500);
     };
 
     getDashboard();
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+    const performanceInterval = setInterval(() => {
+      console.log('Updating performance stats');
+      getDashboard();
+    }, 20000);
+    return () => clearInterval(performanceInterval);
   }, []);
+
+  // useEffect(() => {
+  //   const getDashboard = async () => {
+  //     setIsLoading(true);
+  //     const dashboard = await fetchAPIRequest('/dashboard', 'GET');
+  //     setDashConnections(dashboard.connections);
+  //     setDashTasks(dashboard.tasks);
+  //     setDashChart(dashboard.chart);
+  //     setTimeout(() => {
+  //       setIsLoading(false);
+  //     }, 500);
+  //   };
+
+  //   getDashboard();
+  // }, []);
 
   return isLoading ? (
     <LoadingScreen />

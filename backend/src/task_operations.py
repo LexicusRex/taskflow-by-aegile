@@ -20,13 +20,17 @@ def create_task(handle, task_data):
     new_task.log_new_task_specs()
     new_task.log_task_spec_history(handle, task_data)
     set_task_active(new_task.t_id, new_task)
+    with open(
+        f"{BASE_DIR}/task_content/{new_task.t_id}.json", "w", encoding="utf-8"
+    ) as fp:
+        json.dump([{"time": time.time(), "content": []}], fp)
     return {}
 
 
 def delete_task(handle, task_id):
     task = get_active_task(task_id)
     task.delete(handle)
-    delete_active_task(task_id)
+    # delete_active_task(task_id)
 
 
 def get_task(task_id):
@@ -191,97 +195,6 @@ def get_user_ids(users_handles):
 def task_comment(handle, task_id, text, replied_comment_id):
     Comment(task_id).new(handle, text, replied_comment_id)
     # TODO - notifications and achievements
-    # project_id = cur.execute(
-    #     """
-    #         SELECT tasks.project
-    #         FROM users
-    #         JOIN tasks
-    #         ON users.id = tasks.creator
-    #         WHERE tasks.id=?
-    #     """,
-    #     (task_id,),
-    # ).fetchone()[0]
-
-    #  Achievements: Write comments
-    # update_achievement("First!", poster_id)
-    # update_achievement("Thread Weaver", poster_id)
-
-    # if replied_comment_id == -1:
-    #     # task creator gets a notification from a comment on the task
-    #     # people assigned to the task will also get a comment
-    #     creator_email = cur.execute(
-    #         """
-    #             SELECT email
-    #             FROM users
-    #             JOIN tasks
-    #             ON users.id = tasks.creator
-    #             WHERE tasks.id=?
-    #         """,
-    #         (task_id,),
-    #     ).fetchone()[0]
-
-    #     assignees_data = cur.execute(
-    #         """
-    #         SELECT users.email
-    #         FROM tasks
-    #         JOIN assigned
-    #         ON tasks.id = assigned.task
-    #         JOIN users
-    #         ON users.id = assigned.user
-    #         WHERE tasks.id=?
-    #     """,
-    #         (task_id,),
-    #     ).fetchall()
-
-    #     # Send notifications to assignees of the task being commented on
-    #     # unless they are the task creator, or were the commentor
-    #     for assignees_email in assignees_data:
-    #         if assignees_email[0] != creator_email and assignees_email[0] != email:
-    #             conn.commit()
-    #             add_notification(
-    #                 assignees_email[0],
-    #                 poster_handle,
-    #                 "comment",
-    #                 "comment",
-    #                 f"has commented on a task you were assigned",
-    #                 project_id,
-    #             )
-
-    #     if email != creator_email:
-    #         # no notification when commenting to your own task
-    #         conn.commit()
-    #         add_notification(
-    #             creator_email,
-    #             poster_handle,
-    #             "comment",
-    #             "comment",
-    #             f"has commented on your task",
-    #             project_id,
-    #         )
-    # else:
-    #     # user gets a notification if someone replies to their comment
-    #     poster_email = cur.execute(
-    #         """
-    #             SELECT email
-    #             FROM users
-    #             JOIN comments
-    #             ON users.id = comments.poster
-    #             WHERE comments.id=?
-    #         """,
-    #         (replied_comment_id,),
-    #     ).fetchone()[0]
-
-    #     if email != poster_email:
-    #         # no notification when replying to your own comment
-    #         conn.commit()
-    #         add_notification(
-    #             poster_email,
-    #             poster_handle,
-    #             "comment",
-    #             "reply",
-    #             f"has replied to your comment",
-    #             project_id,
-    #         )
 
 
 def task_get_comment(task_id):
@@ -362,7 +275,7 @@ def get_task_edit(task_id):
         ) as fp:
             edit_history = sorted(json.load(fp), key=lambda edit: edit["time"])
             return edit_history[-1]["content"]
-    except FileNotFoundError:
+    except (FileNotFoundError, KeyError) as err:
         return []
         # raise AccessError("Task is being edited by another user")
     with open(f"{BASE_DIR}/task_content/{task_id}.json", "r", encoding="utf-8") as fp:
@@ -408,13 +321,17 @@ def update_task_edit(task_id, task_content: list):
             f"{BASE_DIR}/task_content/{task_id}.json", "r", encoding="utf-8"
         ) as fp:
             edit_history = json.load(fp)
-            get_edit_difference(edit_history[-1]["content"], task_content)
-    except FileNotFoundError:
+            # get_edit_difference(edit_history[-1]["content"], task_content)
+    except (FileNotFoundError, AttributeError) as error:
         print("Task edit history not found")
 
     edit_history.append({"time": time.time(), "content": task_content})
     with open(f"{BASE_DIR}/task_content/{task_id}.json", "w", encoding="utf-8") as fp:
         json.dump(edit_history, fp)
+        # json.dump([{
+        #     "time": time.time(),
+        #     "content": task_content
+        # }], fp)
 
 
 def get_task_edit_history(task_id):

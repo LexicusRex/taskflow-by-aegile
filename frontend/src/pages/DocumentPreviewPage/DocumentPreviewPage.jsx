@@ -18,7 +18,7 @@ const DocumentPreviewPage = () => {
   const [taskContentList, setTaskContentList] = useState([]);
 
   useEffect(() => {
-    const getDashboard = async () => {
+    const getTaskDocumentPreview = async () => {
       setIsLoading(true);
       const taskContent = await fetchAPIRequest(
         `/task/get/content?projectId=${projectId}`,
@@ -29,7 +29,7 @@ const DocumentPreviewPage = () => {
         setIsLoading(false);
       }, 500);
     };
-    getDashboard();
+    getTaskDocumentPreview();
   }, []);
 
   return isLoading ? (

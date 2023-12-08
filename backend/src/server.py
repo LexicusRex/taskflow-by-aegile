@@ -853,7 +853,7 @@ def schedule_update():
 if __name__ == "__main__":
     scheduler.init_app(APP)
     scheduler.start()
-    APP.run(debug=True, host="0.0.0.0", port=5000)
+    # APP.run(debug=True, host="0.0.0.0", port=5000)
 
     # use the following for final tests before submission.
-    # APP.run(debug=True, host="0.0.0.0", port=5000, use_reloader=False)
+    APP.run(debug=True, host="0.0.0.0", port=5000, use_reloader=False)
