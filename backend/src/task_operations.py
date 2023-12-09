@@ -47,8 +47,7 @@ def get_all_tasks(project_id):
 def update_task_specs(handle, data):
     Project(data["project_id"]).check_permission(handle, "creator")
     task = get_active_task(data["task_id"])
-    task.edit(data)
-    task.log_task_spec_history(handle, data)
+    task.edit(handle, data)
     # todo - notification
     return {}
 

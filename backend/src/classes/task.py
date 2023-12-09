@@ -21,7 +21,7 @@ class Task:
             cur = conn.cursor()
             cur.execute(query, (project_id,))
             return [Task().data(task) for task in cur.fetchall()]
-    
+
     @classmethod
     def get_all_tasks(cls, project_id):
         query = """
@@ -200,7 +200,7 @@ class Task:
         ) as task_report:
             task_report.write(json.dumps([], indent=2))
 
-    def edit(self, data):
+    def edit(self, handle, data):
         accepted_fields = [
             "name",
             "description",
@@ -216,14 +216,27 @@ class Task:
         for field in accepted_fields:
             if field not in data:
                 raise InputError(f"Missing task edit field: {field}")
-            cur.execute(
-                f"UPDATE tasks SET {field}= ? WHERE id = ?", (data[field], self.t_id)
-            )
+        cur.execute("SELECT * FROM tasks WHERE id = ?", (self.t_id,))
+        old_data = self.data(cur.fetchone())
+        changed_field_count = 0
+        # Check if fields have been changed
+        for field in accepted_fields:
+            if old_data[field] != data[field]:
+                cur.execute(
+                    f"UPDATE tasks SET {field}= ? WHERE id = ?",
+                    (data[field], self.t_id),
+                )
+                changed_field_count += 1
+        if set(old_data["assignees"]) != set(data["assignees"]):
+            changed_field_count += 1
+        if changed_field_count == 0:
+            return
         cur.execute(f"UPDATE tasks SET time_end= ? WHERE id = ?", (time(), self.t_id))
         cur.execute("DELETE FROM assigned WHERE task=?", (self.t_id,))
         conn.commit()
         conn.close()
         self.assign_users(data["assignees"])
+        self.log_task_spec_history(handle, data)
 
     def log_task_spec_history(self, handle, task_data):
         date_edited = datetime.now(ZoneInfo("Australia/Sydney")).strftime("%d/%m/%Y")
