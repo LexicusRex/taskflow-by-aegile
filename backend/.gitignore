@@ -5,3 +5,4 @@ src/analytics/projects/*.csv
 src/analytics/users/*.csv
 src/reports/*.json
 src/task_content/*.json
+src/task_specs/*.json

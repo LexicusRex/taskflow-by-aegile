@@ -54,7 +54,9 @@ export default function TaskPageAnalytics({ projectId, isEdit }) {
         flex: 2,
         px: 2,
         paddingTop: 2,
-        minWidth: '350px',
+        minWidth: '250px',
+        maxWidth: '320px',
+        ml: 2,
       }}
     >
       <Typography

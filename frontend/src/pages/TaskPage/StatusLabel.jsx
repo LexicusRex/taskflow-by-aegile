@@ -13,6 +13,15 @@ export default function StatusLabel({ status, setIsEdit }) {
     };
     return String(converter[stat]);
   };
+  const statusColour = (stat) => {
+    const colours = {
+      Blocked: 'rgb(240,102,127)',
+      'Not Started': 'rgb(1,148,255)',
+      'In Progress': 'rgb(151,71,255)',
+      Completed: 'rgb(39,199,112)',
+    };
+    return colours[stat];
+  };
   return (
     <Box
       sx={{
@@ -22,6 +31,9 @@ export default function StatusLabel({ status, setIsEdit }) {
         borderRadius: '10px',
         display: 'flex',
         alignItems: 'center',
+        borderStyle: 'solid none none none',
+        borderColor: statusColour(status),
+        borderWidth: '3px',
       }}
     >
       <Box sx={{ px: 2, py: '6px' }}>

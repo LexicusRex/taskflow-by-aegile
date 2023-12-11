@@ -89,6 +89,19 @@ export default function TaskCard({
     }
   };
 
+  const statusShadow = (stat) => {
+    const colours = {
+      'blocked': 'rgb(237,215,221)',
+      'notstarted': 'rgb(196,224,244)',
+      'inprogress': 'rgb(220,208,244)',
+      'completed': 'rgb(205,230,220)',
+    };
+    const shadowStyle = '0 6px 4px -2px ' + colours[stat] + ', -2px 0 4px -2px '
+                        + colours[stat] + ', 2px 0 4px -2px ' + colours[stat]
+
+    return shadowStyle;
+  };
+
   const splitDate = deadline.split('/');
   const isOverdue =
     Date.parse(`${splitDate[1]}/${splitDate[0]}/${splitDate[2]}`) <= Date.now();
@@ -124,10 +137,12 @@ export default function TaskCard({
                 backgroundColor: 'white',
                 borderRadius: '20px',
                 boxSizing: 'border-box',
+                mb: 2,
                 border: '1px solid',
                 borderColor: selectedId === id ? '#B4B4B4' : '#ECEFF1',
                 transition: 'border-color 0.5s',
-                boxShadow: hasBoxShadow && 3,
+                //boxShadow: hasBoxShadow && 3,
+                boxShadow: statusShadow(status),
                 '&:hover': {
                   cursor: isTaskPage && 'pointer',
                   borderColor: '#B4B4B4',

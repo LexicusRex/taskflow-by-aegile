@@ -8,6 +8,7 @@ import {
   InputLabel,
   Button,
   Skeleton,
+  Divider
 } from '@mui/material';
 import { Droppable } from 'react-beautiful-dnd';
 import TaskPriority from './TaskPriority';
@@ -16,6 +17,7 @@ import { Modal } from '../../components';
 import useModal from '../../hooks/useModal';
 import TaskForm from './TaskForm';
 import { useState } from 'react';
+import TaskHistoryBtn from './TaskHistoryBtn';
 
 import CloseIcon from '@mui/icons-material/Close';
 import SpeedIcon from '@mui/icons-material/Speed';
@@ -46,19 +48,36 @@ const TaskDetails = ({
     setSubtaskModalShown(!isSubtaskModalShown);
   };
 
+  const statusColour = (stat) => {
+    const colours = {
+      'blocked': 'rgb(240,102,127)',
+      'notstarted': 'rgb(1,148,255)',
+      'inprogress': 'rgb(151,71,255)',
+      'completed': 'rgb(39,199,112)',
+    };
+    return colours[stat];
+  };
+
   return (
     <Box
       sx={{
-        px: 2,
-        py: 2,
+        ml: 2,
+        p: 2,
         flexGrow: 1,
-        width: '320px',
+        minWidth: '250px',
+        maxWidth: '320px',
         display: 'flex',
         flexDirection: 'column',
         // alignItems: 'center',
         boxSize: 'border-box',
         overflowY: 'auto',
         maxHeight: '80dvh',
+        backgroundColor: 'rgb(251,249,255)',
+        borderTopLeftRadius: '10px',
+        borderTopRightRadius: '10px',
+        borderStyle: 'solid none none none',
+        borderColor: statusColour(taskData.status),
+        borderWidth: '3px',
       }}
     >
       <Modal
@@ -106,6 +125,10 @@ const TaskDetails = ({
           <IconButton size="small" onClick={toggleModal}>
             <EditIcon />
           </IconButton>
+          <TaskHistoryBtn 
+            taskId={taskData.id} 
+            projectMembers={projectMembers} 
+          />
           <IconButton size="small" onClick={() => setSelectedTask({})}>
             <CloseIcon />
           </IconButton>
@@ -123,7 +146,7 @@ const TaskDetails = ({
           {taskData.name}
         </Typography>
       )}
-      <Box sx={{ px: 2 }}>
+      <Box>
         {isLoading ? (
           <Skeleton 
             variant="rounded"
@@ -135,7 +158,7 @@ const TaskDetails = ({
           <Typography
             fontSize={16}
             color="text.secondary"
-            sx={{ my: 1, textWrap: 'balanced' }}
+            sx={{ textWrap: 'balanced' }}
           >
             {taskData.description}
           </Typography>
@@ -169,57 +192,76 @@ const TaskDetails = ({
               : taskData.deadline}
           </Box>
         )}
-        <InputLabel>Members</InputLabel>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          {isLoading ? (
-            <Box sx={{ display: 'flex' }}>
-              <Skeleton variant="circular" width={40} height={40} />
-              <Skeleton variant="circular" width={40} height={40} />
-              <Skeleton variant="circular" width={40} height={40} />
+        
+        <Box sx={{ display: 'flex' }}>
+          <Box sx={{ width: '50%' }}>  
+            <InputLabel>Members</InputLabel>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              {isLoading ? (
+                <Box sx={{ display: 'flex' }}>
+                  <Skeleton variant="circular" width={40} height={40} />
+                  <Skeleton variant="circular" width={40} height={40} />
+                  <Skeleton variant="circular" width={40} height={40} />
+                </Box>
+              ) : (
+                <AvatarGroup 
+                  max={3} 
+                  sx={{ 
+                    my: 1,
+                    '& .MuiAvatar-root': {
+                      width: 40,
+                      height: 40,
+                      fontSize: 20,
+                    }, 
+                  }}
+                >
+                  {Object.keys(taskData.assigneesData)
+                    .filter((handle) => taskData.assignees.includes(handle))
+                    .map((handle, index) => (
+                      <Tooltip
+                        key={'tooltip-' + taskData.assigneesData[handle].handle}
+                        title={taskData.assigneesData[handle].name}
+                        placement="top"
+                      >
+                        <Avatar
+                          key={taskData.assigneesData[handle].handle}
+                          alt={taskData.assigneesData[handle].name}
+                          src={taskData.assigneesData[handle].image}
+                        >
+                          {taskData.assigneesData[handle].name}
+                        </Avatar>
+                      </Tooltip>
+                    ))}
+                </AvatarGroup>
+              )}
             </Box>
-          ) : (
-            <AvatarGroup /*max={4}*/ sx={{ my: 1 }}>
-              {Object.keys(taskData.assigneesData)
-                .filter((handle) => taskData.assignees.includes(handle))
-                .map((handle, index) => (
-                  <Tooltip
-                    key={'tooltip-' + taskData.assigneesData[handle].handle}
-                    title={taskData.assigneesData[handle].name}
-                    placement="top"
-                  >
-                    <Avatar
-                      key={taskData.assigneesData[handle].handle}
-                      alt={taskData.assigneesData[handle].name}
-                      src={taskData.assigneesData[handle].image}
-                    >
-                      {taskData.assigneesData[handle].name}
-                    </Avatar>
-                  </Tooltip>
-                ))}
-            </AvatarGroup>
-          )}
-        </Box>
-        <InputLabel>Workload</InputLabel>
-        {isLoading ? (
-          <Skeleton
-            variant="rounded"
-            width="15%"
-            height={25}
-            sx={{ my: '5px' }}
-          />
-        ) : (
-          <Box
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              color: '#776E6E',
-              mt: 1,
-            }}
-          >
-            <SpeedIcon sx={{ mr: 0.5 }} />
-            <Typography sx={{ mt: 0.2 }}>{taskData.weighting}</Typography>
           </Box>
-        )}
+          <Box sx={{ width: '50%' }}>
+            <InputLabel>Workload</InputLabel>
+            {isLoading ? (
+              <Skeleton
+                variant="rounded"
+                width="15%"
+                height={25}
+                sx={{ my: '5px' }}
+              />
+            ) : (
+              <Box
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  color: '#776E6E',
+                  mt: 1,
+                }}
+              >
+                <Box sx={{ display: 'flex', mt: 1 }}>
+                  <SpeedIcon sx={{ mr: 0.5 }} />
+                  <Typography sx={{ mt: 0.1 }}>{taskData.weighting}</Typography>
+                </Box> 
+              </Box>
+            )}
+          </Box>
+        </Box>
         <Box sx={{ my: 1 }}>
           <InputLabel>Attachment</InputLabel>
           {isLoading ? (
@@ -233,6 +275,7 @@ const TaskDetails = ({
             <Typography>{taskData.attachmentName || 'No attachment'}</Typography>
           )}
         </Box>
+        <Divider sx={{ my: 2 }} />
       </Box>
       {/* Subtasks */}
       <Button 

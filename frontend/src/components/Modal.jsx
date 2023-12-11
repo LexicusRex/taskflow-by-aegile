@@ -16,6 +16,7 @@ const Modal = ({
   actions,
   purpose,
   submit,
+  size
 }) => {
   // Get save button name for different purpose modal
   return ReactDOM.createPortal(
@@ -26,7 +27,8 @@ const Modal = ({
         aria-labelledby="modal-dialog-title"
         aria-describedby="modal-dialog-description"
         fullWidth={true}
-        maxWidth="sm"
+        maxWidth={size ? size : "sm"}
+        PaperProps={{ sx: { borderRadius: "15px" } }}
       >
         <DialogTitle id="modal-dialog-title">
           <Typography sx={{ fontSize: 32 }}>{modalTitle}</Typography>

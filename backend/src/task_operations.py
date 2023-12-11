@@ -17,12 +17,13 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 def create_task(handle, task_data):
     new_task = Task()
     new_task.new(handle, task_data["project_id"], task_data)
+    new_task.log_new_task_specs()
+    new_task.log_task_spec_history(handle, task_data)
     set_task_active(new_task.t_id, new_task)
-    with open(f"{BASE_DIR}/task_content/{new_task.t_id}.json", "w", encoding="utf-8") as fp:
-        json.dump([{
-        "time": time.time(),
-        "content": []
-    }], fp)
+    with open(
+        f"{BASE_DIR}/task_content/{new_task.t_id}.json", "w", encoding="utf-8"
+    ) as fp:
+        json.dump([{"time": time.time(), "content": []}], fp)
     return {}
 
 
@@ -38,25 +39,34 @@ def get_task(task_id):
         cur.execute("SELECT * FROM tasks WHERE id = ?", (task_id,))
         return Task().data(cur.fetchone())
 
+
 def get_all_tasks(project_id):
     return Task.get_all(project_id)
+
 
 def update_task_specs(handle, data):
     Project(data["project_id"]).check_permission(handle, "creator")
     task = get_active_task(data["task_id"])
-    task.edit(data)
+    task.edit(handle, data)
     # todo - notification
     return {}
+
+
+def get_task_specs_history(task_id):
+    return Task(task_id).get_task_spec_history()
 
 
 def get_user_tasks(handle, is_handle):
     task_list = []
     with get_db() as conn:
         cur = conn.cursor()
-        cur.execute("SELECT * FROM tasks t JOIN assigned a ON t.id = a.task WHERE a.user = ?", (handle,))
-        
+        cur.execute(
+            "SELECT * FROM tasks t JOIN assigned a ON t.id = a.task WHERE a.user = ?",
+            (handle,),
+        )
+
         return [Task().data(task) for task in cur.fetchall()]
-    
+
     with conn:
         if is_handle:
             user_id = conn.execute(
@@ -234,15 +244,18 @@ def task_get_comment(task_id):
 
     return comments_list
 
+
 def task_update_status(handle, task_id, status):
     task = get_active_task(task_id)
     task.update_status(status)
     return {}
 
+
 def task_set_as_subtask(handle, task_id, parent_id):
     task = get_active_task(task_id)
     task.set_as_subtask(parent_id)
     return {}
+
 
 def task_remove_as_subtask(handle, task_id, status):
     task = get_active_task(task_id)
@@ -256,12 +269,18 @@ def register_edit_task_lock(handle, task_id):
 
 def get_task_edit(task_id):
     try:
-        with open(f"{BASE_DIR}/task_content/{task_id}.json", "r", encoding="utf-8") as fp:
+        with open(
+            f"{BASE_DIR}/task_content/{task_id}.json", "r", encoding="utf-8"
+        ) as fp:
             edit_history = sorted(json.load(fp), key=lambda edit: edit["time"])
             return edit_history[-1]["content"]
     except (FileNotFoundError, KeyError) as err:
         return []
-    
+        # raise AccessError("Task is being edited by another user")
+    with open(f"{BASE_DIR}/task_content/{task_id}.json", "r", encoding="utf-8") as fp:
+        return json.load(fp)
+
+
 def get_task_content(project_id):
     query = """
         SELECT t.name, t.id 
@@ -270,35 +289,42 @@ def get_task_content(project_id):
         ON t.id = pto.task
         WHERE t.project = ?
         ORDER BY pto.task_index ASC
-    """ 
+    """
     data = []
     with get_db() as conn:
         cur = conn.cursor()
-        tasks = cur.execute(query, (project_id, )).fetchall()
+        tasks = cur.execute(query, (project_id,)).fetchall()
         for task in tasks:
-            data.append({'id': task['id'], 'name': task['name'], 'blocks': get_task_edit(task['id'])})
+            data.append(
+                {
+                    "id": task["id"],
+                    "name": task["name"],
+                    "blocks": get_task_edit(task["id"]),
+                }
+            )
 
         return data
+
 
 def get_edit_difference(edit_history, task_content):
     # print("removed", [x["content"] for x in edit_history if x not in task_content])
     # print("added", [x["content"] for x in task_content if x not in edit_history])
-    return 
-    
+    return
+
+
 def update_task_edit(task_id, task_content: list):
     edit_history = []
-    
+
     try:
-        with open(f"{BASE_DIR}/task_content/{task_id}.json", "r", encoding="utf-8") as fp:
+        with open(
+            f"{BASE_DIR}/task_content/{task_id}.json", "r", encoding="utf-8"
+        ) as fp:
             edit_history = json.load(fp)
             # get_edit_difference(edit_history[-1]["content"], task_content)
     except (FileNotFoundError, AttributeError) as error:
         print("Task edit history not found")
 
-    edit_history.append({
-        "time": time.time(),
-        "content": task_content
-    })
+    edit_history.append({"time": time.time(), "content": task_content})
     with open(f"{BASE_DIR}/task_content/{task_id}.json", "w", encoding="utf-8") as fp:
         json.dump(edit_history, fp)
         # json.dump([{
@@ -309,10 +335,13 @@ def update_task_edit(task_id, task_content: list):
 
 def get_task_edit_history(task_id):
     try:
-        with open(f"{BASE_DIR}/task_content/{task_id}.json", "r", encoding="utf-8") as fp:
+        with open(
+            f"{BASE_DIR}/task_content/{task_id}.json", "r", encoding="utf-8"
+        ) as fp:
             return sorted(json.load(fp), key=lambda edit: edit["time"], reverse=True)
     except FileNotFoundError:
         raise InputError("Task edit history not found")
+
 
 def set_task_editor_index(project_id, task_id, parent_id):
     with get_db() as conn:
